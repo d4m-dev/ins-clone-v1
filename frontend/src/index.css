@@ -1,0 +1,56 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+  body {
+    @apply bg-white text-ink antialiased;
+    -webkit-tap-highlight-color: transparent;
+  }
+  /* Instagram-like scrollbar */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply bg-ink-faint rounded-full;
+  }
+}
+
+@layer components {
+  .ig-shell {
+    @apply mx-auto w-full max-w-shell px-0 md:px-5;
+  }
+  .ig-card {
+    @apply bg-white border-b border-ink-line md:border md:rounded-lg overflow-hidden;
+  }
+  .ig-input {
+    @apply w-full rounded-md border border-ink-line bg-ink-bg px-3 py-3 text-sm
+           placeholder:text-ink-soft focus:outline-none focus:border-ink-soft;
+  }
+  .ig-button {
+    @apply w-full rounded-lg bg-ig-blue px-4 py-2 text-sm font-semibold text-white
+           transition hover:bg-ig-blueHover disabled:opacity-40 disabled:cursor-not-allowed;
+  }
+  .ig-button-ghost {
+    @apply rounded-lg border border-ink-line bg-white px-4 py-2 text-sm font-semibold
+           text-ink transition hover:bg-ink-bg;
+  }
+  .ig-link {
+    @apply text-ig-blue font-semibold hover:underline;
+  }
+  .ig-gradient-text {
+    @apply bg-gradient-to-r from-ig-purple via-ig-pink to-ig-orange bg-clip-text text-transparent;
+  }
+  .ig-story-ring {
+    background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
+  }
+  .ig-spinner {
+    @apply h-6 w-6 animate-spin rounded-full border-2 border-ink-line border-t-ink-soft;
+  }
+}

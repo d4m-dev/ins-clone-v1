@@ -1,0 +1,203 @@
+{
+  "app": {
+    "name": "FamilyGram",
+    "tagline": "A private photo album for the family",
+    "footer": "FamilyGram — a private album for the family"
+  },
+  "nav": {
+    "home": "Home",
+    "search": "Search",
+    "create": "Create",
+    "reels": "Reels",
+    "activity": "Activity",
+    "profile": "Profile",
+    "sharePhoto": "Share a photo",
+    "logout": "Log out"
+  },
+  "language": {
+    "label": "Language",
+    "switch": "Change language",
+    "current": "Using: {{language}}"
+  },
+  "common": {
+    "loading": "Loading…",
+    "retry": "Try again",
+    "cancel": "Cancel",
+    "close": "Close",
+    "delete": "Delete",
+    "post": "Post",
+    "back": "Back",
+    "error": "Something went wrong",
+    "errorHint": "Please try again in a moment.",
+    "copyLink": "Copy link",
+    "copied": "Link copied"
+  },
+  "feed": {
+    "empty": {
+      "title": "No photos yet",
+      "description": "Every family album starts with one picture. Be the first to share a moment!",
+      "action": "Upload your first photo"
+    },
+    "end": "You have seen every photo in the album 🎉",
+    "loginHint": "to like and comment."
+  },
+  "post": {
+    "likes": {
+      "one": "{{total}} like",
+      "other": "{{total}} likes"
+    },
+    "comments": {
+      "one": "{{total}} comment",
+      "other": "{{total}} comments"
+    },
+    "viewAllComments": "View all {{total}} comments",
+    "menu": "More options",
+    "delete": "Delete photo",
+    "deleteConfirm": "Delete this photo permanently?",
+    "deleteDenied": "Only the owner can delete this photo.",
+    "deleteFailed": "Could not delete the photo.",
+    "likeFailed": "Could not update the like.",
+    "imageAlt": "Photo by {{name}}",
+    "location": "Location"
+  },
+  "comment": {
+    "empty": "No comments yet — be the first to say something nice 💬",
+    "placeholder": "Add a comment…",
+    "loginRequired": "Log in to comment",
+    "send": "Post",
+    "sendFailed": "Could not post your comment.",
+    "loadFailed": "Could not load the comments."
+  },
+  "upload": {
+    "title": "Create new post",
+    "pick": "Tap to select a photo",
+    "remove": "Remove image",
+    "formats": "{{types}} — max {{max}} MB",
+    "captionPlaceholder": "Write a caption…",
+    "locationPlaceholder": "Add location (optional)",
+    "share": "Share",
+    "sharing": "Sharing…",
+    "privacy": "Your photo is stored on the family server — never on a public cloud.",
+    "unsupported": "Unsupported format. Allowed: {{types}}.",
+    "tooLarge": "Image is larger than {{max}} MB. Please pick a smaller one.",
+    "failed": "Upload failed. Please try again.",
+    "loginRequired": "You need to log in to share a photo.",
+    "videoTooLong": "Video is {{duration}} long — the limit is {{max}} seconds.",
+    "videoHint": "Video up to {{max}} seconds, {{size}} MB",
+    "audio": "Soundtrack (optional)",
+    "audioTitle": "Song title / music credit",
+    "processing": "Processing video…",
+    "posterFailed": "Could not generate a cover image — you can still post it.",
+    "videoReady": "Video {{duration}} is ready",
+    "modePhoto": "Photo",
+    "modeVideo": "Video (Reels)",
+    "pickVideo": "Tap to choose a video"
+  },
+  "profile": {
+    "posts": "posts",
+    "likes": "likes",
+    "withComments": "with comments",
+    "joined": "Joined {{time}}",
+    "sharePhoto": "Share photo",
+    "adminPanel": "Admin panel",
+    "tab": "Posts",
+    "empty": {
+      "title": "No posts yet",
+      "self": "Your shared photos will show up here.",
+      "other": "This member has not shared a photo yet."
+    },
+    "loadFailed": "Could not load this profile.",
+    "member": "Family member"
+  },
+  "explore": {
+    "searchPlaceholder": "Search photos, captions, members…",
+    "noMatch": "No photo matches your search",
+    "emptyTitle": "Nothing here yet",
+    "noMatchHint": "Try another word, like a place or a name.",
+    "emptyHint": "Photos appear here as soon as the family uploads them.",
+    "photoAlt": "Family photo"
+  },
+  "postPage": {
+    "loadFailed": "Could not load this photo.",
+    "imageAlt": "Photo by {{name}}"
+  },
+  "auth": {
+    "login": "Log in",
+    "loggingIn": "Logging in…",
+    "register": "Sign up",
+    "registering": "Creating account…",
+    "or": "or",
+    "identifierPlaceholder": "Username or e-mail",
+    "passwordPlaceholder": "Password",
+    "noAccount": "Don't have an account?",
+    "hasAccount": "Have an account?",
+    "loginHint": "Only family members have an account. Ask the admin to create yours if you cannot register.",
+    "registerHint": "Sign up to share photos with the family. This album is private — nobody outside is invited.",
+    "terms": "By signing up you agree that your photos stay inside the family. Admins can delete any content.",
+    "fields": {
+      "fullName": "Full name",
+      "fullNamePlaceholder": "Nguyen Van A",
+      "username": "Username",
+      "usernamePlaceholder": "a.nguyen",
+      "email": "E-mail",
+      "emailPlaceholder": "you@example.com",
+      "password": "Password",
+      "passwordPlaceholder": "At least 8 characters"
+    },
+    "loginFailed": "Unable to log in right now.",
+    "registerFailed": "Registration failed. Please try again."
+  },
+  "notFound": {
+    "title": "Page not found",
+    "description": "The link you followed does not exist (or the photo was deleted).",
+    "action": "Back to the album"
+  },
+  "error": {
+    "network": "Cannot reach the server. Check your connection and try again.",
+    "http": "Request failed ({{status}}).",
+    "sessionExpired": "Your session expired, please log in again."
+  },
+  "reels": {
+    "title": "Reels",
+    "empty": {
+      "title": "No videos yet",
+      "description": "Record a short moment — up to 60 seconds — and share it with the family.",
+      "action": "Upload your first video"
+    },
+    "views": {
+      "one": "{{total}} view",
+      "other": "{{total}} views"
+    },
+    "soundOn": "Unmute",
+    "soundOff": "Mute",
+    "swipeHint": "Swipe up for the next video",
+    "loadFailed": "Could not load the video.",
+    "music": "Soundtrack"
+  },
+  "stories": {
+    "title": "Moments",
+    "today": "Last 24 hours",
+    "yourStory": "Your moment",
+    "empty": "Nobody has shared a moment today",
+    "add": "Add a moment",
+    "expired": "This moment has expired"
+  },
+  "viewer": {
+    "close": "Close",
+    "download": "Download",
+    "downloading": "Downloading…",
+    "next": "Next photo",
+    "previous": "Previous photo",
+    "zoomHint": "Double-tap to zoom · drag to move",
+    "counter": "{{current}}/{{total}}",
+    "downloadFailed": "Could not download the file.",
+    "openFull": "View full size"
+  },
+  "pwa": {
+    "install": "Install app",
+    "installTitle": "Add FamilyGram to your home screen",
+    "installHint": "Open it instantly like a real app, no browser needed.",
+    "dismiss": "Later",
+    "offline": "You are offline — some photos may not load."
+  }
+}

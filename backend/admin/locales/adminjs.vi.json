@@ -1,0 +1,201 @@
+{
+  "actions": {
+    "new": "Thêm mới",
+    "edit": "Sửa",
+    "show": "Chi tiết",
+    "delete": "Xoá",
+    "bulkDelete": "Xoá mục đã chọn",
+    "list": "Danh sách",
+    "search": "Tìm kiếm",
+    "export": "Xuất dữ liệu"
+  },
+  "buttons": {
+    "save": "Lưu",
+    "addNewItem": "Thêm mục mới",
+    "filter": "Lọc",
+    "filterActive": "Lọc ({{count}})",
+    "applyChanges": "Áp dụng",
+    "resetFilter": "Đặt lại",
+    "confirmRemovalMany": "Xác nhận xoá {{count}} bản ghi",
+    "confirmRemovalMany_plural": "Xác nhận xoá {{count}} bản ghi",
+    "logout": "Đăng xuất",
+    "login": "Đăng nhập",
+    "seeTheDocumentation": "Xem: <1>tài liệu</1>",
+    "createFirstRecord": "Tạo bản ghi đầu tiên",
+    "cancel": "Huỷ",
+    "confirm": "Xác nhận",
+    "contactUs": "Liên hệ",
+    "upload": "Tải ảnh lên",
+    "chooseFile": "Chọn tệp"
+  },
+  "labels": {
+    "navigation": "Điều hướng",
+    "pages": "Trang",
+    "selectedRecords": "Đã chọn ({{selected}})",
+    "filters": "Bộ lọc",
+    "adminVersion": "Admin: {{version}}",
+    "appVersion": "Ứng dụng: {{version}}",
+    "dashboard": "Tổng quan",
+    "User": "Thành viên",
+    "Post": "Ảnh",
+    "Comment": "Bình luận",
+    "Like": "Lượt thích"
+  },
+  "properties": {
+    "length": "Độ dài",
+    "from": "Từ",
+    "to": "Đến",
+    "id": "Mã số",
+    "username": "Tên đăng nhập",
+    "fullName": "Họ và tên",
+    "email": "Email",
+    "password": "Mật khẩu",
+    "avatarUrl": "Ảnh đại diện",
+    "bio": "Giới thiệu",
+    "role": "Vai trò",
+    "locale": "Ngôn ngữ",
+    "isActive": "Đang hoạt động",
+    "lastLoginAt": "Đăng nhập lần cuối",
+    "createdAt": "Ngày tạo",
+    "updatedAt": "Ngày cập nhật",
+    "userId": "Mã thành viên",
+    "imageFilename": "Ảnh",
+    "mimeType": "Định dạng",
+    "sizeBytes": "Dung lượng (byte)",
+    "caption": "Chú thích",
+    "location": "Địa điểm",
+    "likeCount": "Lượt thích",
+    "commentCount": "Bình luận",
+    "isArchived": "Đã ẩn khỏi album",
+    "postId": "Mã ảnh",
+    "body": "Nội dung",
+    "role.admin": "Quản trị viên",
+    "role.member": "Thành viên",
+    "isActive.true": "Có",
+    "isActive.false": "Không",
+    "isArchived.true": "Đã ẩn",
+    "isArchived.false": "Đang hiển thị",
+    "locale.vi": "🇻🇳 Tiếng Việt",
+    "locale.en": "🇬🇧 English",
+    "locale.zh": "🇨🇳 中文"
+  },
+  "resources": {
+    "User": {
+      "actions": {
+        "new": "Thêm thành viên",
+        "edit": "Sửa thành viên",
+        "delete": "Xoá thành viên",
+        "list": "Danh sách thành viên",
+        "show": "Chi tiết thành viên"
+      }
+    },
+    "Post": {
+      "actions": {
+        "new": "Thêm ảnh",
+        "edit": "Sửa ảnh",
+        "delete": "Xoá ảnh",
+        "list": "Tất cả ảnh",
+        "show": "Chi tiết ảnh"
+      }
+    },
+    "Comment": {
+      "actions": {
+        "delete": "Xoá bình luận",
+        "list": "Danh sách bình luận"
+      }
+    },
+    "Like": {
+      "actions": {
+        "delete": "Xoá lượt thích",
+        "list": "Danh sách lượt thích"
+      }
+    }
+  },
+  "components": {
+    "DropZone": {
+      "placeholder": "Kéo thả ảnh vào đây, hoặc bấm để chọn tệp",
+      "acceptedSize": "Dung lượng tối đa: {{maxSize}}",
+      "acceptedType": "Hỗ trợ: {{mimeTypes}}",
+      "unsupportedSize": "Tệp {{fileName}} quá lớn",
+      "unsupportedType": "Tệp {{fileName}} không đúng định dạng: {{fileType}}"
+    },
+    "LanguageSelector": {
+      "availableLanguages": {
+        "vi": "Tiếng Việt",
+        "en": "English",
+        "zh-CN": "中文",
+        "de": "German",
+        "es": "Spanish",
+        "it": "Italian",
+        "ja": "Japanese",
+        "pl": "Polish",
+        "pt-BR": "Portuguese (Brazil)",
+        "ua": "Ukrainian"
+      }
+    },
+    "Login": {
+      "welcomeHeader": "Xin chào",
+      "welcomeMessage": "đây là trang quản trị FamilyGram — nơi bạn quản lý thành viên, ảnh và bình luận của cả gia đình.",
+      "properties": {
+        "email": "Email quản trị",
+        "password": "Mật khẩu"
+      },
+      "loginButton": "Đăng nhập"
+    }
+  },
+  "messages": {
+    "successfullyBulkDeleted": "Đã xoá {{count}} bản ghi",
+    "successfullyBulkDeleted_plural": "Đã xoá {{count}} bản ghi",
+    "successfullyDeleted": "Đã xoá bản ghi",
+    "successfullyUpdated": "Đã lưu thay đổi",
+    "thereWereValidationErrors": "Dữ liệu chưa hợp lệ — xem chi tiết bên dưới",
+    "forbiddenError": "Bạn không thể thực hiện thao tác {{actionName}} trên {{resourceId}}",
+    "anyForbiddenError": "Bạn không có quyền thực hiện thao tác này",
+    "successfullyCreated": "Đã tạo bản ghi mới",
+    "bulkDeleteError": "Có lỗi khi xoá bản ghi. Mở console để xem chi tiết",
+    "errorFetchingRecords": "Có lỗi khi tải danh sách. Mở console để xem chi tiết",
+    "errorFetchingRecord": "Có lỗi khi tải bản ghi. Mở console để xem chi tiết",
+    "noRecordsSelected": "Bạn chưa chọn bản ghi nào",
+    "theseRecordsWillBeRemoved": "Bản ghi sau sẽ bị xoá",
+    "theseRecordsWillBeRemoved_plural": "Các bản ghi sau sẽ bị xoá",
+    "pickSomeFirstToRemove": "Hãy chọn bản ghi trước khi xoá",
+    "error404Resource": "Không tìm thấy bảng dữ liệu có mã: {{resourceId}}",
+    "error404Action": "Bảng {{resourceId}} không có thao tác tên là {{actionName}}",
+    "error404Record": "Bảng {{resourceId}} không có bản ghi với mã: {{recordId}}",
+    "seeConsoleForMore": "Xem console của trình duyệt để biết thêm chi tiết…",
+    "noActionComponent": "Bạn cần tạo component cho thao tác này",
+    "noRecordsInResource": "Bảng này chưa có bản ghi nào",
+    "noRecords": "Chưa có dữ liệu",
+    "confirmDelete": "Bạn có chắc muốn xoá mục này không?",
+    "welcomeOnBoard_title": "Chào mừng đến trang quản trị!",
+    "welcomeOnBoard_subtitle": "Album gia đình đang chạy trên chiếc điện thoại của bạn. Vài gợi ý để bắt đầu:",
+    "addingResources_title": "Quản lý thành viên",
+    "addingResources_subtitle": "Thêm, sửa hoặc tạm khoá tài khoản của người thân",
+    "customizeResources_title": "Kiểm duyệt ảnh",
+    "customizeResources_subtitle": "Xem mọi ảnh đã đăng, ẩn khỏi album hoặc xoá vĩnh viễn",
+    "customizeActions_title": "Kiểm duyệt bình luận",
+    "customizeActions_subtitle": "Xoá bình luận không phù hợp với không khí gia đình",
+    "writeOwnComponents_title": "Giao diện tuỳ chỉnh",
+    "writeOwnComponents_subtitle": "custom-admin.css cho phép đổi màu, chữ và bố cục trang quản trị",
+    "customDashboard_title": "Sao lưu dữ liệu",
+    "customDashboard_subtitle": "Chạy `npm run db:backup` định kỳ và đồng bộ thư mục uploads/",
+    "roleBasedAccess_title": "Phân quyền",
+    "roleBasedAccess_subtitle": "Chỉ quản trị viên mới xoá được thành viên và ảnh của người khác",
+    "community_title": "Album riêng tư",
+    "community_subtitle": "Không ai ngoài gia đình truy cập được — hãy giữ token và mật khẩu an toàn",
+    "foundBug_title": "Phát hiện lỗi?",
+    "foundBug_subtitle": "Xem log tại `npm start` hoặc `logs/` trên điện thoại",
+    "needMoreSolutions_title": "Cần thêm tính năng?",
+    "needMoreSolutions_subtitle": "Xem mục ý tưởng trong README (album theo năm, kỷ niệm, khung ảnh…)",
+    "invalidCredentials": "Email hoặc mật khẩu không đúng",
+    "keyPlaceholder": "KHOÁ",
+    "valuePlaceholder": "GIÁ TRỊ",
+    "initialKey": "Khoá-{{number}}",
+    "keyInUse": "Khoá không được trùng nhau",
+    "keyValuePropertyDefaultDescription": "Mọi giá trị được lưu dạng văn bản. Khoá phải duy nhất, khoá trùng sẽ không được lưu.",
+    "pageNotFound_title": "Không tìm thấy trang",
+    "pageNotFound_subtitle": "Trang <strong>\"{{pageName}}\"</strong> không tồn tại",
+    "componentNotFound_title": "Chưa chỉ định component",
+    "componentNotFound_subtitle": "Bạn cần chỉ định component để hiển thị phần tử này"
+  }
+}

@@ -1,0 +1,484 @@
+/* ==========================================================================
+   custom-admin.css — LỚP GHI ĐÈ GIAO DIỆN CHO ADMINJS (FamilyGram)
+   --------------------------------------------------------------------------
+   File này được AdminJS nhúng tự động nhờ:
+       assets: { styles: ['/admin/assets/custom-admin.css'] }
+   và được phục vụ bởi chính Express (express.static ở admin/public/).
+   KHÔNG cần build, KHÔNG cần npm — sửa file bằng nano rồi F5 là thấy ngay.
+
+   CẤU TRÚC TỆP:
+     PHẦN 1 — Biến thiết kế & typography tiếng Việt
+     PHẦN 2 — Thương hiệu: sidebar · topbar · bảng · trang đăng nhập
+     PHẦN 3 — Bản điện thoại (bạn dùng /admin trên chính Android — quan trọng!)
+     PHẦN 4 — Ghi đè CHUỖI CỨNG bằng CSS (::after) — công cụ Việt hoá
+     PHẦN 5 — Dashboard, badge, chi tiết nhỏ
+
+   CÁCH LY HOẠT ĐỘNG:
+     • Chữ trên giao diện (nút Lưu, bộ lọc, thông báo, trang đăng nhập…) do
+       admin/locales/adminjs.vi.json dịch — đó là tầng chính, phủ 100% khoá
+       giao diện của AdminJS v7 (xem i18n: locale.buildAdminLocale).
+     • CSS trong tệp này lo màu sắc, bố cục, bản mobile và — ở PHẦN 4 — thay
+       thế những chuỗi hiếm hoi AdminJS render thẳng trong component (không có
+       khoá i18n), hoặc khi bạn muốn đổi chữ mà không sửa code.
+
+   QUY ƯỚC SELECTOR CỦA ADMINJS (tài liệu chính thức, từ v6.4):
+     data-css="{resource}-{action}-{container}"   ví dụ: [data-css="posts-edit-form"]
+     và các hook cố định: sidebar · sidebar-logo · sidebar-resources · topbar ·
+     table · button · login
+   Dùng [data-css$="edit-form"] để bắt mọi form sửa của mọi bảng.
+   ========================================================================== */
+
+/* ==========================================================================
+   PHẦN 1 — BIẾN THIẾT KẾ & TYPOGRAPHY TIẾNG VIỆT
+   ========================================================================== */
+
+:root {
+  /* Bảng màu FamilyGram (lấy từ UI React để hai nơi trông cùng một hệ) */
+  --fg-brand: #e1306c;
+  --fg-brand-2: #833ab4;
+  --fg-brand-3: #fd9d3c;
+  --fg-blue: #0095f6;
+  --fg-red: #ed4956;
+  --fg-ink: #262626;
+  --fg-muted: #8e8e8e;
+  --fg-line: #dbdbdb;
+  --fg-bg: #fafafa;
+
+  /* Biến gốc của AdminJS */
+  --topbar-color: #ffffff;
+  --sidebar-bg-color: #fafafa;
+  --sidebar-color: var(--fg-ink);
+  --sidebar-link-color: var(--fg-brand);
+  --fg-radius: 12px;
+  --fg-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+/* Dấu tiếng Việt hiển thị đẹp với font hệ thống; không tải webfont (tiết kiệm
+   băng thông điện thoại và không bị chặn bởi CSP). */
+body,
+button,
+input,
+select,
+textarea,
+[data-css] {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Noto Sans',
+    'Helvetica Neue', Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Nhãn tiếng Việt dài hơn tiếng Anh một chút → nới dòng và đừng cắt chữ */
+label,
+button,
+[data-css$='form'] span {
+  line-height: 1.45;
+}
+[data-css$='form'] label {
+  text-wrap: balance;
+}
+
+/* Nút bấm dễ chạm hơn trên điện thoại (chuẩn Material: 44px) */
+@media (pointer: coarse) {
+  [data-css='button'],
+  button[type='submit'],
+  a[data-css='button'] {
+    min-height: 44px;
+  }
+}
+
+/* ==========================================================================
+   PHẦN 2 — THƯƠNG HIỆU: SIDEBAR · TOPBAR · BẢNG · ĐĂNG NHẬP
+   ========================================================================== */
+
+/* ------------------------------- Top bar -------------------------------- */
+section[data-css='topbar'],
+header[data-css='topbar'] {
+  background: var(--topbar-color) !important;
+  border-bottom: 1px solid var(--fg-line) !important;
+  box-shadow: var(--fg-shadow);
+}
+
+/* -------------------------------- Sidebar -------------------------------- */
+section[data-css='sidebar'] {
+  background-color: var(--sidebar-bg-color) !important;
+  color: var(--fg-ink) !important;
+  border-right: 1px solid var(--fg-line) !important;
+  border-top: none !important;
+  border-bottom: none !important;
+}
+
+section[data-css='sidebar'] svg {
+  fill: var(--fg-brand) !important;
+}
+
+/* Logo: dải gradient giống app React */
+a[data-css='sidebar-logo'],
+section[data-css='sidebar-logo'] {
+  background: linear-gradient(45deg, var(--fg-brand-2), var(--fg-brand), var(--fg-brand-3)) !important;
+  color: #fff !important;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+}
+
+section[data-css='sidebar-resources'],
+[data-css='sidebar'] section a {
+  background: transparent !important;
+  color: var(--fg-ink) !important;
+  border-radius: var(--fg-radius);
+}
+
+[data-css='sidebar'] a:hover {
+  background: rgba(225, 48, 108, 0.08) !important;
+  color: var(--fg-brand) !important;
+}
+
+/* Nhóm menu (Gia đình / Tương tác) */
+[data-css='sidebar'] section > section > span,
+[data-css='sidebar'] h2 {
+  color: var(--fg-muted) !important;
+  text-transform: uppercase;
+  font-size: 11px !important;
+  letter-spacing: 0.6px;
+  font-weight: 700;
+}
+
+/* --------------------------------- Nút ----------------------------------- */
+[data-css='button'],
+button[data-css='button'],
+a[data-css='button'] {
+  border-radius: 999px !important;
+  font-weight: 600 !important;
+}
+
+[data-css='button-primary'],
+button[data-css='button-primary'],
+button[type='submit'] {
+  background: linear-gradient(45deg, var(--fg-brand-2), var(--fg-brand)) !important;
+  border: none !important;
+  color: #fff !important;
+}
+
+/* Nút nguy hiểm (Xoá) — đỏ Instagram, không dùng đỏ mặc định của AdminJS */
+[data-css='button-danger'],
+button[data-css='button-danger'] {
+  background: var(--fg-red) !important;
+  border-color: var(--fg-red) !important;
+  color: #fff !important;
+}
+
+/* -------------------------------- Bảng ----------------------------------- */
+section[data-css='table'] table {
+  border-radius: var(--fg-radius) !important;
+  overflow: hidden;
+  background: #fff;
+}
+
+section[data-css='table'] thead th {
+  background: var(--fg-bg) !important;
+  color: var(--fg-muted) !important;
+  text-transform: uppercase;
+  font-size: 11px !important;
+  letter-spacing: 0.6px;
+  white-space: nowrap;
+}
+
+section[data-css='table'] tbody tr:hover {
+  background: rgba(225, 48, 108, 0.05) !important;
+}
+
+section[data-css='table'] tbody td {
+  font-size: 13px;
+  vertical-align: middle;
+}
+
+/* Cột "Ảnh" trong bảng Post: giá trị là URL đầy đủ → hiển thị gọn, dễ đọc */
+[data-css='posts-list-table'] td:nth-child(2),
+[data-css$='list-imageFilename'] {
+  font-size: 12px;
+  word-break: break-all;
+  max-width: 260px;
+}
+
+/* --------------------------- Trang đăng nhập ----------------------------- */
+[data-css='login'] {
+  background: linear-gradient(135deg, var(--fg-brand-2), var(--fg-brand), var(--fg-brand-3)) !important;
+}
+
+[data-css='login'] form,
+[data-css='login'] section {
+  border-radius: 18px !important;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.25) !important;
+}
+
+/* Ô nhập trên trang đăng nhập + mọi form */
+[data-css$='form'] input[type='text'],
+[data-css$='form'] input[type='email'],
+[data-css$='form'] input[type='password'],
+[data-css$='form'] input[type='number'],
+[data-css$='form'] textarea,
+[data-css$='form'] select {
+  border-radius: 10px !important;
+}
+
+/* ==========================================================================
+   PHẦN 3 — BẢN ĐIỆN THOẠI (bạn quản trị ngay trên máy Android)
+   AdminJS vốn thiết kế cho desktop; khối này biến nó thành dùng được bằng ngón tay.
+   ========================================================================== */
+
+@media (max-width: 1024px) {
+  /* Sidebar thành dải ngang cuộn được ở trên cùng */
+  section[data-css='sidebar'] {
+    position: sticky;
+    top: 0;
+    z-index: 30;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    height: auto !important;
+    flex-direction: row !important;
+    align-items: center;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 8px 10px !important;
+    border-right: none !important;
+    border-bottom: 1px solid var(--fg-line) !important;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  section[data-css='sidebar'] > * {
+    flex: 0 0 auto;
+  }
+
+  /* Ẩn logo chữ trong dải ngang cho đỡ chật */
+  a[data-css='sidebar-logo'] {
+    display: none !important;
+  }
+
+  /* Menu dọc → menu ngang, mỗi mục một "chip" */
+  section[data-css='sidebar-resources'],
+  [data-css='sidebar'] section {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center;
+    gap: 6px;
+  }
+
+  [data-css='sidebar'] section a {
+    white-space: nowrap;
+    padding: 8px 12px !important;
+    border: 1px solid var(--fg-line);
+    background: #fff !important;
+  }
+
+  [data-css='sidebar'] section a:hover {
+    border-color: var(--fg-brand);
+  }
+
+  /* Nội dung chiếm toàn bộ chiều ngang, có lề an toàn cho ngón tay */
+  [data-css='topbar'],
+  [data-css$='-list'],
+  [data-css$='-edit'],
+  [data-css$='-show'],
+  [data-css='dashboard'] {
+    padding-left: 12px !important;
+    padding-right: 12px !important;
+  }
+
+  /* Bảng: cuộn ngang + cột đầu dính lại để biết đang xem bản ghi nào */
+  section[data-css='table'] {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  section[data-css='table'] table {
+    min-width: 720px;
+    font-size: 12px;
+  }
+
+  section[data-css='table'] th:first-child,
+  section[data-css='table'] td:first-child {
+    position: sticky;
+    left: 0;
+    z-index: 2;
+    background: #fff;
+    box-shadow: 1px 0 0 var(--fg-line);
+  }
+
+  section[data-css='table'] thead th:first-child {
+    background: var(--fg-bg);
+  }
+
+  /* Thanh hành động (Lưu / Huỷ / Xoá) dính đáy màn hình, luôn với tới được */
+  [data-css$='form'] footer,
+  [data-css$='-edit'] > section:last-child,
+  [data-css$='-new'] > section:last-child {
+    position: sticky;
+    bottom: 0;
+    z-index: 20;
+    background: #fff;
+    padding: 10px 12px !important;
+    border-top: 1px solid var(--fg-line);
+  }
+
+  /* Nút toàn chiều ngang cho dễ bấm */
+  [data-css$='form'] button[type='submit'],
+  [data-css='button-primary'] {
+    width: 100%;
+  }
+
+  /* Bộ lọc xếp dọc thay vì 3 cột */
+  [data-css$='-list'] form > section,
+  [data-css='filter-drawer'] section {
+    flex-direction: column !important;
+    gap: 10px;
+  }
+}
+
+/* Màn hình rất nhỏ: giảm khoảng trắng thừa */
+@media (max-width: 480px) {
+  [data-css$='-list'],
+  [data-css$='-edit'],
+  [data-css$='-show'],
+  [data-css='dashboard'] {
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+  }
+
+  section[data-css='sidebar'] {
+    padding: 6px 8px !important;
+  }
+}
+
+/* ==========================================================================
+   PHẦN 4 — GHI ĐÈ CHUỖI CỨNG BẰNG CSS (công cụ Việt hoá)
+   --------------------------------------------------------------------------
+   Kỹ thuật: ẩn chữ gốc bằng `font-size: 0`, rồi in chữ mới bằng `::after`
+   (hoặc `::before`). Icon SVG không bị ảnh hưởng vì kích thước của chúng do
+   thuộc tính width/height quyết định.
+
+   KHI NÀO DÙNG:
+     • Chuỗi AdminJS render thẳng trong component mà KHÔNG có khoá i18n.
+     • Muốn đổi nhanh vài chữ mà không sửa file dịch / không restart server.
+   KHI NÀO KHÔNG NÊN: mọi chuỗi đã có khoá trong adminjs.vi.json — hãy sửa ở
+   đó, vì bản dịch tự thích ứng khi AdminJS đổi phiên bản, còn selector thì có
+   thể phải cập nhật. PHẦN 4 chỉ là lưới an toàn.
+   ========================================================================== */
+
+/* --- 4.1 Đang BẬT: ba chỗ an toàn, không thể nhầm lẫn ------------------- */
+
+/* (a) Nút đăng nhập của trang /admin/login — trong form chỉ có 1 nút submit */
+[data-css='login'] form button[type='submit'] {
+  font-size: 0 !important;
+}
+[data-css='login'] form button[type='submit']::after {
+  content: 'Đăng nhập';
+  font-size: 14px;
+  font-weight: 600;
+}
+
+/* (b) Nút Lưu ở mọi form sửa/thêm — AdminJS đánh dấu bằng type="submit" */
+[data-css$='-edit-form'] button[type='submit'],
+[data-css$='-new-form'] button[type='submit'] {
+  font-size: 0 !important;
+}
+[data-css$='-edit-form'] button[type='submit']::after,
+[data-css$='-new-form'] button[type='submit']::after {
+  content: 'Lưu';
+  font-size: 14px;
+  font-weight: 600;
+}
+
+/* (c) Nút tạo bản ghi đầu tiên ở trạng thái rỗng của bảng */
+[data-css$='-list'] section a[data-css='button'] {
+  font-size: 0 !important;
+}
+[data-css$='-list'] section a[data-css='button']::after {
+  content: 'Thêm mới';
+  font-size: 14px;
+  font-weight: 600;
+}
+
+/* (d) Ẩn huy hiệu "Made with love / AdminJS" nếu bản AdminJS nào đó vẫn render
+   (chúng ta đã đặt branding.withMadeWithLove = false, đây là lớp bảo hiểm). */
+[data-css='made-with-love'],
+footer[data-css='made-with-love'],
+[data-css='sidebar'] ~ * a[href*='adminjs.co'] {
+  display: none !important;
+}
+
+/* --- 4.2 MẪU SẴN DÙNG: bỏ comment khi cần ------------------------------- */
+/*
+   Đổi nhãn nút Xoá trong mọi form sửa:
+   [data-css$='-edit-form'] button[data-css='button-danger'] { font-size: 0 !important; }
+   [data-css$='-edit-form'] button[data-css='button-danger']::after {
+     content: 'Xoá bản ghi'; font-size: 14px; font-weight: 600;
+   }
+
+   Đổi tiêu đề trang danh sách (h1 của resource):
+   [data-css$='-list'] h1 { font-size: 0 !important; }
+   [data-css$='-list'] h1::after { content: 'Album ảnh gia đình'; font-size: 20px; font-weight: 700; }
+
+   Đổi nhãn tab trong form sửa (Thông tin / Metadata):
+   [data-css$='-edit-form'] [role='tab'] { font-size: 0 !important; }
+   [data-css$='-edit-form'] [role='tab']:nth-child(1)::after { content: 'Thông tin'; font-size: 13px; }
+   [data-css$='-edit-form'] [role='tab']:nth-child(2)::after { content: 'Chi tiết kỹ thuật'; font-size: 13px; }
+
+   Đổi placeholder ô tìm kiếm / giá trị rỗng:
+   [data-css='key-value'] input::placeholder { color: transparent; }
+   [data-css='key-value'] input:placeholder-shown::before { content: 'KHOÁ'; }
+*/
+
+/* Gợi ý tra selector: mở DevTools → chuột phải phần tử → Inspect → đọc
+   thuộc tính data-css của chính nó và của thẻ cha, rồi ghép theo quy ước
+   "{resource}-{action}-{container}" + hậu tố `$="..."` cho linh hoạt. */
+
+/* ==========================================================================
+   PHẦN 5 — DASHBOARD, BADGE & CHI TIẾT NHỎ
+   ========================================================================== */
+
+/* Thẻ thống kê trên dashboard (các mục do messages.welcomeOnBoard_* sinh ra) */
+[data-css='dashboard'] section,
+[data-css='dashboard'] a {
+  border-radius: var(--fg-radius) !important;
+  box-shadow: var(--fg-shadow);
+}
+
+[data-css='dashboard'] h1 {
+  font-weight: 700;
+  letter-spacing: -0.2px;
+}
+
+/* Badge dùng trong handler dashboard / ghi chú */
+.fg-badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(225, 48, 108, 0.1);
+  color: var(--fg-brand);
+  font-weight: 600;
+  font-size: 12px;
+}
+
+/* Dấu sao trường bắt buộc & thông báo lỗi cho rõ hơn */
+[data-css$='form'] [color='danger'],
+[data-css$='form'] span[data-css='text'] {
+  font-size: 12px;
+}
+
+/* Thanh cuộn mảnh cho bảng và sidebar mobile */
+section[data-css='table']::-webkit-scrollbar,
+section[data-css='sidebar']::-webkit-scrollbar {
+  height: 6px;
+}
+section[data-css='table']::-webkit-scrollbar-thumb,
+section[data-css='sidebar']::-webkit-scrollbar-thumb {
+  background: var(--fg-line);
+  border-radius: 3px;
+}
+
+/* In ấn (nếu bạn muốn in danh sách thành viên/ảnh ra giấy) */
+@media print {
+  section[data-css='sidebar'],
+  section[data-css='topbar'] {
+    display: none !important;
+  }
+}

@@ -1,0 +1,21 @@
+# ---------------------------------------------------------------------------
+# backend/.gitignore — the .env file must NEVER be committed.
+# ---------------------------------------------------------------------------
+node_modules/
+.env
+.env.local
+.env.*.local
+
+# uploaded family photos (privacy!) and backups
+uploads/*
+!uploads/.gitkeep
+backups/
+
+# logs / runtime artifacts
+*.log
+logs/
+pids/
+coverage/
+.DS_Store
+Thumbs.db
+*.tmp

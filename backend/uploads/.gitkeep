@@ -1,0 +1,3 @@
+Keeps the uploads/ directory in git while ignoring the photos themselves.
+Sub-folders uploaded/posts and uploads/avatars are created automatically on boot
+by services/storage.service.js → ensureUploadFolders().

@@ -1,0 +1,203 @@
+{
+  "app": {
+    "name": "FamilyGram",
+    "tagline": "Album ảnh riêng của gia đình",
+    "footer": "FamilyGram — album riêng của gia đình"
+  },
+  "nav": {
+    "home": "Trang chủ",
+    "search": "Tìm kiếm",
+    "create": "Đăng ảnh",
+    "reels": "Thước phim",
+    "activity": "Hoạt động",
+    "profile": "Trang cá nhân",
+    "sharePhoto": "Chia sẻ ảnh",
+    "logout": "Đăng xuất"
+  },
+  "language": {
+    "label": "Ngôn ngữ",
+    "switch": "Đổi ngôn ngữ",
+    "current": "Đang dùng: {{language}}"
+  },
+  "common": {
+    "loading": "Đang tải…",
+    "retry": "Thử lại",
+    "cancel": "Huỷ",
+    "close": "Đóng",
+    "delete": "Xoá",
+    "post": "Đăng",
+    "back": "Quay lại",
+    "error": "Đã xảy ra lỗi",
+    "errorHint": "Vui lòng thử lại sau giây lát.",
+    "copyLink": "Sao chép liên kết",
+    "copied": "Đã sao chép liên kết"
+  },
+  "feed": {
+    "empty": {
+      "title": "Chưa có ảnh nào",
+      "description": "Album gia đình nào cũng bắt đầu từ một tấm ảnh. Hãy là người đầu tiên chia sẻ khoảnh khắc!",
+      "action": "Đăng ảnh đầu tiên"
+    },
+    "end": "Bạn đã xem hết ảnh trong album 🎉",
+    "loginHint": "để thích và bình luận."
+  },
+  "post": {
+    "likes": {
+      "one": "{{total}} lượt thích",
+      "other": "{{total}} lượt thích"
+    },
+    "comments": {
+      "one": "{{total}} bình luận",
+      "other": "{{total}} bình luận"
+    },
+    "viewAllComments": "Xem tất cả {{total}} bình luận",
+    "menu": "Tuỳ chọn khác",
+    "delete": "Xoá ảnh",
+    "deleteConfirm": "Xoá vĩnh viễn ảnh này?",
+    "deleteDenied": "Chỉ chủ ảnh mới có thể xoá.",
+    "deleteFailed": "Không thể xoá ảnh.",
+    "likeFailed": "Không thể cập nhật lượt thích.",
+    "imageAlt": "Ảnh của {{name}}",
+    "location": "Vị trí"
+  },
+  "comment": {
+    "empty": "Chưa có bình luận — hãy là người đầu tiên 💬",
+    "placeholder": "Thêm bình luận…",
+    "loginRequired": "Đăng nhập để bình luận",
+    "send": "Đăng",
+    "sendFailed": "Không thể gửi bình luận.",
+    "loadFailed": "Không tải được bình luận."
+  },
+  "upload": {
+    "title": "Tạo bài viết mới",
+    "pick": "Chạm để chọn ảnh",
+    "remove": "Xoá ảnh",
+    "formats": "{{types}} — tối đa {{max}} MB",
+    "captionPlaceholder": "Viết chú thích…",
+    "locationPlaceholder": "Thêm địa điểm (không bắt buộc)",
+    "share": "Chia sẻ",
+    "sharing": "Đang chia sẻ…",
+    "privacy": "Ảnh của bạn được lưu trên máy chủ gia đình — không tải lên đám mây công khai.",
+    "unsupported": "Định dạng không hỗ trợ. Cho phép: {{types}}.",
+    "tooLarge": "Ảnh lớn hơn {{max}} MB. Vui lòng chọn ảnh nhỏ hơn.",
+    "failed": "Tải ảnh thất bại. Vui lòng thử lại.",
+    "loginRequired": "Bạn cần đăng nhập để chia sẻ ảnh.",
+    "videoTooLong": "Video dài {{duration}} — chỉ cho phép tối đa {{max}} giây.",
+    "videoHint": "Video tối đa {{max}} giây, {{size}} MB",
+    "audio": "Nhạc nền (không bắt buộc)",
+    "audioTitle": "Tên bài hát / nguồn nhạc",
+    "processing": "Đang xử lý video…",
+    "posterFailed": "Không tạo được ảnh bìa — vẫn đăng được bình thường.",
+    "videoReady": "Video {{duration}} đã sẵn sàng",
+    "modePhoto": "Ảnh",
+    "modeVideo": "Video (Reels)",
+    "pickVideo": "Chạm để chọn video"
+  },
+  "profile": {
+    "posts": "bài viết",
+    "likes": "lượt thích",
+    "withComments": "có bình luận",
+    "joined": "Tham gia {{time}}",
+    "sharePhoto": "Đăng ảnh",
+    "adminPanel": "Trang quản trị",
+    "tab": "Bài viết",
+    "empty": {
+      "title": "Chưa có bài viết",
+      "self": "Ảnh bạn chia sẻ sẽ hiện ở đây.",
+      "other": "Thành viên này chưa chia sẻ ảnh nào."
+    },
+    "loadFailed": "Không thể tải trang cá nhân này.",
+    "member": "Thành viên gia đình"
+  },
+  "explore": {
+    "searchPlaceholder": "Tìm ảnh, chú thích, thành viên…",
+    "noMatch": "Không tìm thấy ảnh phù hợp",
+    "emptyTitle": "Chưa có gì ở đây",
+    "noMatchHint": "Thử từ khác, ví dụ tên người hoặc địa điểm.",
+    "emptyHint": "Ảnh sẽ hiện ở đây ngay khi gia đình đăng lên.",
+    "photoAlt": "Ảnh gia đình"
+  },
+  "postPage": {
+    "loadFailed": "Không thể tải ảnh này.",
+    "imageAlt": "Ảnh của {{name}}"
+  },
+  "auth": {
+    "login": "Đăng nhập",
+    "loggingIn": "Đang đăng nhập…",
+    "register": "Đăng ký",
+    "registering": "Đang tạo tài khoản…",
+    "or": "hoặc",
+    "identifierPlaceholder": "Tên đăng nhập hoặc email",
+    "passwordPlaceholder": "Mật khẩu",
+    "noAccount": "Chưa có tài khoản?",
+    "hasAccount": "Đã có tài khoản?",
+    "loginHint": "Chỉ thành viên trong gia đình mới có tài khoản. Hãy liên hệ quản trị viên nếu bạn chưa đăng ký được.",
+    "registerHint": "Đăng ký để chia sẻ ảnh với gia đình. Album này là riêng tư — không ai ngoài gia đình được mời.",
+    "terms": "Khi đăng ký, bạn đồng ý rằng ảnh của bạn nằm trong album gia đình. Quản trị viên có thể xoá bất kỳ nội dung nào.",
+    "fields": {
+      "fullName": "Họ và tên",
+      "fullNamePlaceholder": "Nguyễn Văn A",
+      "username": "Tên đăng nhập",
+      "usernamePlaceholder": "a.nguyen",
+      "email": "Email",
+      "emailPlaceholder": "ban@example.com",
+      "password": "Mật khẩu",
+      "passwordPlaceholder": "Ít nhất 8 ký tự"
+    },
+    "loginFailed": "Không thể đăng nhập lúc này.",
+    "registerFailed": "Đăng ký thất bại. Vui lòng thử lại."
+  },
+  "notFound": {
+    "title": "Không tìm thấy trang",
+    "description": "Liên kết bạn mở không tồn tại (hoặc ảnh đã bị xoá).",
+    "action": "Về trang album"
+  },
+  "error": {
+    "network": "Không kết nối được máy chủ. Kiểm tra mạng và thử lại.",
+    "http": "Yêu cầu thất bại ({{status}}).",
+    "sessionExpired": "Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại."
+  },
+  "reels": {
+    "title": "Reels",
+    "empty": {
+      "title": "Chưa có video nào",
+      "description": "Quay một khoảnh khắc ngắn — tối đa 60 giây — rồi chia sẻ với cả nhà.",
+      "action": "Đăng video đầu tiên"
+    },
+    "views": {
+      "one": "{{total}} lượt xem",
+      "other": "{{total}} lượt xem"
+    },
+    "soundOn": "Bật tiếng",
+    "soundOff": "Tắt tiếng",
+    "swipeHint": "Vuốt lên để xem video tiếp theo",
+    "loadFailed": "Không tải được video.",
+    "music": "Nhạc nền"
+  },
+  "stories": {
+    "title": "Khoảnh khắc",
+    "today": "Khoảnh khắc 24 giờ",
+    "yourStory": "Tin của bạn",
+    "empty": "Hôm nay chưa ai đăng khoảnh khắc nào",
+    "add": "Thêm khoảnh khắc",
+    "expired": "Khoảnh khắc này đã hết hạn"
+  },
+  "viewer": {
+    "close": "Đóng",
+    "download": "Tải về",
+    "downloading": "Đang tải…",
+    "next": "Ảnh tiếp theo",
+    "previous": "Ảnh trước",
+    "zoomHint": "Chạm đúp để phóng to · kéo để di chuyển",
+    "counter": "{{current}}/{{total}}",
+    "downloadFailed": "Không tải được tệp.",
+    "openFull": "Xem ảnh lớn"
+  },
+  "pwa": {
+    "install": "Cài đặt ứng dụng",
+    "installTitle": "Cài FamilyGram lên màn hình chính",
+    "installHint": "Mở nhanh như một ứng dụng thật, không cần mở trình duyệt.",
+    "dismiss": "Để sau",
+    "offline": "Bạn đang ngoại tuyến — một số ảnh có thể chưa hiển thị được."
+  }
+}

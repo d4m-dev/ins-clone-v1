@@ -1,0 +1,203 @@
+{
+  "app": {
+    "name": "FamilyGram",
+    "tagline": "家庭专属相册",
+    "footer": "FamilyGram — 家庭专属相册"
+  },
+  "nav": {
+    "home": "首页",
+    "search": "搜索",
+    "create": "发布",
+    "reels": "短视频",
+    "activity": "动态",
+    "profile": "个人主页",
+    "sharePhoto": "分享照片",
+    "logout": "退出登录"
+  },
+  "language": {
+    "label": "语言",
+    "switch": "切换语言",
+    "current": "当前语言：{{language}}"
+  },
+  "common": {
+    "loading": "加载中…",
+    "retry": "重试",
+    "cancel": "取消",
+    "close": "关闭",
+    "delete": "删除",
+    "post": "发布",
+    "back": "返回",
+    "error": "出错了",
+    "errorHint": "请稍后重试。",
+    "copyLink": "复制链接",
+    "copied": "链接已复制"
+  },
+  "feed": {
+    "empty": {
+      "title": "还没有照片",
+      "description": "每个家庭相册都从第一张照片开始。快来分享你的第一个瞬间吧！",
+      "action": "上传第一张照片"
+    },
+    "end": "你已经看完了相册里的所有照片 🎉",
+    "loginHint": "即可点赞和评论。"
+  },
+  "post": {
+    "likes": {
+      "one": "{{total}} 个赞",
+      "other": "{{total}} 个赞"
+    },
+    "comments": {
+      "one": "{{total}} 条评论",
+      "other": "{{total}} 条评论"
+    },
+    "viewAllComments": "查看全部 {{total}} 条评论",
+    "menu": "更多选项",
+    "delete": "删除照片",
+    "deleteConfirm": "确定永久删除这张照片？",
+    "deleteDenied": "只有本人可以删除这张照片。",
+    "deleteFailed": "无法删除照片。",
+    "likeFailed": "无法更新点赞。",
+    "imageAlt": "{{name}} 的照片",
+    "location": "位置"
+  },
+  "comment": {
+    "empty": "还没有评论 — 来抢第一条吧 💬",
+    "placeholder": "添加评论…",
+    "loginRequired": "登录后评论",
+    "send": "发布",
+    "sendFailed": "无法发布评论。",
+    "loadFailed": "无法加载评论。"
+  },
+  "upload": {
+    "title": "创建新帖子",
+    "pick": "点击选择照片",
+    "remove": "移除照片",
+    "formats": "{{types}} — 最多 {{max}} MB",
+    "captionPlaceholder": "写点什么…",
+    "locationPlaceholder": "添加位置（可选）",
+    "share": "分享",
+    "sharing": "分享中…",
+    "privacy": "照片保存在家庭服务器上 — 不会上传到公共云端。",
+    "unsupported": "不支持的格式。支持：{{types}}。",
+    "tooLarge": "照片大于 {{max}} MB，请选择更小的照片。",
+    "failed": "上传失败，请重试。",
+    "loginRequired": "你需要登录才能分享照片。",
+    "videoTooLong": "视频时长 {{duration}} — 最多只能 {{max}} 秒。",
+    "videoHint": "视频不超过 {{max}} 秒、{{size}} MB",
+    "audio": "背景音乐（可选）",
+    "audioTitle": "歌曲名称 / 音乐来源",
+    "processing": "正在处理视频…",
+    "posterFailed": "无法生成封面 — 仍然可以正常发布。",
+    "videoReady": "视频 {{duration}} 已就绪",
+    "modePhoto": "照片",
+    "modeVideo": "视频（Reels）",
+    "pickVideo": "点击选择视频"
+  },
+  "profile": {
+    "posts": "帖子",
+    "likes": "点赞",
+    "withComments": "有条评论",
+    "joined": "加入于 {{time}}",
+    "sharePhoto": "发布照片",
+    "adminPanel": "管理后台",
+    "tab": "帖子",
+    "empty": {
+      "title": "还没有帖子",
+      "self": "你分享的照片会显示在这里。",
+      "other": "该成员还没有分享照片。"
+    },
+    "loadFailed": "无法加载此个人主页。",
+    "member": "家庭成员"
+  },
+  "explore": {
+    "searchPlaceholder": "搜索照片、文字、成员…",
+    "noMatch": "没有找到符合条件的照片",
+    "emptyTitle": "这里还没有内容",
+    "noMatchHint": "换个词试试，比如地点或名字。",
+    "emptyHint": "家人上传后，照片会显示在这里。",
+    "photoAlt": "家庭照片"
+  },
+  "postPage": {
+    "loadFailed": "无法加载这张照片。",
+    "imageAlt": "{{name}} 的照片"
+  },
+  "auth": {
+    "login": "登录",
+    "loggingIn": "登录中…",
+    "register": "注册",
+    "registering": "正在创建账号…",
+    "or": "或",
+    "identifierPlaceholder": "用户名或邮箱",
+    "passwordPlaceholder": "密码",
+    "noAccount": "还没有账号？",
+    "hasAccount": "已有账号？",
+    "loginHint": "只有家庭成员才有账号。如果无法注册，请联系管理员。",
+    "registerHint": "注册即可与家人分享照片。此相册仅限家人查看。",
+    "terms": "注册即表示你同意照片保存在家庭相册中。管理员可以删除任何内容。",
+    "fields": {
+      "fullName": "姓名",
+      "fullNamePlaceholder": "张三",
+      "username": "用户名",
+      "usernamePlaceholder": "zhang.san",
+      "email": "邮箱",
+      "emailPlaceholder": "you@example.com",
+      "password": "密码",
+      "passwordPlaceholder": "至少 8 个字符"
+    },
+    "loginFailed": "暂时无法登录。",
+    "registerFailed": "注册失败，请重试。"
+  },
+  "notFound": {
+    "title": "页面不存在",
+    "description": "你访问的链接不存在（或照片已被删除）。",
+    "action": "返回相册"
+  },
+  "error": {
+    "network": "无法连接服务器，请检查网络后重试。",
+    "http": "请求失败（{{status}}）。",
+    "sessionExpired": "登录状态已过期，请重新登录。"
+  },
+  "reels": {
+    "title": "短视频",
+    "empty": {
+      "title": "还没有视频",
+      "description": "拍一段不超过 60 秒的片段，分享给家人吧。",
+      "action": "上传第一段视频"
+    },
+    "views": {
+      "one": "{{total}} 次观看",
+      "other": "{{total}} 次观看"
+    },
+    "soundOn": "开启声音",
+    "soundOff": "静音",
+    "swipeHint": "上滑查看下一段视频",
+    "loadFailed": "无法加载视频。",
+    "music": "背景音乐"
+  },
+  "stories": {
+    "title": "动态",
+    "today": "24 小时动态",
+    "yourStory": "我的动态",
+    "empty": "今天还没有人分享动态",
+    "add": "添加动态",
+    "expired": "该动态已过期"
+  },
+  "viewer": {
+    "close": "关闭",
+    "download": "下载",
+    "downloading": "下载中…",
+    "next": "下一张",
+    "previous": "上一张",
+    "zoomHint": "双击放大 · 拖动移动",
+    "counter": "{{current}}/{{total}}",
+    "downloadFailed": "无法下载文件。",
+    "openFull": "查看大图"
+  },
+  "pwa": {
+    "install": "安装应用",
+    "installTitle": "把 FamilyGram 添加到主屏幕",
+    "installHint": "像原生应用一样快速打开，无需浏览器。",
+    "dismiss": "稍后再说",
+    "offline": "当前离线 — 部分照片可能无法显示。"
+  }
+}

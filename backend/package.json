@@ -1,0 +1,49 @@
+{
+  "name": "familygram-backend",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Private family photo-sharing backend (Express + MariaDB + AdminJS + Telegram) running on Termux / Ubuntu ARM64.",
+  "main": "server.js",
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "scripts": {
+    "start": "concurrently -k -p \"[{name}]\" -n \"DB,API,BOT-TUNNEL\" -c \"magenta,green,cyan\" \"npm:start:db\" \"npm:start:api\" \"npm:start:tunnel\"",
+    "start:db": "bash scripts/start-mariadb.sh",
+    "start:api": "node server.js",
+    "start:tunnel": "bash scripts/start-tunnel.sh",
+    "start:api:watch": "node --watch server.js",
+    "dev": "concurrently -k -p \"[{name}]\" -n \"DB,API-WATCH,API,TUNNEL\" -c \"magenta,yellow,green,cyan\" \"npm:start:db\" \"npm:watch:api\" \"npm:start:api\" \"npm:start:tunnel\"",
+    "watch:api": "echo 'dev watch not used in prod mode - see nodemon'",
+    "db:init": "bash scripts/init-database.sh",
+    "db:backup": "bash scripts/backup-database.sh",
+    "tunnel:install": "bash scripts/setup-cloudflared.sh",
+    "bootstrap:termux": "bash scripts/bootstrap-termux.sh",
+    "admin:passwd": "node scripts/hash-password.js",
+    "health": "node -e \"require('./config/urls');console.log('urls config OK')\""
+  },
+  "dependencies": {
+    "@adminjs/express": "^6.1.0",
+    "@adminjs/sequelize": "^4.1.1",
+    "adminjs": "^7.8.13",
+    "bcryptjs": "^2.4.3",
+    "connect-session-sequelize": "^7.1.7",
+    "cors": "^2.8.6",
+    "dotenv": "^16.6.1",
+    "express": "^4.22.3",
+    "express-rate-limit": "^7.5.1",
+    "express-session": "^1.18.0",
+    "express-validator": "^7.3.2",
+    "helmet": "^7.2.0",
+    "jsonwebtoken": "^9.0.3",
+    "mariadb": "^3.3.2",
+    "morgan": "^1.12.1",
+    "multer": "^2.4.0",
+    "node-telegram-bot-api": "^0.66.0",
+    "sequelize": "^6.37.8",
+    "sqlite3": "^6.0.1"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
