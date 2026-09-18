@@ -24,8 +24,8 @@ set +a
 
 DB_HOST="${DB_HOST:-127.0.0.1}"
 DB_PORT="${DB_PORT:-3306}"
-DB_NAME="${DB_NAME:-familygram}"
-DB_USER="${DB_USER:-familygram}"
+DB_NAME="${DB_NAME:-pixgram}"
+DB_USER="${DB_USER:-pixgram}"
 DB_PASSWORD="${DB_PASSWORD:?DB_PASSWORD must be set in .env}"
 
 log() { echo "[INIT] $*"; }

@@ -1,7 +1,7 @@
 /**
  * src/components/InstallPrompt.jsx
  * ---------------------------------------------------------------------------
- * Băng mời "Cài FamilyGram lên màn hình chính" + băng cảnh báo ngoại tuyến.
+ * Băng mời "Cài PixGram lên màn hình chính" + băng cảnh báo ngoại tuyến.
  * Cả hai đều nhẹ, tự ẩn khi không cần và không chặn thao tác của người dùng.
  * ---------------------------------------------------------------------------
  */

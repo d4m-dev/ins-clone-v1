@@ -14,10 +14,10 @@ BACKUP_DIR="${BACKUP_DIR:-$SCRIPT_DIR/backups}"
 STAMP="$(date +%Y%m%d-%H%M%S)"
 mkdir -p "$BACKUP_DIR"
 
-DB_NAME="${DB_NAME:-familygram}"
+DB_NAME="${DB_NAME:-pixgram}"
 DB_HOST="${DB_HOST:-127.0.0.1}"
 DB_PORT="${DB_PORT:-3306}"
-DB_USER="${DB_USER:-familygram}"
+DB_USER="${DB_USER:-pixgram}"
 DB_PASSWORD="${DB_PASSWORD:?DB_PASSWORD must be set in .env}"
 
 TARGET="$BACKUP_DIR/${DB_NAME}-${STAMP}.sql"

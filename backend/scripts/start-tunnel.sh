@@ -19,7 +19,7 @@ if [ -f "$ENV_FILE" ]; then
 fi
 
 PORT="${PORT:-4000}"
-TUNNEL_NAME="${CLOUDFLARE_TUNNEL_NAME:-familygram-api}"
+TUNNEL_NAME="${CLOUDFLARE_TUNNEL_NAME:-pixgram-api}"
 # Token của tunnel do Cloudflare dashboard tạo (Zero Trust → Networks → Tunnels).
 # Khi có token thì KHÔNG cần config.yml: tuyến đường (public hostname → origin)
 # đã được cấu hình trên dashboard.

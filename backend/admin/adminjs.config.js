@@ -98,7 +98,7 @@ const ASSETS_ROUTE = urls.prefix.adminAssets; // '/admin/assets'
 const userResource = {
   resource: User,
   options: {
-    navigation: { name: 'Gia đình', icon: 'User' },
+    navigation: { name: 'Cộng đồng', icon: 'User' },
     listProperties: ['id', 'username', 'fullName', 'email', 'role', 'locale', 'isActive', 'createdAt'],
     showProperties: ['id', 'username', 'fullName', 'email', 'role', 'locale', 'avatarUrl', 'bio', 'isActive', 'lastLoginAt', 'createdAt'],
     editProperties: ['fullName', 'email', 'role', 'locale', 'isActive', 'bio'],
@@ -148,7 +148,7 @@ const userResource = {
           return request;
         },
       },
-      /** Only a full admin may hard-delete a family member (cascades posts). */
+      /** Only a full admin may hard-delete a member (cascades posts). */
       delete: {
         isAccessible: ({ currentAdmin }) => currentAdmin?.role === 'admin',
       },
@@ -159,7 +159,7 @@ const userResource = {
 const postResource = {
   resource: Post,
   options: {
-    navigation: { name: 'Gia đình', icon: 'Image' },
+    navigation: { name: 'Cộng đồng', icon: 'Image' },
     listProperties: ['id', 'imageFilename', 'mediaType', 'caption', 'userId', 'likeCount', 'commentCount', 'viewCount', 'isArchived', 'createdAt'],
     showProperties: ['id', 'imageFilename', 'mediaType', 'videoFilename', 'durationSeconds', 'audioTitle', 'mimeType', 'sizeBytes', 'caption', 'location', 'userId', 'likeCount', 'commentCount', 'viewCount', 'isArchived', 'createdAt'],
     editProperties: ['caption', 'location', 'isArchived'],
@@ -285,7 +285,7 @@ const likeResource = {
 const inviteResource = {
   resource: Invite,
   options: {
-    navigation: { name: 'Gia đình', icon: 'Mail' },
+    navigation: { name: 'Cộng đồng', icon: 'Mail' },
     listProperties: ['id', 'email', 'role', 'status', 'invitedById', 'expiresAt', 'acceptedAt', 'createdAt'],
     showProperties: ['id', 'email', 'role', 'status', 'message', 'invitedById', 'expiresAt', 'acceptedAt', 'createdAt'],
     filterProperties: ['email', 'status', 'role', 'expiresAt'],
@@ -338,7 +338,7 @@ const adminJsOptions = {
   logoutPath: `${urls.prefix.admin}/logout`,
 
   branding: {
-    companyName: 'Quản trị FamilyGram',
+    companyName: 'Quản trị PixGram',
     withMadeWithLove: false,
     theme: {
       colors: {
@@ -432,8 +432,8 @@ function buildAdminFallbackRouter(reason) {
     <p>API và ảnh <b>vẫn hoạt động bình thường</b>. Chỉ riêng trang này lỗi.</p>
     <p><b>Lý do:</b> <code>${String(reason).replace(/[<>&]/g, '')}</code></p>
     <p>Trên điện thoại, chạy lại:</p>
-    <p><code>cd ~/familygram/backend &amp;&amp; npm install &amp;&amp; npm start</code></p>
-    <p>Nếu vẫn lỗi, xem nhật ký khởi động: <code>cat ~/familygram/backend/logs/*.log</code></p>
+    <p><code>cd ~/pixgram/backend &amp;&amp; npm install &amp;&amp; npm start</code></p>
+    <p>Nếu vẫn lỗi, xem nhật ký khởi động: <code>cat ~/pixgram/backend/logs/*.log</code></p>
   </div>`;
 
   const router = express.Router();

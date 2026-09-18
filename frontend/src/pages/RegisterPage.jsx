@@ -1,5 +1,5 @@
 /**
- * src/pages/RegisterPage.jsx — tạo tài khoản thành viên gia đình.
+ * src/pages/RegisterPage.jsx — tạo tài khoản thành viên mới.
  * Kiểm tra phía client mô phỏng đúng luật express-validator của backend,
  * nhưng server vẫn là nguồn xác thực cuối cùng.
  */

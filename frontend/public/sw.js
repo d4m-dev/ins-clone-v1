@@ -1,11 +1,11 @@
 /* eslint-disable no-restricted-globals */
 /**
- * public/sw.js — service worker của FamilyGram
+ * public/sw.js — service worker của PixGram
  * ---------------------------------------------------------------------------
  * Chiến lược (an toàn trước, offline vừa đủ):
  *   • Điều hướng (HTML)   : network-first → offline thì trả shell đã lưu.
  *   • Tài nguyên build    : cache-first (file có hash trong tên, không đổi).
- *   • Ảnh/video /uploads/ : KHÔNG cache (album gia đình lớn dần, dung lượng
+ *   • Ảnh/video /uploads/ : KHÔNG cache (kho ảnh lớn dần, dung lượng
  *                           điện thoại có hạn) — chỉ đi mạng, lỗi thì bỏ qua.
  *   • /api/*              : KHÔNG cache, trừ GET /api/stories|/api/reels dùng
  *                           network-first có lưu tạm để còn xem khi mất mạng.
@@ -13,7 +13,7 @@
  * LƯU Ý: đổi CACHE_VERSION mỗi khi sửa file này để buộc cập nhật.
  */
 
-const CACHE_VERSION = 'familygram-v1';
+const CACHE_VERSION = 'pixgram-v1';
 const SHELL_CACHE = `${CACHE_VERSION}-shell`;
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 const DATA_CACHE = `${CACHE_VERSION}-data`;

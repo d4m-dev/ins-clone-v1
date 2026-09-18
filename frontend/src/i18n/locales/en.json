@@ -1,8 +1,8 @@
 {
   "app": {
-    "name": "FamilyGram",
-    "tagline": "A private photo album for the family",
-    "footer": "FamilyGram — a private album for the family"
+    "name": "PixGram",
+    "tagline": "Share photos with everyone",
+    "footer": "PixGram — where everyone shares photos"
   },
   "nav": {
     "home": "Home",
@@ -12,7 +12,8 @@
     "activity": "Activity",
     "profile": "Profile",
     "sharePhoto": "Share a photo",
-    "logout": "Log out"
+    "logout": "Log out",
+    "messages": "Messages"
   },
   "language": {
     "label": "Language",
@@ -35,7 +36,7 @@
   "feed": {
     "empty": {
       "title": "No photos yet",
-      "description": "Every family album starts with one picture. Be the first to share a moment!",
+      "description": "Every community starts with one picture. Be the first to share a moment!",
       "action": "Upload your first photo"
     },
     "end": "You have seen every photo in the album 🎉",
@@ -77,7 +78,7 @@
     "locationPlaceholder": "Add location (optional)",
     "share": "Share",
     "sharing": "Sharing…",
-    "privacy": "Your photo is stored on the family server — never on a public cloud.",
+    "privacy": "Your photo is stored on a private server — never on a public cloud.",
     "unsupported": "Unsupported format. Allowed: {{types}}.",
     "tooLarge": "Image is larger than {{max}} MB. Please pick a smaller one.",
     "failed": "Upload failed. Please try again.",
@@ -110,16 +111,16 @@
       "other": "This member has not shared a photo yet."
     },
     "loadFailed": "Could not load this profile.",
-    "member": "Family member",
-    "inviteMember": "Invite family"
+    "member": "Member",
+    "inviteMember": "Invite members"
   },
   "explore": {
     "searchPlaceholder": "Search photos, captions, members…",
     "noMatch": "No photo matches your search",
     "emptyTitle": "Nothing here yet",
     "noMatchHint": "Try another word, like a place or a name.",
-    "emptyHint": "Photos appear here as soon as the family uploads them.",
-    "photoAlt": "Family photo"
+    "emptyHint": "Photos appear here as soon as people upload them.",
+    "photoAlt": "Photo"
   },
   "postPage": {
     "loadFailed": "Could not load this photo.",
@@ -135,9 +136,9 @@
     "passwordPlaceholder": "Password",
     "noAccount": "Don't have an account?",
     "hasAccount": "Have an account?",
-    "loginHint": "Only family members have an account. Ask the admin to create yours if you cannot register.",
-    "registerHint": "Sign up to share photos with the family. This album is private — nobody outside is invited.",
-    "terms": "By signing up you agree that your photos stay inside the family. Admins can delete any content.",
+    "loginHint": "Create a free account to share photos with everyone. You need to sign in to post, like and comment.",
+    "registerHint": "Sign up and start sharing photos with the community.",
+    "terms": "By signing up you agree that your photos are public in the community. Admins may remove any content.",
     "fields": {
       "fullName": "Full name",
       "fullNamePlaceholder": "Nguyen Van A",
@@ -166,7 +167,7 @@
     "title": "Reels",
     "empty": {
       "title": "No videos yet",
-      "description": "Record a short moment — up to 60 seconds — and share it with the family.",
+      "description": "Record a short moment — up to 60 seconds — and share it with everyone.",
       "action": "Upload your first video"
     },
     "views": {
@@ -200,7 +201,7 @@
   },
   "pwa": {
     "install": "Install app",
-    "installTitle": "Add FamilyGram to your home screen",
+    "installTitle": "Add PixGram to your home screen",
     "installHint": "Open it instantly like a real app, no browser needed.",
     "dismiss": "Later",
     "offline": "You are offline — some photos may not load."
@@ -235,19 +236,19 @@
   },
   "invite": {
     "checking": "Checking the invitation…",
-    "validTitle": "💌 You are invited to the family album",
-    "validBody": "{{inviter}} invited you to join FamilyGram.",
+    "validTitle": "💌 You have an invitation to join",
+    "validBody": "{{inviter}} invited you to join PixGram.",
     "emailLocked": "Signing up with {{email}} (chosen by the inviter).",
     "invalidTitle": "This invitation cannot be used",
     "invalidBody": "The invitation link has expired or was already used. Ask an administrator for a new one — you can still sign up if allowed.",
-    "someone": "A family member",
-    "title": "Invite family",
-    "subtitle": "Send an invitation to the family album — administrators only.",
+    "someone": "A member",
+    "title": "Invite members",
+    "subtitle": "Send an invitation to join — administrators only.",
     "emailLabel": "Invitee's e-mail",
     "roleMember": "Member",
     "roleAdmin": "Administrator",
     "messageLabel": "Message (optional)",
-    "messagePlaceholder": "Join our family album!",
+    "messagePlaceholder": "Come share your photos with us!",
     "send": "Send invitation",
     "sending": "Sending…",
     "expiryHint": "Each invitation works once and expires after a few days.",
@@ -270,5 +271,54 @@
       "revoked": "Revoked",
       "expired": "Expired"
     }
+  },
+  "chat": {
+    "title": "Messages",
+    "newChat": "New message",
+    "tabInbox": "Inbox",
+    "tabRequests": "Requests",
+    "emptyInbox": "No conversations yet",
+    "emptyInboxHint": "Start a chat with someone you want to share photos with.",
+    "noRequests": "No message requests",
+    "noRequestsHint": "Messages from people you don't follow land here until you accept.",
+    "noMessages": "No messages yet",
+    "unknownUser": "User",
+    "you": "You",
+    "previewSeparator": ": ",
+    "seen": "Seen",
+    "today": "Today",
+    "yesterday": "Yesterday",
+    "placeholder": "Write a message…",
+    "send": "Send",
+    "attach": "Send a photo or video",
+    "emoji": "Emoji",
+    "attachment": "Attachment",
+    "fileTypeUnsupported": "Only photos and videos can be sent.",
+    "fileTooLarge": "File is larger than {{max}} MB. Pick a smaller one.",
+    "attachFailed": "That file could not be processed.",
+    "sendFailed": "Message not sent. Please try again.",
+    "loadOlder": "Load older messages",
+    "sayHi": "Say hi to @{{name}}",
+    "pickHint": "Pick a conversation on the left, or start a new one.",
+    "typing": "typing…",
+    "realtimeOn": "Live",
+    "realtimeOff": "Syncing periodically",
+    "requestHint": "{{name}} isn't in your contacts yet. Accept to receive messages from them?",
+    "accept": "Accept",
+    "decline": "Decline",
+    "declinedHint": "You declined this conversation.",
+    "unsend": "Unsend message",
+    "recalled": "Message unsent",
+    "more": "Options",
+    "searchPeople": "Search people",
+    "noPeopleFound": "No one found",
+    "noRecent": "No recent chats — search by username.",
+    "shareTo": "Send to",
+    "sharedPost": "Shared post",
+    "viewPost": "View post",
+    "sharedDone": "Sent to {{name}}",
+    "sharedAsRequest": "Sent — it sits in their requests until accepted.",
+    "shareHint": "People you haven't chatted with will see this in Requests.",
+    "share": "Share"
   }
 }

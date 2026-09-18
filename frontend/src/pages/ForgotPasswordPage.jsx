@@ -3,7 +3,7 @@
  * ---------------------------------------------------------------------------
  * Nguyên tắc an toàn: giao diện LUÔN hiện cùng một thông báo dù email có tồn
  * tại hay không — nếu hiện "email không tồn tại" thì kẻ lạ có thể dò xem ai
- * trong gia đình đã có tài khoản. Vì vậy trang chỉ chuyển sang trạng thái
+ * trên hệ thống đã có tài khoản. Vì vậy trang chỉ chuyển sang trạng thái
  * "đã gửi" và nhắc kiểm tra cả mục Spam.
  *
  * Mọi URL lấy từ config/urls.js — không hardcode.

@@ -69,7 +69,7 @@ check_url() {
   ' <<<"$body"
 }
 
-printf '\n\033[1m══ FamilyGram — kiểm tra sức khoẻ ══\033[0m\n'
+printf '\n\033[1m══ PixGram — kiểm tra sức khoẻ ══\033[0m\n'
 check_url "Máy chủ trên máy này (nội bộ)" "$LOCAL_URL" 1
 
 if [ "${1:-}" = "--public" ]; then

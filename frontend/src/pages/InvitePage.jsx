@@ -1,9 +1,9 @@
 /**
- * src/pages/InvitePage.jsx — "Mời người thân" (chỉ quản trị viên).
+ * src/pages/InvitePage.jsx — "Mời thành viên" (chỉ quản trị viên).
  * ---------------------------------------------------------------------------
  * Vì sao cần trang này thay vì dùng AdminJS?
  *   AdminJS phục vụ việc quản trị dữ liệu, còn đây là việc thường ngày của nhà:
- *   nhập email của người thân → gửi lời mời → (nếu Gmail lỗi) copy link gửi tay
+ *   nhập email người được mời → gửi lời mời → (nếu Gmail lỗi) copy link gửi tay
  *   qua Zalo/Messenger. Nhìn thấy trạng thái "đã dùng / còn chờ" và thu hồi được.
  *
  * Bảo mật: backend đã chặn theo vai trò (`requireAdmin`); giao diện chỉ ẩn nút

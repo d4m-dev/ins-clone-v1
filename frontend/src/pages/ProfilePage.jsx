@@ -88,7 +88,7 @@ export default function ProfilePage() {
                   {t('profile.sharePhoto')}
                 </Link>
               )}
-              {/* Chỉ quản trị viên mới thấy nút mời người thân. */}
+              {/* Chỉ quản trị viên mới thấy nút mời thành viên. */}
               {currentUser?.role === 'admin' && (
                 <Link
                   to={ROUTES.invite}

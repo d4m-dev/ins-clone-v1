@@ -1,8 +1,8 @@
 {
   "app": {
-    "name": "FamilyGram",
-    "tagline": "家庭专属相册",
-    "footer": "FamilyGram — 家庭专属相册"
+    "name": "PixGram",
+    "tagline": "与大家分享照片",
+    "footer": "PixGram — 人人分享照片的地方"
   },
   "nav": {
     "home": "首页",
@@ -12,7 +12,8 @@
     "activity": "动态",
     "profile": "个人主页",
     "sharePhoto": "分享照片",
-    "logout": "退出登录"
+    "logout": "退出登录",
+    "messages": "消息"
   },
   "language": {
     "label": "语言",
@@ -35,7 +36,7 @@
   "feed": {
     "empty": {
       "title": "还没有照片",
-      "description": "每个家庭相册都从第一张照片开始。快来分享你的第一个瞬间吧！",
+      "description": "每个社区都从第一张照片开始。快来分享你的第一个瞬间吧！",
       "action": "上传第一张照片"
     },
     "end": "你已经看完了相册里的所有照片 🎉",
@@ -77,7 +78,7 @@
     "locationPlaceholder": "添加位置（可选）",
     "share": "分享",
     "sharing": "分享中…",
-    "privacy": "照片保存在家庭服务器上 — 不会上传到公共云端。",
+    "privacy": "照片保存在自己的服务器上 — 不会上传到公共云端。",
     "unsupported": "不支持的格式。支持：{{types}}。",
     "tooLarge": "照片大于 {{max}} MB，请选择更小的照片。",
     "failed": "上传失败，请重试。",
@@ -110,16 +111,16 @@
       "other": "该成员还没有分享照片。"
     },
     "loadFailed": "无法加载此个人主页。",
-    "member": "家庭成员",
-    "inviteMember": "邀请家人"
+    "member": "成员",
+    "inviteMember": "邀请成员"
   },
   "explore": {
     "searchPlaceholder": "搜索照片、文字、成员…",
     "noMatch": "没有找到符合条件的照片",
     "emptyTitle": "这里还没有内容",
     "noMatchHint": "换个词试试，比如地点或名字。",
-    "emptyHint": "家人上传后，照片会显示在这里。",
-    "photoAlt": "家庭照片"
+    "emptyHint": "大家上传后，照片会显示在这里。",
+    "photoAlt": "照片"
   },
   "postPage": {
     "loadFailed": "无法加载这张照片。",
@@ -135,9 +136,9 @@
     "passwordPlaceholder": "密码",
     "noAccount": "还没有账号？",
     "hasAccount": "已有账号？",
-    "loginHint": "只有家庭成员才有账号。如果无法注册，请联系管理员。",
-    "registerHint": "注册即可与家人分享照片。此相册仅限家人查看。",
-    "terms": "注册即表示你同意照片保存在家庭相册中。管理员可以删除任何内容。",
+    "loginHint": "创建免费账号，与大家分享照片。需要登录才能发布、点赞和评论。",
+    "registerHint": "注册后即可与社区分享照片。",
+    "terms": "注册即表示你同意照片在社区中公开。管理员可删除任何内容。",
     "fields": {
       "fullName": "姓名",
       "fullNamePlaceholder": "张三",
@@ -166,7 +167,7 @@
     "title": "短视频",
     "empty": {
       "title": "还没有视频",
-      "description": "拍一段不超过 60 秒的片段，分享给家人吧。",
+      "description": "拍一段不超过 60 秒的片段，分享给大家吧。",
       "action": "上传第一段视频"
     },
     "views": {
@@ -200,7 +201,7 @@
   },
   "pwa": {
     "install": "安装应用",
-    "installTitle": "把 FamilyGram 添加到主屏幕",
+    "installTitle": "把 PixGram 添加到主屏幕",
     "installHint": "像原生应用一样快速打开，无需浏览器。",
     "dismiss": "稍后再说",
     "offline": "当前离线 — 部分照片可能无法显示。"
@@ -235,19 +236,19 @@
   },
   "invite": {
     "checking": "正在检查邀请…",
-    "validTitle": "💌 你被邀请加入家庭相册",
-    "validBody": "{{inviter}} 邀请你加入 FamilyGram。",
+    "validTitle": "💌 你收到了加入邀请",
+    "validBody": "{{inviter}} 邀请你加入 PixGram。",
     "emailLocked": "将使用 {{email}} 注册（由邀请人指定）。",
     "invalidTitle": "该邀请无法使用",
     "invalidBody": "邀请链接已过期或已被使用。请联系管理员重新发送邀请——如允许，你仍可注册。",
-    "someone": "家庭成员",
-    "title": "邀请家人",
-    "subtitle": "向家庭相册发送邀请——仅管理员可操作。",
+    "someone": "一位成员",
+    "title": "邀请成员",
+    "subtitle": "发送加入邀请——仅管理员可操作。",
     "emailLabel": "受邀人邮箱",
     "roleMember": "成员",
     "roleAdmin": "管理员",
     "messageLabel": "留言（可选）",
-    "messagePlaceholder": "来我们的家庭相册吧！",
+    "messagePlaceholder": "来一起分享照片吧！",
     "send": "发送邀请",
     "sending": "发送中…",
     "expiryHint": "每个邀请只能使用一次，几天后自动过期。",
@@ -270,5 +271,54 @@
       "revoked": "已撤销",
       "expired": "已过期"
     }
+  },
+  "chat": {
+    "title": "消息",
+    "newChat": "新消息",
+    "tabInbox": "收件箱",
+    "tabRequests": "消息请求",
+    "emptyInbox": "还没有会话",
+    "emptyInboxHint": "和你想要分享照片的人开始聊天吧。",
+    "noRequests": "没有消息请求",
+    "noRequestsHint": "陌生人发来的消息会显示在这里，直到你接受。",
+    "noMessages": "还没有消息",
+    "unknownUser": "用户",
+    "you": "你",
+    "previewSeparator": "：",
+    "seen": "已读",
+    "today": "今天",
+    "yesterday": "昨天",
+    "placeholder": "输入消息…",
+    "send": "发送",
+    "attach": "发送照片或视频",
+    "emoji": "表情",
+    "attachment": "附件",
+    "fileTypeUnsupported": "只能发送图片或视频。",
+    "fileTooLarge": "文件超过 {{max}} MB，请选择更小的文件。",
+    "attachFailed": "无法处理此文件。",
+    "sendFailed": "消息发送失败，请重试。",
+    "loadOlder": "加载更早的消息",
+    "sayHi": "向 @{{name}} 打个招呼",
+    "pickHint": "选择左侧的会话，或开始新会话。",
+    "typing": "正在输入…",
+    "realtimeOn": "实时",
+    "realtimeOff": "定期同步",
+    "requestHint": "{{name}} 还不在你的联系人中。接受以接收对方的消息？",
+    "accept": "接受",
+    "decline": "拒绝",
+    "declinedHint": "你已拒绝该会话。",
+    "unsend": "撤回消息",
+    "recalled": "消息已撤回",
+    "more": "选项",
+    "searchPeople": "搜索用户",
+    "noPeopleFound": "没有找到用户",
+    "noRecent": "暂无最近聊天 — 请按用户名搜索。",
+    "shareTo": "发送给",
+    "sharedPost": "分享的帖子",
+    "viewPost": "查看帖子",
+    "sharedDone": "已发送给 {{name}}",
+    "sharedAsRequest": "已发送 — 对方接受后才会进入收件箱。",
+    "shareHint": "尚未与你聊过的人会在“消息请求”里看到它。",
+    "share": "分享"
   }
 }

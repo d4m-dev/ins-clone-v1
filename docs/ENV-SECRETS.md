@@ -1,4 +1,4 @@
-# Nơi lưu bí mật — FamilyGram
+# Nơi lưu bí mật — PixGram
 
 > **Quy tắc vàng:** bí mật **chỉ** nằm trong `backend/.env` trên điện thoại Termux.
 > Tuyệt đối không commit, không dán vào mã React, không đặt trong biến `VITE_*` của Vercel.
@@ -67,7 +67,7 @@ TG=$(grep '^TELEGRAM_BOT_TOKEN=' .env | cut -d= -f2-)
 CHAT=$(grep '^TELEGRAM_ADMIN_CHAT_ID=' .env | cut -d= -f2-)
 curl -s "https://api.telegram.org/bot$TG/getMe"                       # → {"ok":true,"result":{"username":"..."}}
 curl -s -X POST "https://api.telegram.org/bot$TG/sendMessage" \
-     -d "chat_id=$CHAT" -d "text=✅ Kiểm tra kết nối FamilyGram"
+     -d "chat_id=$CHAT" -d "text=✅ Kiểm tra kết nối PixGram"
 ```
 
 > ⚠️ Nếu `getMe` trả về một bot **không phải bạn tạo** (tên/mô tả thuộc dịch vụ khác),

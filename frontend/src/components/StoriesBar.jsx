@@ -17,7 +17,7 @@ import Avatar from './Avatar.jsx';
 import { PlusSquareIcon } from './Icons.jsx';
 import StoryViewer from './StoryViewer.jsx';
 
-const SEEN_KEY = 'familygram.seenStories';
+const SEEN_KEY = 'pixgram.seenStories';
 
 const readSeen = () => {
   try {

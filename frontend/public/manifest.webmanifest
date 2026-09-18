@@ -1,26 +1,84 @@
 {
   "id": "/",
-  "name": "FamilyGram — Album gia đình",
-  "short_name": "FamilyGram",
-  "description": "Album ảnh riêng tư của gia đình: đăng ảnh, video ngắn, thích và bình luận — dữ liệu nằm trên máy chủ tại nhà.",
+  "name": "PixGram — Chia sẻ ảnh cộng đồng",
+  "short_name": "PixGram",
+  "description": "Chia sẻ ảnh với mọi người: đăng ảnh, video ngắn, thích, bình luận và nhắn tin trực tiếp — máy chủ đặt tại nhà.",
   "lang": "vi",
   "dir": "ltr",
   "start_url": "/?source=pwa",
   "scope": "/",
   "display": "standalone",
-  "display_override": ["standalone", "minimal-ui"],
+  "display_override": [
+    "standalone",
+    "minimal-ui"
+  ],
   "orientation": "portrait",
   "background_color": "#ffffff",
   "theme_color": "#000000",
-  "categories": ["photo", "social", "lifestyle"],
+  "categories": [
+    "photo",
+    "social",
+    "lifestyle"
+  ],
   "icons": [
-    { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
-    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
-    { "src": "/icons/maskable-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
-    { "src": "/icons/maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/maskable-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/icons/maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
   ],
   "shortcuts": [
-    { "name": "Đăng ảnh", "short_name": "Đăng ảnh", "url": "/upload", "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }] },
-    { "name": "Reels", "short_name": "Reels", "url": "/reels", "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }] }
+    {
+      "name": "Đăng ảnh",
+      "short_name": "Đăng ảnh",
+      "url": "/upload",
+      "icons": [
+        {
+          "src": "/icons/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Tin nhắn",
+      "short_name": "Tin nhắn",
+      "url": "/messages",
+      "icons": [
+        {
+          "src": "/icons/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Reels",
+      "short_name": "Reels",
+      "url": "/reels",
+      "icons": [
+        {
+          "src": "/icons/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    }
   ]
 }

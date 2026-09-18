@@ -23,7 +23,7 @@ set -a; # shellcheck disable=SC1090
 . "$ENV_FILE"; set +a
 
 PORT="${PORT:-4000}"
-TUNNEL_NAME="${CLOUDFLARE_TUNNEL_NAME:-familygram-api}"
+TUNNEL_NAME="${CLOUDFLARE_TUNNEL_NAME:-pixgram-api}"
 HOSTNAME="${CLOUDFLARE_HOSTNAME:-api.d4mdev.click}"
 CF_DIR="$HOME/.cloudflared"
 CONFIG_FILE="${CLOUDFLARE_TUNNEL_CONFIG:-$CF_DIR/config.yml}"

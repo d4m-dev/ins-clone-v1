@@ -1,5 +1,5 @@
 /* ==========================================================================
-   custom-admin.css — LỚP GHI ĐÈ GIAO DIỆN CHO ADMINJS (FamilyGram)
+   custom-admin.css — LỚP GHI ĐÈ GIAO DIỆN CHO ADMINJS (PixGram)
    --------------------------------------------------------------------------
    File này được AdminJS nhúng tự động nhờ:
        assets: { styles: ['/admin/assets/custom-admin.css'] }
@@ -33,7 +33,7 @@
    ========================================================================== */
 
 :root {
-  /* Bảng màu FamilyGram (lấy từ UI React để hai nơi trông cùng một hệ) */
+  /* Bảng màu PixGram (lấy từ UI React để hai nơi trông cùng một hệ) */
   --fg-brand: #e1306c;
   --fg-brand-2: #833ab4;
   --fg-brand-3: #fd9d3c;
@@ -131,7 +131,7 @@ section[data-css='sidebar-resources'],
   color: var(--fg-brand) !important;
 }
 
-/* Nhóm menu (Gia đình / Tương tác) */
+/* Nhóm menu (Cộng đồng / Tương tác) */
 [data-css='sidebar'] section > section > span,
 [data-css='sidebar'] h2 {
   color: var(--fg-muted) !important;
@@ -415,7 +415,7 @@ footer[data-css='made-with-love'],
 
    Đổi tiêu đề trang danh sách (h1 của resource):
    [data-css$='-list'] h1 { font-size: 0 !important; }
-   [data-css$='-list'] h1::after { content: 'Album ảnh gia đình'; font-size: 20px; font-weight: 700; }
+   [data-css$='-list'] h1::after { content: 'Cộng đồng chia sẻ ảnh'; font-size: 20px; font-weight: 700; }
 
    Đổi nhãn tab trong form sửa (Thông tin / Metadata):
    [data-css$='-edit-form'] [role='tab'] { font-size: 0 !important; }

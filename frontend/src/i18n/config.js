@@ -36,7 +36,7 @@ export const DEFAULT_LOCALE = LOCALES[import.meta.env.VITE_DEFAULT_LOCALE]
   : 'vi';
 
 /** Nơi lưu lựa chọn của người dùng. */
-export const LOCALE_STORAGE_KEY = 'familygram.locale';
+export const LOCALE_STORAGE_KEY = 'pixgram.locale';
 
 /** Map mã ngôn ngữ của trình duyệt → locale của app. */
 export const normalizeLocale = (value) => {

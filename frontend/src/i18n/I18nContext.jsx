@@ -31,7 +31,7 @@ export function I18nProvider({ children, initialLocale }) {
     document.documentElement.lang = locale;
     document.documentElement.dir = LOCALES[locale]?.dir || 'ltr';
     try {
-      window.localStorage.setItem('familygram.locale', locale);
+      window.localStorage.setItem('pixgram.locale', locale);
     } catch {
       /* chế độ riêng tư: bỏ qua */
     }

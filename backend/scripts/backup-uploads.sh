@@ -6,12 +6,12 @@
 #   npm run backup:uploads   # chỉ ảnh/video (script này)
 #   npm run backup           # cả hai
 #
-# Vì sao cần riêng? Ảnh gia đình là thứ KHÔNG thể tạo lại. Database có thể dựng
+# Vì sao cần riêng? Ảnh của cộng đồng là thứ KHÔNG thể tạo lại. Database có thể dựng
 # lại (thành viên, bài viết), nhưng tệp ảnh thì không — nên luôn sao lưu cả hai.
 #
 # Tệp nén nằm ở backend/backups/, giữ 7 bản gần nhất rồi tự xoá bản cũ.
 # Nên copy thư mục backups/ sang thẻ nhớ hoặc máy tính định kỳ:
-#   cp -r ~/familygram/backend/backups /sdcard/FamilyGram-Backup
+#   cp -r ~/pixgram/backend/backups /sdcard/PixGram-Backup
 # ============================================================================
 set -euo pipefail
 

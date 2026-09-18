@@ -1,4 +1,4 @@
-# FamilyGram — deployment runbook
+# PixGram — deployment runbook
 
 Two targets: **the phone** (backend: MariaDB + Express + AdminJS + Telegram) and **Vercel** (frontend). The phone is published through a **Cloudflare Tunnel** on a fixed hostname (`api.d4mdev.click`).
 
@@ -14,6 +14,8 @@ Two targets: **the phone** (backend: MariaDB + Express + AdminJS + Telegram) and
 | Accounts | Cloudflare, Vercel, GitHub (optional) |
 
 ---
+
+> Đổi thương hiệu trên máy chủ đang chạy (DB, user MariaDB, tunnel): **`docs/MIGRATION-PIXGRAM.md`**.
 
 ## 1. Phone bootstrap (once)
 
@@ -97,9 +99,9 @@ Manual equivalent:
 
 ```bash
 cloudflared tunnel login
-cloudflared tunnel create familygram-api
-cloudflared tunnel route dns familygram-api api.d4mdev.click
-cloudflared tunnel run familygram-api
+cloudflared tunnel create pixgram-api
+cloudflared tunnel route dns pixgram-api api.d4mdev.click
+cloudflared tunnel run pixgram-api
 ```
 
 **Why a tunnel instead of port-forwarding:** it is outbound-only (no router/NAT configuration, no exposed device IP), Cloudflare terminates TLS, and Cloudflare **Access** can wrap `/admin` in an extra login (see §7).
@@ -116,11 +118,11 @@ npm start
 
 ```
 [DB]      Starting mysqld_safe (port 3306, datadir …/var/lib/mysql)
-[API]     FamilyGram API  ·  env=production
+[API]     PixGram API  ·  env=production
 [API]     HTTP server listening on 0.0.0.0:4000 — 0 image(s) stored (0 MB)
 [API]     AdminJS ready → https://api.d4mdev.click/admin
-[API]     Telegram bot online as @your_family_bot
-[TUNNEL]  Starting tunnel 'familygram-api' (api.d4mdev.click → http://127.0.0.1:4000)
+[API]     Telegram bot online as @your_photo_bot
+[TUNNEL]  Starting tunnel 'pixgram-api' (api.d4mdev.click → http://127.0.0.1:4000)
 ```
 
 Verify from anywhere: `curl https://api.d4mdev.click/api/health`
@@ -130,12 +132,12 @@ To keep it running across reboots, either re-run `npm start` after boot or add T
 ```bash
 pkg install termux-boot
 mkdir -p ~/.termux/boot
-cat > ~/.termux/boot/familygram.sh <<'SH'
+cat > ~/.termux/boot/pixgram.sh <<'SH'
 #!/data/data/com.termux/files/usr/bin/sh
 termux-wake-lock
-cd ~/familygram/backend && npm start
+cd ~/pixgram/backend && npm start
 SH
-chmod +x ~/.termux/boot/familygram.sh
+chmod +x ~/.termux/boot/pixgram.sh
 ```
 
 ---
@@ -146,7 +148,7 @@ chmod +x ~/.termux/boot/familygram.sh
 2. Send `/start` to your bot, then `/id` — it replies with the chat id → `TELEGRAM_ADMIN_CHAT_ID`.
 3. Upload a photo from the app; the bot should immediately send the picture with the caption and buttons.
 
-Group notifications: add the bot to a family group, make it admin, and use the **group's negative chat id** as `TELEGRAM_ADMIN_CHAT_ID`.
+Group notifications: add the bot to a group, make it admin, and use the **group's negative chat id** as `TELEGRAM_ADMIN_CHAT_ID`.
 
 ---
 
@@ -162,7 +164,7 @@ vercel --prod          # or: import the Git repo in the Vercel dashboard
 Environment variables (Vercel → Project → Settings → Environment Variables, **Production + Preview**):
 
 ```
-VITE_APP_ORIGIN=https://family.d4mdev.click
+VITE_APP_ORIGIN=https://ins-clone-v1.vercel.app
 VITE_API_ORIGIN=https://api.d4mdev.click
 VITE_API_PREFIX=api
 VITE_UPLOADS_PREFIX=uploads
@@ -170,7 +172,7 @@ VITE_ADMIN_URL=https://api.d4mdev.click/admin
 ```
 
 Then:
-1. Add the domain `family.d4mdev.click` to the Vercel project (CNAME as instructed by Vercel).
+1. (Optional) Add your own custom domain to the Vercel project (CNAME as instructed by Vercel).
 2. Put the **Vercel origin** into the backend's `CORS_ORIGINS` (comma-separated, no trailing slash) and restart the API.
 3. `vercel.json` already rewrites every path to `index.html` so client-side routes like `/p/12` and `/u/linh.tran` survive a refresh.
 
@@ -215,8 +217,8 @@ ALLOWED_AUDIO_MIME_TYPES=audio/mpeg,audio/mp4,audio/aac,audio/ogg,audio/wav
 **Kiểm tra sau khi deploy**
 
 ```bash
-curl -sI https://family.d4mdev.click/sw.js | grep -i cache-control   # phải là max-age=0
-curl -s  https://family.d4mdev.click/manifest.webmanifest | head -3
+curl -sI https://ins-clone-v1.vercel.app/sw.js | grep -i cache-control   # phải là max-age=0
+curl -s  https://ins-clone-v1.vercel.app/manifest.webmanifest | head -3
 ```
 
 Trên Android: mở bằng Chrome → menu ⋮ → **Thêm vào màn hình chính** (hoặc bấm nút
@@ -333,10 +335,10 @@ const miss=f(en).filter(k=>!f(vi).includes(k));console.log(miss.length?'THIẾU:
 - [ ] `CORS_ORIGINS` lists only your real frontend origins.
 - [ ] Cloudflare → **Access → Applications**: protect `/admin*` with an e-mail OTP policy (free) so even a leaked password is useless.
 - [ ] Cloudflare → SSL/TLS: **Full** (or Full Strict). Never “Flexible”.
-- [ ] Cloudflare → Speed: keep image optimisation off unless you want Cloudflare to resize family photos.
+- [ ] Cloudflare → Speed: keep image optimisation off unless you want Cloudflare to resize photos.
 - [ ] `DB_SYNC=none` after the schema is settled (switches Sequelize from auto-`alter` to migrations).
 - [ ] Nightly backup: `npm run db:backup` (add a `termux-job-scheduler` or cron entry) **and** rsync `backend/uploads/` to SD card / cloud.
-- [ ] Set the phone's lock-screen to something the family trusts; the device holds the entire archive.
+- [ ] Set the phone's lock-screen to something you trust; the device holds the entire archive.
 
 ---
 
@@ -345,7 +347,7 @@ const miss=f(en).filter(k=>!f(vi).includes(k));console.log(miss.length?'THIẾU:
 ```bash
 npm run db:backup                       # gzip dump into backend/backups/ (keeps 14)
 tail -f $PREFIX/var/log/mysqld.log      # MariaDB log
-cloudflared tunnel info familygram-api  # tunnel status (runs from any shell)
+cloudflared tunnel info pixgram-api  # tunnel status (runs from any shell)
 curl -s https://api.d4mdev.click/api/health | head
 ```
 
@@ -356,7 +358,7 @@ du -sh backend/uploads                 # how big is the archive?
 du -sh $PREFIX/var/lib/mysql           # how big is the DB?
 ```
 
-Move the archive to external storage via `.env`: `UPLOAD_DIR=/storage/emulated/0/FamilyGram/uploads` — the static guard and multer both read the same env value, so nothing else changes.
+Move the archive to external storage via `.env`: `UPLOAD_DIR=/storage/emulated/0/PixGram/uploads` — the static guard and multer both read the same env value, so nothing else changes.
 
 ---
 
@@ -381,7 +383,7 @@ Move the archive to external storage via `.env`: `UPLOAD_DIR=/storage/emulated/0
 | AdminJS shows a blank page | open DevTools: a stale `custom-admin.css` or a CSP added by a proxy broke the bundle; clear the cache and re-check nothing else sets `Content-Security-Policy` on `/admin` |
 | Telegram silent | token/chat id wrong, or the bot was blocked; `/status` in the chat should print the uptime |
 | Thông báo Telegram sai ngôn ngữ | kiểm tra `/lang` trong chat và cột **Ngôn ngữ** của thành viên trong AdminJS (thông báo theo ngôn ngữ người đăng) |
-| UI hiện tiếng Anh dù muốn tiếng Việt | `localStorage.familygram.locale` cũ trong trình duyệt; bấm 🌐 chọn lại, hoặc đặt `VITE_DEFAULT_LOCALE=vi` trên Vercel rồi redeploy |
+| UI hiện tiếng Anh dù muốn tiếng Việt | `localStorage.pixgram.locale` cũ trong trình duyệt; bấm 🌐 chọn lại, hoặc đặt `VITE_DEFAULT_LOCALE=vi` trên Vercel rồi redeploy |
 | `/admin` hiện tiếng Anh | `ADMIN_LOCALE=vi` trong `.env` rồi khởi động lại API; nếu chỉ vài chỗ lẻ vẫn tiếng Anh, bấm 🌐 chọn *Tiếng Việt* (AdminJS nhớ theo `localeDetection`) hoặc thêm khoá vào `admin/locales/adminjs.vi.json` |
 | CSS tuỳ chỉnh không thấy tác dụng | kiểm tra `GET /admin/assets/custom-admin.css` trả 200; DevTools → Network xem file có bị cache (Ctrl-Shift-R) và selector `data-css` có đúng với phiên bản AdminJS đang dùng |
 | `/admin/login` trả **500** (trang đăng nhập vẫn hiện) | AdminJS bị mount **sau** `express.json()` → `WrongArgumentError`. Trong `server.js`, AdminJS phải đứng trước `applyParsers()`. `npm run boot:check` phát hiện lỗi này |
@@ -403,7 +405,7 @@ Move the archive to external storage via `.env`: `UPLOAD_DIR=/storage/emulated/0
 | Component | Cost |
 | --- | --- |
 | Cloudflare Tunnel + DNS | free |
-| Vercel Hobby | free (100 GB bandwidth/month — plenty for a family) |
+| Vercel Hobby | free (100 GB bandwidth/month — plenty for a community app) |
 | Telegram Bot API | free |
 | Phone + electricity | ~1–3 W |
 | MariaDB on ARM64 | ~250 MB RAM, a few hundred MB of storage per 1 000 photos |

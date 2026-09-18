@@ -8,7 +8,7 @@
  *      người dùng đăng ảnh xong ngay, email gửi nền, lỗi chỉ ghi log.
  *   2. Không có `nodemailer` hoặc EMAIL_ENABLED=false → service tự tắt êm,
  *      API vẫn chạy bình thường (quan trọng trên Termux: cài thiếu gói không
- *      được làm sập máy chủ ảnh của cả nhà).
+ *      được làm sập máy chủ ảnh).
  *   3. Khoá bí mật chỉ nằm ở .env phía server. Không bao giờ trả về client.
  * ---------------------------------------------------------------------------
  */
@@ -100,7 +100,7 @@ async function send({ to, subject, html, text, replyTo }) {
 }
 
 /* -------------------------------------------------------------------------- */
-/*                        Các tình huống của FamilyGram                       */
+/*                        Các tình huống của PixGram                       */
 /* -------------------------------------------------------------------------- */
 
 /** Có ảnh/video mới → báo quản trị viên. */

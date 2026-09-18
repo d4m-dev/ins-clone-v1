@@ -2,7 +2,7 @@
 'use strict';
 
 /**
- * scripts/doctor.js — "khám sức khoẻ" máy chủ FamilyGram, chạy trên điện thoại.
+ * scripts/doctor.js — "khám sức khoẻ" máy chủ PixGram, chạy trên điện thoại.
  * ---------------------------------------------------------------------------
  *   cd backend && npm run doctor
  *
@@ -116,7 +116,7 @@ function battery() {
 
 (async () => {
   console.log('\n╔══════════════════════════════════════════════════════════╗');
-  console.log('║   🩺  FamilyGram — khám sức khoẻ máy chủ                  ║');
+  console.log('║   🩺  PixGram — khám sức khoẻ máy chủ                  ║');
   console.log('╚══════════════════════════════════════════════════════════╝');
 
   /* ------------------------------- môi trường ------------------------------ */

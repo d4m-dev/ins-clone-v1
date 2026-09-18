@@ -1,8 +1,8 @@
 {
   "app": {
-    "name": "FamilyGram",
-    "tagline": "Album ảnh riêng của gia đình",
-    "footer": "FamilyGram — album riêng của gia đình"
+    "name": "PixGram",
+    "tagline": "Chia sẻ ảnh với cộng đồng",
+    "footer": "PixGram — nơi mọi người chia sẻ ảnh"
   },
   "nav": {
     "home": "Trang chủ",
@@ -12,7 +12,8 @@
     "activity": "Hoạt động",
     "profile": "Trang cá nhân",
     "sharePhoto": "Chia sẻ ảnh",
-    "logout": "Đăng xuất"
+    "logout": "Đăng xuất",
+    "messages": "Tin nhắn"
   },
   "language": {
     "label": "Ngôn ngữ",
@@ -35,7 +36,7 @@
   "feed": {
     "empty": {
       "title": "Chưa có ảnh nào",
-      "description": "Album gia đình nào cũng bắt đầu từ một tấm ảnh. Hãy là người đầu tiên chia sẻ khoảnh khắc!",
+      "description": "Cộng đồng nào cũng bắt đầu từ một tấm ảnh. Hãy là người đầu tiên chia sẻ khoảnh khắc!",
       "action": "Đăng ảnh đầu tiên"
     },
     "end": "Bạn đã xem hết ảnh trong album 🎉",
@@ -77,7 +78,7 @@
     "locationPlaceholder": "Thêm địa điểm (không bắt buộc)",
     "share": "Chia sẻ",
     "sharing": "Đang chia sẻ…",
-    "privacy": "Ảnh của bạn được lưu trên máy chủ gia đình — không tải lên đám mây công khai.",
+    "privacy": "Ảnh của bạn được lưu trên máy chủ riêng — không tải lên đám mây công khai.",
     "unsupported": "Định dạng không hỗ trợ. Cho phép: {{types}}.",
     "tooLarge": "Ảnh lớn hơn {{max}} MB. Vui lòng chọn ảnh nhỏ hơn.",
     "failed": "Tải ảnh thất bại. Vui lòng thử lại.",
@@ -110,16 +111,16 @@
       "other": "Thành viên này chưa chia sẻ ảnh nào."
     },
     "loadFailed": "Không thể tải trang cá nhân này.",
-    "member": "Thành viên gia đình",
-    "inviteMember": "Mời người thân"
+    "member": "Thành viên",
+    "inviteMember": "Mời thành viên"
   },
   "explore": {
     "searchPlaceholder": "Tìm ảnh, chú thích, thành viên…",
     "noMatch": "Không tìm thấy ảnh phù hợp",
     "emptyTitle": "Chưa có gì ở đây",
     "noMatchHint": "Thử từ khác, ví dụ tên người hoặc địa điểm.",
-    "emptyHint": "Ảnh sẽ hiện ở đây ngay khi gia đình đăng lên.",
-    "photoAlt": "Ảnh gia đình"
+    "emptyHint": "Ảnh sẽ hiện ở đây ngay khi mọi người đăng lên.",
+    "photoAlt": "Ảnh"
   },
   "postPage": {
     "loadFailed": "Không thể tải ảnh này.",
@@ -135,9 +136,9 @@
     "passwordPlaceholder": "Mật khẩu",
     "noAccount": "Chưa có tài khoản?",
     "hasAccount": "Đã có tài khoản?",
-    "loginHint": "Chỉ thành viên trong gia đình mới có tài khoản. Hãy liên hệ quản trị viên nếu bạn chưa đăng ký được.",
-    "registerHint": "Đăng ký để chia sẻ ảnh với gia đình. Album này là riêng tư — không ai ngoài gia đình được mời.",
-    "terms": "Khi đăng ký, bạn đồng ý rằng ảnh của bạn nằm trong album gia đình. Quản trị viên có thể xoá bất kỳ nội dung nào.",
+    "loginHint": "Tạo tài khoản miễn phí để chia sẻ ảnh với mọi người. Bạn cần đăng nhập để đăng ảnh, thích và bình luận.",
+    "registerHint": "Đăng ký để bắt đầu chia sẻ ảnh với cộng đồng.",
+    "terms": "Khi đăng ký, bạn đồng ý rằng ảnh của bạn được công khai trên cộng đồng. Quản trị viên có thể xoá bất kỳ nội dung nào.",
     "fields": {
       "fullName": "Họ và tên",
       "fullNamePlaceholder": "Nguyễn Văn A",
@@ -166,7 +167,7 @@
     "title": "Reels",
     "empty": {
       "title": "Chưa có video nào",
-      "description": "Quay một khoảnh khắc ngắn — tối đa 60 giây — rồi chia sẻ với cả nhà.",
+      "description": "Quay một khoảnh khắc ngắn — tối đa 60 giây — rồi chia sẻ với mọi người.",
       "action": "Đăng video đầu tiên"
     },
     "views": {
@@ -200,7 +201,7 @@
   },
   "pwa": {
     "install": "Cài đặt ứng dụng",
-    "installTitle": "Cài FamilyGram lên màn hình chính",
+    "installTitle": "Cài PixGram lên màn hình chính",
     "installHint": "Mở nhanh như một ứng dụng thật, không cần mở trình duyệt.",
     "dismiss": "Để sau",
     "offline": "Bạn đang ngoại tuyến — một số ảnh có thể chưa hiển thị được."
@@ -235,19 +236,19 @@
   },
   "invite": {
     "checking": "Đang kiểm tra lời mời…",
-    "validTitle": "💌 Bạn được mời vào album gia đình",
-    "validBody": "{{inviter}} đã mời bạn tham gia FamilyGram.",
+    "validTitle": "💌 Bạn có lời mời tham gia",
+    "validBody": "{{inviter}} đã mời bạn tham gia PixGram.",
     "emailLocked": "Đăng ký bằng email {{email}} (do người mời chọn).",
     "invalidTitle": "Lời mời không dùng được",
     "invalidBody": "Liên kết mời đã hết hạn hoặc đã được sử dụng. Bạn hãy xin quản trị viên gửi lời mời mới — hoặc vẫn có thể đăng ký nếu được phép.",
-    "someone": "Một thành viên trong gia đình",
-    "title": "Mời người thân",
-    "subtitle": "Gửi lời mời vào album gia đình — chỉ quản trị viên làm được việc này.",
+    "someone": "Một thành viên",
+    "title": "Mời thành viên",
+    "subtitle": "Gửi lời mời tham gia — chỉ quản trị viên làm được việc này.",
     "emailLabel": "Email của người được mời",
     "roleMember": "Thành viên",
     "roleAdmin": "Quản trị viên",
     "messageLabel": "Lời nhắn (không bắt buộc)",
-    "messagePlaceholder": "Vào album nhà mình nhé!",
+    "messagePlaceholder": "Tham gia chia sẻ ảnh cùng mọi người nhé!",
     "send": "Gửi lời mời",
     "sending": "Đang gửi…",
     "expiryHint": "Mỗi lời mời chỉ dùng được một lần và tự hết hạn sau vài ngày.",
@@ -270,5 +271,54 @@
       "revoked": "Đã thu hồi",
       "expired": "Hết hạn"
     }
+  },
+  "chat": {
+    "title": "Tin nhắn",
+    "newChat": "Tin nhắn mới",
+    "tabInbox": "Hộp thư",
+    "tabRequests": "Tin nhắn chờ",
+    "emptyInbox": "Chưa có cuộc trò chuyện nào",
+    "emptyInboxHint": "Bắt đầu trò chuyện với người bạn muốn chia sẻ ảnh.",
+    "noRequests": "Không có tin nhắn chờ",
+    "noRequestsHint": "Tin từ người lạ sẽ nằm ở đây cho tới khi bạn đồng ý.",
+    "noMessages": "Chưa có tin nhắn",
+    "unknownUser": "Người dùng",
+    "you": "Bạn",
+    "previewSeparator": ": ",
+    "seen": "Đã xem",
+    "today": "Hôm nay",
+    "yesterday": "Hôm qua",
+    "placeholder": "Viết tin nhắn…",
+    "send": "Gửi",
+    "attach": "Gửi ảnh hoặc video",
+    "emoji": "Biểu tượng cảm xúc",
+    "attachment": "Tệp đính kèm",
+    "fileTypeUnsupported": "Chỉ gửi được ảnh hoặc video.",
+    "fileTooLarge": "Tệp lớn hơn {{max}} MB. Hãy chọn tệp nhỏ hơn.",
+    "attachFailed": "Không xử lý được tệp này.",
+    "sendFailed": "Không gửi được tin nhắn. Thử lại nhé.",
+    "loadOlder": "Tải tin cũ hơn",
+    "sayHi": "Hãy gửi lời chào tới @{{name}}",
+    "pickHint": "Chọn một cuộc trò chuyện ở bên trái, hoặc bắt đầu cuộc mới.",
+    "typing": "đang nhập…",
+    "realtimeOn": "Trực tuyến",
+    "realtimeOff": "Đang đồng bộ định kỳ",
+    "requestHint": "{{name}} chưa nằm trong danh sách liên hệ của bạn. Đồng ý để nhận tin nhắn từ người này?",
+    "accept": "Đồng ý",
+    "decline": "Từ chối",
+    "declinedHint": "Bạn đã từ chối cuộc trò chuyện này.",
+    "unsend": "Thu hồi tin nhắn",
+    "recalled": "Tin nhắn đã được thu hồi",
+    "more": "Tuỳ chọn",
+    "searchPeople": "Tìm người để nhắn tin",
+    "noPeopleFound": "Không tìm thấy ai",
+    "noRecent": "Chưa có ai gần đây — hãy tìm theo tên đăng nhập.",
+    "shareTo": "Chia sẻ vào tin nhắn",
+    "sharedPost": "Bài viết được chia sẻ",
+    "viewPost": "Xem bài viết",
+    "sharedDone": "Đã gửi cho {{name}}",
+    "sharedAsRequest": "Đã gửi — tin nhắn đang chờ người nhận đồng ý.",
+    "shareHint": "Người chưa từng trò chuyện với bạn sẽ thấy tin trong mục “Tin nhắn chờ”.",
+    "share": "Chia sẻ"
   }
 }

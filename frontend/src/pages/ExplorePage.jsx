@@ -1,5 +1,5 @@
 /**
- * src/pages/ExplorePage.jsx — lưới tìm kiếm toàn bộ ảnh của gia đình
+ * src/pages/ExplorePage.jsx — lưới tìm kiếm toàn bộ ảnh của cộng đồng
  * (tab Explore của Instagram). Tìm theo chú thích, địa điểm hoặc tên thành viên.
  */
 

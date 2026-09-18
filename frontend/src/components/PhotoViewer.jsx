@@ -196,7 +196,7 @@ export default function PhotoViewer({ items = [], startIndex = 0, onClose, onLik
       const url = URL.createObjectURL(blob);
       const anchor = document.createElement('a');
       anchor.href = url;
-      anchor.download = current.isVideo ? `familygram-${current.id}.mp4` : `familygram-${current.id}.jpg`;
+      anchor.download = current.isVideo ? `pixgram-${current.id}.mp4` : `pixgram-${current.id}.jpg`;
       document.body.appendChild(anchor);
       anchor.click();
       anchor.remove();

@@ -20,7 +20,7 @@ export function useInstallPrompt() {
   const [installed, setInstalled] = useState(isStandalone);
   const [dismissed, setDismissed] = useState(() => {
     try {
-      return localStorage.getItem('familygram.pwaDismissed') === '1';
+      return localStorage.getItem('pixgram.pwaDismissed') === '1';
     } catch {
       return false;
     }
@@ -55,7 +55,7 @@ export function useInstallPrompt() {
   const dismiss = useCallback(() => {
     setDismissed(true);
     try {
-      localStorage.setItem('familygram.pwaDismissed', '1');
+      localStorage.setItem('pixgram.pwaDismissed', '1');
     } catch {
       /* chế độ riêng tư */
     }
