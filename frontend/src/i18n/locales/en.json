@@ -145,7 +145,8 @@
       "passwordPlaceholder": "At least 8 characters"
     },
     "loginFailed": "Unable to log in right now.",
-    "registerFailed": "Registration failed. Please try again."
+    "registerFailed": "Registration failed. Please try again.",
+    "forgotPasswordLink": "Forgot password?"
   },
   "notFound": {
     "title": "Page not found",
@@ -199,5 +200,42 @@
     "installHint": "Open it instantly like a real app, no browser needed.",
     "dismiss": "Later",
     "offline": "You are offline — some photos may not load."
+  },
+  "forgot": {
+    "title": "Forgot your password?",
+    "subtitle": "Enter the e-mail you signed up with and we'll send you a link to set a new password.",
+    "submit": "Send reset link",
+    "submitting": "Sending…",
+    "sentTitle": "📬 Instructions sent",
+    "sentBody": "If this e-mail has an account, we've sent a password reset link. The link works once and expires in {{minutes}} minutes.",
+    "checkSpam": "Don't see it? Check the Spam folder.",
+    "backToLogin": "← Back to sign in",
+    "tryAnother": "Use a different e-mail",
+    "failed": "Couldn't send the request right now. Please try again."
+  },
+  "reset": {
+    "title": "Set a new password",
+    "subtitle": "Choose a new password for your account.",
+    "passwordPlaceholder": "New password (at least 8 characters)",
+    "confirmPlaceholder": "Repeat the new password",
+    "submit": "Change password",
+    "submitting": "Changing…",
+    "doneTitle": "✅ Password changed",
+    "doneBody": "You can sign in with your new password. Devices already signed in keep working until their session ends.",
+    "goToLogin": "Sign in now",
+    "missingToken": "This link has no confirmation code. Open the exact link from the e-mail, or request a new one.",
+    "requestNew": "Request a new link",
+    "mismatch": "The two passwords do not match.",
+    "failed": "Couldn't change the password. The link may have expired.",
+    "singleUse": "The link works only once — do not share it."
+  },
+  "invite": {
+    "checking": "Checking the invitation…",
+    "validTitle": "💌 You are invited to the family album",
+    "validBody": "{{inviter}} invited you to join FamilyGram.",
+    "emailLocked": "Signing up with {{email}} (chosen by the inviter).",
+    "invalidTitle": "This invitation cannot be used",
+    "invalidBody": "The invitation link has expired or was already used. Ask an administrator for a new one — you can still sign up if allowed.",
+    "someone": "A family member"
   }
 }

@@ -11,6 +11,8 @@ import ExplorePage from './pages/ExplorePage.jsx';
 import ReelsPage from './pages/ReelsPage.jsx';
 import LoginPage from './pages/LoginPage.jsx';
 import RegisterPage from './pages/RegisterPage.jsx';
+import ForgotPasswordPage from './pages/ForgotPasswordPage.jsx';
+import ResetPasswordPage from './pages/ResetPasswordPage.jsx';
 import UploadPage from './pages/UploadPage.jsx';
 import ProfilePage from './pages/ProfilePage.jsx';
 import PostPage from './pages/PostPage.jsx';
@@ -34,6 +36,11 @@ export default function App() {
       <Route path={ROUTES.reels} element={<ReelsPage />} />
       <Route path={ROUTES.login} element={<LoginPage />} />
       <Route path={ROUTES.register} element={<RegisterPage />} />
+
+      {/* Hai trang này KHÔNG cần đăng nhập: người quên mật khẩu thì không có phiên.
+          Link trong email trỏ thẳng tới đây (xem backend/services/mailer.service.js). */}
+      <Route path={ROUTES.forgotPassword} element={<ForgotPasswordPage />} />
+      <Route path={ROUTES.resetPassword} element={<ResetPasswordPage />} />
       <Route path="/p/:id" element={<PostPage />} />
 
       <Route

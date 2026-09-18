@@ -37,6 +37,20 @@ export const ENDPOINTS = {
     register: `${API_BASE}/auth/register`,
     login: `${API_BASE}/auth/login`,
     me: `${API_BASE}/auth/me`,
+    /** Quên mật khẩu — backend LUÔN trả cùng một thông báo (chống dò tài khoản). */
+    forgotPassword: `${API_BASE}/auth/forgot-password`,
+    /** Đặt lại mật khẩu bằng token dùng một lần trong email. */
+    resetPassword: `${API_BASE}/auth/reset-password`,
+  },
+
+  /** Lời mời thành viên (chỉ quản trị viên tạo; tra cứu thì công khai). */
+  invites: {
+    create: `${API_BASE}/invites`,
+    list: `${API_BASE}/invites`,
+    stats: `${API_BASE}/invites/stats`,
+    revoke: (id) => `${API_BASE}/invites/${id}`,
+    /** Kiểm tra link mời trước khi cho đăng ký. */
+    check: (token) => `${API_BASE}/invites/${encodeURIComponent(token)}`,
   },
 
   posts: {
@@ -106,6 +120,13 @@ export const ROUTES = {
   upload: '/upload',
   login: '/login',
   register: '/register',
+  /**
+   * Hai trang này phải khớp `urls.routes` trong backend/config/urls.js
+   * (backend dùng chúng để dựng link trong email: …/register?invite=…,
+   * …/reset-password?token=…), và phải có rewrite trong vercel.json.
+   */
+  forgotPassword: '/forgot-password',
+  resetPassword: '/reset-password',
   profile: (username) => `/u/${username}`,
   post: (id) => `/p/${id}`,
   /**

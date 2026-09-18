@@ -7,17 +7,20 @@
  * token do middleware auth. Thông báo lỗi được dịch theo ngôn ngữ người dùng.
  */
 
-const { User } = require('../models');
+const { User, Invite } = require('../models');
 const { env } = require('../config/env');
 const urls = require('../config/urls');
 const ApiError = require('../utils/ApiError');
+const { t } = require('../i18n');
 const asyncHandler = require('../utils/asyncHandler');
 // Danh sách ngôn ngữ hỗ trợ — lấy từ utils/locale để chỉ có MỘT nguồn sự thật.
 const { SUPPORTED: SUPPORTED_LOCALES } = require('../utils/locale');
 const { signToken } = require('../middleware/auth.middleware');
 const telegram = require('../services/telegram.service');
+const mailer = require('../services/mailer.service');
 const logger = require('../utils/logger');
 const { resolveLocale, normalizeLocale } = require('../utils/locale');
+const { generateToken, hashToken, safeEqual, inMinutes } = require('../utils/tokens');
 
 /** POST /api/auth/register */
 const register = asyncHandler(async (req, res) => {
@@ -25,11 +28,28 @@ const register = asyncHandler(async (req, res) => {
   // Ngôn ngữ của người đăng ký: header Accept-Language → body.locale → mặc định (vi)
   const locale = resolveLocale(req) || normalizeLocale(req.body.locale) || 'vi';
 
-  const existing = await User.unscoped().findOne({ where: { email }, attributes: ['id'] });
-  if (existing) throw ApiError.conflict('An account with this e-mail already exists.');
+  /**
+   * Đăng ký bằng lời mời: email + vai trò do lời mời quyết định, KHÔNG tin client.
+   * Kiểm tra trước khi tạo người dùng để không tạo tài khoản ngoài ý muốn.
+   */
+  const inviteToken = req.body.inviteToken ? String(req.body.inviteToken) : null;
+  let invite = null;
+  let effectiveEmail = email;
+
+  if (inviteToken) {
+    invite = await Invite.scope('withToken').findOne({ where: { tokenHash: hashToken(inviteToken) } });
+    // Thông báo lỗi theo ngôn ngữ người gửi (Accept-Language từ giao diện).
+    const locale = resolveLocale(req);
+    if (!invite) throw ApiError.badRequest(t(locale, 'api.inviteInvalid'));
+    if (!invite.isUsable()) throw ApiError.badRequest(t(locale, 'api.inviteUsed'));
+    effectiveEmail = invite.email;
+  }
+
+  const existing = await User.unscoped().findOne({ where: { email: effectiveEmail }, attributes: ['id'] });
+  if (existing) throw ApiError.conflict(t(resolveLocale(req), 'api.emailTaken'));
 
   const usernameTaken = await User.unscoped().findOne({ where: { username }, attributes: ['id'] });
-  if (usernameTaken) throw ApiError.conflict('This username is already taken.');
+  if (usernameTaken) throw ApiError.conflict(t(resolveLocale(req), 'api.usernameTaken'));
 
   // Tài khoản đầu tiên có thể tự nhận quyền admin (cờ trong .env).
   const isFirstUser = (await User.unscoped().count()) === 0;
@@ -37,14 +57,26 @@ const register = asyncHandler(async (req, res) => {
   const user = await User.create({
     username,
     fullName,
-    email,
+    email: effectiveEmail,
     password,
     locale,
-    role: isFirstUser && env.auth.firstUserIsAdmin ? 'admin' : 'member',
+    role: invite ? invite.role : isFirstUser && env.auth.firstUserIsAdmin ? 'admin' : 'member',
+    invitedById: invite ? invite.invitedById : null,
   });
+
+  // Đánh dấu lời mời đã dùng (một lần duy nhất).
+  if (invite) {
+    invite.acceptedAt = new Date();
+    invite.acceptedByUserId = user.id;
+    await invite.save();
+    logger.info(`Lời mời #${invite.id} đã được chấp nhận bởi @${user.username}`);
+  }
 
   if (isFirstUser) await telegram.notifyFirstUser(user);
   else await telegram.notifyNewMember(user);
+
+  // Email chào mừng — chạy nền, không chặn phản hồi đăng ký.
+  mailer.sendWelcome({ user, locale }).catch((error) => logger.warn(`Welcome email failed: ${error.message}`));
 
   logger.info(`User registered: @${user.username} (${user.role}, ${locale})`);
 
@@ -106,6 +138,73 @@ const updateMe = asyncHandler(async (req, res) => {
 });
 
 /** GET /api/auth/config — thông tin khởi tạo công khai cho app React. */
+/**
+ * POST /api/auth/forgot-password
+ * ---------------------------------------------------------------------------
+ * Luôn trả về CÙNG một thông báo, bất kể email có tồn tại hay không
+ * (chống dò tài khoản). Chỉ khi email tồn tại mới thực sự gửi thư.
+ */
+const forgotPassword = asyncHandler(async (req, res) => {
+  const email = String(req.body.email || '').trim().toLowerCase();
+  const locale = resolveLocale(req) || 'vi';
+
+  const user = await User.unscoped().findOne({ where: { email } });
+
+  if (user && user.isActive) {
+    const rawToken = generateToken();
+    user.passwordResetHash = hashToken(rawToken);
+    user.passwordResetExpiresAt = inMinutes(env.email.resetTokenTtlMinutes);
+    await user.save();
+
+    // Gửi nền; người dùng không thấy sự khác biệt dù SMTP có lỗi.
+    mailer
+      .sendPasswordReset({ user, rawToken, locale: user.locale || locale })
+      .catch((error) => logger.warn(`Reset email failed: ${error.message}`));
+
+    logger.info(`Yêu cầu đặt lại mật khẩu cho @${user.username}`);
+  }
+
+  res.json({
+    success: true,
+    data: {
+      message: t(locale, 'api.forgotSent'),
+      expiresInMinutes: env.email.resetTokenTtlMinutes,
+    },
+  });
+});
+
+/**
+ * POST /api/auth/reset-password
+ * ---------------------------------------------------------------------------
+ * Token dùng MỘT lần. Sau khi đổi mật khẩu, token bị xoá và người dùng đăng
+ * nhập lại — phiên cũ vẫn hợp lệ tới khi hết hạn JWT, nên nhắc trong thông báo.
+ */
+const resetPassword = asyncHandler(async (req, res) => {
+  const { token, password } = req.body;
+  const tokenHash = hashToken(token);
+
+  const user = await User.scope('withResetToken').findOne({ where: { passwordResetHash: tokenHash } });
+
+  // So sánh hằng thời gian + kiểm tra hạn dùng.
+  if (!user || !safeEqual(user.passwordResetHash, tokenHash) || !user.hasValidResetToken()) {
+    throw ApiError.badRequest(t(resolveLocale(req), 'api.resetInvalid'));
+  }
+
+  user.password = password; // hook beforeSave sẽ băm
+  user.clearResetToken();
+  await user.save();
+
+  logger.info(`Mật khẩu đã được đặt lại cho @${user.username}`);
+
+  res.json({
+    success: true,
+    data: {
+      message: t(resolveLocale(req), 'api.resetDone'),
+      user: user.toPublicJSON(),
+    },
+  });
+});
+
 const publicConfig = asyncHandler(async (_req, res) => {
   res.json({
     success: true,
@@ -129,4 +228,4 @@ const publicConfig = asyncHandler(async (_req, res) => {
   });
 });
 
-module.exports = { register, login, me, updateMe, publicConfig };
+module.exports = { register, login, me, updateMe, forgotPassword, resetPassword, publicConfig };

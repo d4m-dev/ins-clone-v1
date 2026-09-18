@@ -16,21 +16,74 @@
 
 const path = require('path');
 const express = require('express');
-const AdminJS = require('adminjs');
-const AdminJSExpress = require('@adminjs/express');
-const AdminJSSequelize = require('@adminjs/sequelize');
+// `adminjs` (lõi) nạp được bằng require(), NHƯNG kết quả là một namespace:
+// lớp thật nằm ở `module.AdminJS` (hoặc `module.default`). Nếu dùng thẳng
+// namespace thì `AdminJS.registerAdapter` là undefined —
+// "TypeError: AdminJS.registerAdapter is not a function".
+const AdminJSModule = require('adminjs');
+const AdminJS = AdminJSModule.AdminJS ?? AdminJSModule.default ?? AdminJSModule;
+if (typeof AdminJS?.registerAdapter !== 'function') {
+  // Sai hình dạng export ⇒ nói thẳng ra thay vì chết mơ hồ ở giữa chừng.
+  throw new Error(
+    'Không tìm thấy lớp AdminJS (cần adminjs >= 7). Hãy chạy: cd backend && npm install'
+  );
+}
+// ⚠️ BẪY ESM — ghi lại để không ai sửa nhầm:
+// @adminjs/express và @adminjs/sequelize được phát hành dạng "type": "module"
+// và package.json của chúng CHỈ khai báo điều kiện "import" (không có "require").
+// Vì vậy `require('@adminjs/express')` ném ERR_PACKAGE_PATH_NOT_EXPORTED —
+// đúng cả với mọi bản 6.x/4.x hiện có. Bắt buộc nạp bằng import() động:
+// xem loadAdminPlugins() bên dưới.
 const session = require('express-session');
-const SequelizeStore = require('connect-session-sequelize')(session.session);
+// connect-session-sequelize cần LỚP Store của express-session.
+// (Đã từng viết nhầm `session.session` → TypeError: Class extends value
+// undefined… ngay khi khởi động. Đúng phải là `session.Store`.)
+const SequelizeStore = require('connect-session-sequelize')(session.Store);
 const bcrypt = require('bcryptjs');
 const { timingSafeEqual } = require('crypto');
 
 const { env } = require('../config/env');
 const urls = require('../config/urls');
 const logger = require('../utils/logger');
-const { sequelize, User, Post, Comment, Like } = require('../models');
+const { sequelize, User, Post, Comment, Like, Invite } = require('../models');
 const { buildAdminLocale } = require('./locales');
 
-AdminJS.registerAdapter({ Database: AdminJSSequelize.Database, Resource: AdminJSSequelize.Resource });
+/* -------------------------------------------------------------------------- */
+/*              Nạp plugin ESM (chỉ một lần, nhớ kết quả vào cache)          */
+/* -------------------------------------------------------------------------- */
+
+let pluginsPromise = null;
+
+/**
+ * Nạp @adminjs/express + @adminjs/sequelize bằng import() động rồi đăng ký
+ * adapter Sequelize. Gọi bao nhiêu lần cũng chỉ chạy thật một lần.
+ */
+function loadAdminPlugins() {
+  if (!pluginsPromise) {
+    pluginsPromise = (async () => {
+      const [expressModule, sequelizeModule] = await Promise.all([
+        import('@adminjs/express'),
+        import('@adminjs/sequelize'),
+      ]);
+      // Gói ESM: lớp thật nằm ở `default`; vẫn chấp nhận namespace trực tiếp
+      // để không vỡ nếu bản phát hành sau này đổi cách xuất.
+      const AdminJSExpress = expressModule.default ?? expressModule;
+      const AdminJSSequelize = sequelizeModule.default ?? sequelizeModule;
+
+      AdminJS.registerAdapter({
+        Database: AdminJSSequelize.Database,
+        Resource: AdminJSSequelize.Resource,
+      });
+
+      logger.debug('Đã nạp @adminjs/express + @adminjs/sequelize (ESM động) và đăng ký adapter Sequelize');
+      return { AdminJSExpress, AdminJSSequelize };
+    })().catch((error) => {
+      pluginsPromise = null; // cho phép thử lại ở lần khởi động sau
+      throw error;
+    });
+  }
+  return pluginsPromise;
+}
 
 /** Directory holding the CSS AdminJS will be told about. */
 const PUBLIC_DIR = path.join(__dirname, 'public');
@@ -220,6 +273,46 @@ const likeResource = {
 /* -------------------------------------------------------------------------- */
 
 /** Credential check driven exclusively by .env values. */
+/* -------------------------------------------------------------------------- */
+/*                    🎟️  Lời mời thành viên (bảng invites)                  */
+/* -------------------------------------------------------------------------- */
+
+/**
+ * Lời mời là dữ liệu quản trị: xem hạn dùng, ai mời, đã dùng hay chưa.
+ * `tokenHash` bị ẩn tuyệt đối — kể cả quản trị viên cũng không cần thấy, và
+ * AdminJS không được phép SỬA bản ghi (sửa tay có thể phá tính một-lần).
+ */
+const inviteResource = {
+  resource: Invite,
+  options: {
+    navigation: { name: 'Gia đình', icon: 'Mail' },
+    listProperties: ['id', 'email', 'role', 'status', 'invitedById', 'expiresAt', 'acceptedAt', 'createdAt'],
+    showProperties: ['id', 'email', 'role', 'status', 'message', 'invitedById', 'expiresAt', 'acceptedAt', 'createdAt'],
+    filterProperties: ['email', 'status', 'role', 'expiresAt'],
+    // Không tạo mới trong AdminJS (phải tạo qua API để token được sinh + gửi mail)
+    // và không sửa (đổi status bằng tay = phá vòng đời của lời mời).
+    actions: {
+      new: { isAccessible: false },
+      edit: { isAccessible: false },
+      bulkDelete: { isVisible: true },
+    },
+    properties: {
+      id: { label: 'Mã' },
+      email: { label: 'Email được mời' },
+      role: { label: 'Vai trò khi tham gia' },
+      status: { label: 'Trạng thái' },
+      message: { label: 'Lời nhắn kèm theo' },
+      invitedById: { label: 'Người mời (ID)' },
+      expiresAt: { label: 'Hết hạn lúc' },
+      acceptedAt: { label: 'Đã tham gia lúc' },
+      createdAt: { label: 'Ngày tạo' },
+      // Hai trường dưới đây là dữ liệu bí mật/kỹ thuật → ẩn hoàn toàn.
+      tokenHash: { isVisible: { list: false, show: false, edit: false, filter: false } },
+      updatedAt: { isVisible: { list: false, show: false, edit: false, filter: false } },
+    },
+  },
+};
+
 async function authenticateAdmin(email, password) {
   if (!email || !password) return null;
   if (String(email).trim().toLowerCase() !== env.admin.email.toLowerCase()) {
@@ -270,17 +363,26 @@ const adminJsOptions = {
   dashboard: {
     component: undefined, // default dashboard
     handler: async () => {
-      const [users, posts, comments, likes] = await Promise.all([
+      const [users, posts, comments, likes, invitesPending] = await Promise.all([
         User.count(),
         Post.count(),
         Comment.count(),
         Like.count(),
+        Invite.count({ where: { status: 'pending' } }),
       ]);
-      return { users, posts, comments, likes, apiBase: urls.api.base };
+      return {
+        users,
+        posts,
+        comments,
+        likes,
+        invitesPending, // số lời mời còn chờ dùng
+        apiBase: urls.api.base,
+        appUrl: env.frontendBaseUrl,
+      };
     },
   },
 
-  resources: [userResource, postResource, commentResource, likeResource],
+  resources: [userResource, postResource, commentResource, likeResource, inviteResource],
 
   /**
    * ⬇⬇⬇  VIỆT HOÁ TOÀN BỘ KHUNG GIAO DIỆN  ⬇⬇⬇
@@ -297,13 +399,71 @@ const adminJsOptions = {
   }),
 };
 
-const admin = new AdminJS(adminJsOptions);
+/**
+ * Đối tượng AdminJS chỉ được tạo SAU khi adapter Sequelize đã đăng ký —
+ * nếu tạo trước, `new AdminJS({resources})` sẽ không dựng nổi resource.
+ * Vì vậy nó được khởi tạo lười (lazy) và nhớ lại vào biến `admin`.
+ */
+let admin = null;
+
+async function createAdmin() {
+  if (admin) return admin;
+  await loadAdminPlugins();
+  admin = new AdminJS(adminJsOptions);
+  return admin;
+}
 
 /**
  * Builds the authenticated router (session-based login form) that server.js
  * mounts at `/admin`.
  */
-function buildAdminRouter(app) {
+/**
+ * Router dự phòng: nếu AdminJS không khởi động được (thiếu gói, sai phiên bản
+ * Node…) thì API + ảnh vẫn chạy, còn /admin trả về trang giải thích bằng tiếng
+ * Việt kèm đúng câu lệnh cần chạy. Tình huống này KHÔNG được làm sập server.
+ */
+function buildAdminFallbackRouter(reason) {
+  const html = `<!doctype html><meta charset="utf-8"><title>Bảng quản trị chưa sẵn sàng</title>
+  <style>body{font-family:system-ui;background:#fafafa;color:#262626;padding:40px;line-height:1.65;max-width:760px}
+  h1{color:#c13584}code{background:#efefef;padding:2px 6px;border-radius:6px}
+  .box{border-left:4px solid #c13584;background:#fff;padding:16px 20px;border-radius:8px}</style>
+  <h1>⚠️ Bảng quản trị chưa khởi động được</h1>
+  <div class="box">
+    <p>API và ảnh <b>vẫn hoạt động bình thường</b>. Chỉ riêng trang này lỗi.</p>
+    <p><b>Lý do:</b> <code>${String(reason).replace(/[<>&]/g, '')}</code></p>
+    <p>Trên điện thoại, chạy lại:</p>
+    <p><code>cd ~/familygram/backend &amp;&amp; npm install &amp;&amp; npm start</code></p>
+    <p>Nếu vẫn lỗi, xem nhật ký khởi động: <code>cat ~/familygram/backend/logs/*.log</code></p>
+  </div>`;
+
+  const router = express.Router();
+  router.use((_req, res) => res.status(503).type('html').send(html));
+  return router;
+}
+
+async function buildAdminRouter(app) {
+  // Static assets (custom-admin.css…) được mount TRƯỚC và luôn sẵn sàng — kể cả
+  // khi AdminJS lỗi, tệp CSS vẫn tải được để còn soi giao diện.
+  app.use(
+    ASSETS_ROUTE,
+    express.static(PUBLIC_DIR, {
+      index: false,
+      dotfiles: 'deny',
+      maxAge: '1h',
+      setHeaders: (res) => res.setHeader('X-Content-Type-Options', 'nosniff'),
+    })
+  );
+
+  let AdminJSExpress;
+  try {
+    ({ AdminJSExpress } = await loadAdminPlugins());
+    await createAdmin();
+  } catch (error) {
+    logger.error(`AdminJS không nạp được: ${error.message}`);
+    logger.error('→ Kiểm tra: cd backend && npm install (cần adminjs, @adminjs/express, @adminjs/sequelize, express-session, connect-session-sequelize)');
+    return buildAdminFallbackRouter(error.message);
+  }
+
   const sessionStore = new SequelizeStore({
     db: sequelize,
     tableName: 'admin_sessions',
@@ -335,17 +495,6 @@ function buildAdminRouter(app) {
     }
   );
 
-  // Static assets for the dashboard, mounted BEFORE the AdminJS router.
-  app.use(
-    ASSETS_ROUTE,
-    express.static(PUBLIC_DIR, {
-      index: false,
-      dotfiles: 'deny',
-      maxAge: '1h',
-      setHeaders: (res) => res.setHeader('X-Content-Type-Options', 'nosniff'),
-    })
-  );
-
   // First request creates the session table (and any missing tables).
   sessionStore.sync().catch((error) => logger.warn(`AdminJS session sync failed: ${error.message}`));
 
@@ -358,4 +507,17 @@ function buildAdminRouter(app) {
   return router;
 }
 
-module.exports = { admin, buildAdminRouter, adminJsOptions, ASSETS_ROUTE, PUBLIC_DIR, authenticateAdmin };
+module.exports = {
+  // `admin` là biến lười: dùng createAdmin() nếu cần chắc chắn nó đã tồn tại.
+  get admin() {
+    return admin;
+  },
+  createAdmin,
+  buildAdminRouter,
+  buildAdminFallbackRouter,
+  loadAdminPlugins,
+  adminJsOptions,
+  ASSETS_ROUTE,
+  PUBLIC_DIR,
+  authenticateAdmin,
+};

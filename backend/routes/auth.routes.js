@@ -24,6 +24,16 @@ const authLimiter = rateLimit({
   },
 });
 
+// Đăng ký có thể kèm lời mời: email/vai trò sẽ do server quyết định.
+const optionalInviteRule = body('inviteToken').optional().isString().isLength({ min: 16, max: 120 });
+const forgotRules = [body('email').trim().isEmail().withMessage('A valid e-mail address is required.').normalizeEmail()];
+const resetRules = [
+  body('token').trim().notEmpty().withMessage('Reset token is required.'),
+  body('password')
+    .isLength({ min: 8, max: 72 })
+    .withMessage('Password must be 8-72 characters.'),
+];
+
 const registerRules = [
   body('username')
     .trim()
@@ -45,6 +55,12 @@ const loginRules = [
 router.get('/config', authController.publicConfig);
 router.post('/register', authLimiter, registerRules, validate, authController.register);
 router.post('/login', authLimiter, loginRules, validate, authController.login);
+
+/**
+ * Quên / đặt lại mật khẩu — dùng chung authLimiter để không thành kênh spam email.
+ */
+router.post('/forgot-password', authLimiter, forgotRules, validate, authController.forgotPassword);
+router.post('/reset-password', authLimiter, resetRules, validate, authController.resetPassword);
 router.get('/me', requireAuth, authController.me);
 router.patch(
   '/me',

@@ -118,10 +118,20 @@ export const apiPostForm = (url, formData, options) =>
 /* -------------------------------------------------------------------------- */
 
 export const authApi = {
+  /** payload có thể kèm `inviteToken` khi thành viên vào bằng link mời. */
   register: (payload) => apiPost(ENDPOINTS.auth.register, payload),
   login: (payload) => apiPost(ENDPOINTS.auth.login, payload),
   me: () => apiGet(ENDPOINTS.auth.me),
   publicConfig: () => apiGet(ENDPOINTS.config),
+  /** Gửi email chứa link đặt lại mật khẩu (luôn trả thông báo chung). */
+  forgotPassword: (payload) => apiPost(ENDPOINTS.auth.forgotPassword, payload),
+  /** Đổi mật khẩu bằng token trong email. */
+  resetPassword: (payload) => apiPost(ENDPOINTS.auth.resetPassword, payload),
+};
+
+export const invitesApi = {
+  /** Công khai: kiểm tra link mời trước khi hiện form đăng ký. */
+  check: (token, options) => apiGet(ENDPOINTS.invites.check(token), options),
 };
 
 export const postsApi = {

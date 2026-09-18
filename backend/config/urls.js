@@ -100,6 +100,19 @@ const urls = {
     relativeAvatar: (filename) => (filename ? join('/uploads', 'avatars', filename) : null),
   },
 
+  /**
+   * Đường dẫn phía FRONTEND — dùng để dựng liên kết trong email (mời thành viên,
+   * đặt lại mật khẩu). PHẢI khớp với ROUTES trong frontend/config/urls.js.
+   */
+  routes: {
+    home: '/',
+    login: '/login',
+    register: '/register',
+    resetPassword: '/reset-password',
+    post: (id) => `/p/${id}`,
+    profile: (username) => `/u/${username}`,
+  },
+
   /** AdminJS dashboard + its static assets (custom CSS lives here). */
   admin: {
     dashboard: join(BASE, '/admin'),

@@ -4,15 +4,15 @@
  * nhưng server vẫn là nguồn xác thực cuối cùng.
  */
 
-import { useState } from 'react';
-import { Link, Navigate, useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { Link, Navigate, useNavigate, useSearchParams } from 'react-router-dom';
 import { ROUTES } from '../../config/urls.js';
 import { useAuth } from '../context/AuthContext.jsx';
 import { useI18n } from '../i18n/index.js';
 import { Alert } from '../components/States.jsx';
 import { SpinnerIcon } from '../components/Icons.jsx';
 import LanguageSwitcher from '../components/LanguageSwitcher.jsx';
-import { ApiError } from '../api/client.js';
+import { ApiError, invitesApi } from '../api/client.js';
 
 const FIELDS = [
   { name: 'fullName', labelKey: 'auth.fields.fullName', placeholderKey: 'auth.fields.fullNamePlaceholder', type: 'text', autoComplete: 'name' },
@@ -29,6 +29,40 @@ export default function RegisterPage() {
   const [error, setError] = useState(null);
   const [submitting, setSubmitting] = useState(false);
 
+  /* --------------------------- link mời (?invite=…) ---------------------- */
+  // Link trong email có dạng  <trang web>/register?invite=<token>
+  // (xem backend/services/mailer.service.js). Kiểm tra trước để:
+  //   • hiện lời chào đúng tên người mời,
+  //   • điền sẵn email mà quản trị viên đã mời,
+  //   • báo ngay nếu link đã hết hạn / đã dùng, thay vì để người dùng
+  //     điền hết form rồi mới nhận lỗi.
+  const [params] = useSearchParams();
+  const inviteToken = params.get('invite') || '';
+  const [invite, setInvite] = useState(null);
+  const [inviteState, setInviteState] = useState(inviteToken ? 'checking' : 'none');
+
+  useEffect(() => {
+    if (!inviteToken) return undefined;
+    let alive = true;
+
+    invitesApi
+      .check(inviteToken)
+      .then((data) => {
+        if (!alive) return;
+        setInvite(data?.invite || null);
+        setInviteState('valid');
+        // Email do lời mời quyết định (backend cũng ghi đè như vậy).
+        if (data?.invite?.email) setForm((current) => ({ ...current, email: data.invite.email }));
+      })
+      .catch(() => {
+        if (alive) setInviteState('invalid');
+      });
+
+    return () => {
+      alive = false;
+    };
+  }, [inviteToken]);
+
   if (isReady && isAuthenticated) return <Navigate to={ROUTES.feed} replace />;
 
   const update = (field) => (event) =>
@@ -44,6 +78,8 @@ export default function RegisterPage() {
         username: form.username.trim().toLowerCase(),
         email: form.email.trim().toLowerCase(),
         password: form.password,
+        // Chỉ gửi khi link mời còn dùng được — backend sẽ tự kiểm tra lại.
+        ...(inviteState === 'valid' && inviteToken ? { inviteToken } : {}),
       });
       navigate(ROUTES.feed, { replace: true });
     } catch (err) {
@@ -71,22 +107,55 @@ export default function RegisterPage() {
           </div>
           <p className="px-2 text-center text-sm font-semibold text-ink-soft">{t('auth.registerHint')}</p>
 
+          {inviteState === 'checking' && (
+            <p className="flex items-center gap-2 rounded-lg bg-ink-bg px-3 py-2 text-xs text-ink-soft">
+              <SpinnerIcon className="h-3 w-3" />
+              {t('invite.checking')}
+            </p>
+          )}
+
+          {inviteState === 'valid' && invite && (
+            <div className="w-full rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-center text-xs text-green-800">
+              <p className="text-sm font-semibold">{t('invite.validTitle')}</p>
+              <p className="mt-1">
+                {t('invite.validBody', {
+                  inviter: invite.inviter?.fullName || invite.inviter?.username || t('invite.someone'),
+                })}
+              </p>
+              <p className="mt-1 text-[11px]">{t('invite.emailLocked', { email: invite.email })}</p>
+            </div>
+          )}
+
+          {inviteState === 'invalid' && (
+            <div className="w-full space-y-1 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-center text-xs text-amber-800">
+              <p className="text-sm font-semibold">{t('invite.invalidTitle')}</p>
+              <p className="leading-relaxed">{t('invite.invalidBody')}</p>
+            </div>
+          )}
+
           <form onSubmit={submit} className="mt-2 w-full space-y-2.5">
-            {FIELDS.map((field) => (
-              <label key={field.name} className="block">
-                <span className="sr-only">{t(field.labelKey)}</span>
-                <input
-                  type={field.type}
-                  name={field.name}
-                  autoComplete={field.autoComplete}
-                  placeholder={t(field.placeholderKey)}
-                  value={form[field.name]}
-                  onChange={update(field.name)}
-                  className="ig-input"
-                  required
-                />
-              </label>
-            ))}
+            {FIELDS.map((field) => {
+              // Có lời mời ⇒ email do lời mời quyết định, khoá ô nhập cho khỏi
+              // hiểu nhầm là sửa được (backend luôn dùng email trong lời mời).
+              const locked = field.name === 'email' && inviteState === 'valid';
+              return (
+                <label key={field.name} className="block">
+                  <span className="sr-only">{t(field.labelKey)}</span>
+                  <input
+                    type={field.type}
+                    name={field.name}
+                    autoComplete={field.autoComplete}
+                    placeholder={t(field.placeholderKey)}
+                    value={form[field.name]}
+                    onChange={update(field.name)}
+                    readOnly={locked}
+                    aria-readonly={locked || undefined}
+                    className={locked ? 'ig-input cursor-not-allowed bg-ink-bg text-ink-soft' : 'ig-input'}
+                    required
+                  />
+                </label>
+              );
+            })}
 
             <div className="pt-1">{error && <Alert>{error}</Alert>}</div>
 

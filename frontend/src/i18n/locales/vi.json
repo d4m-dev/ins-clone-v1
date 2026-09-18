@@ -145,7 +145,8 @@
       "passwordPlaceholder": "Ít nhất 8 ký tự"
     },
     "loginFailed": "Không thể đăng nhập lúc này.",
-    "registerFailed": "Đăng ký thất bại. Vui lòng thử lại."
+    "registerFailed": "Đăng ký thất bại. Vui lòng thử lại.",
+    "forgotPasswordLink": "Quên mật khẩu?"
   },
   "notFound": {
     "title": "Không tìm thấy trang",
@@ -199,5 +200,42 @@
     "installHint": "Mở nhanh như một ứng dụng thật, không cần mở trình duyệt.",
     "dismiss": "Để sau",
     "offline": "Bạn đang ngoại tuyến — một số ảnh có thể chưa hiển thị được."
+  },
+  "forgot": {
+    "title": "Quên mật khẩu?",
+    "subtitle": "Nhập email đã đăng ký. Chúng tôi sẽ gửi cho bạn một liên kết để đặt mật khẩu mới.",
+    "submit": "Gửi liên kết đặt lại",
+    "submitting": "Đang gửi…",
+    "sentTitle": "📬 Đã gửi hướng dẫn",
+    "sentBody": "Nếu email này có tài khoản, chúng tôi đã gửi liên kết đặt lại mật khẩu. Liên kết chỉ dùng được một lần và hết hạn sau {{minutes}} phút.",
+    "checkSpam": "Không thấy thư? Hãy kiểm tra mục Spam / Quảng cáo.",
+    "backToLogin": "← Về trang đăng nhập",
+    "tryAnother": "Dùng email khác",
+    "failed": "Không gửi được yêu cầu lúc này. Vui lòng thử lại."
+  },
+  "reset": {
+    "title": "Đặt mật khẩu mới",
+    "subtitle": "Chọn mật khẩu mới cho tài khoản của bạn.",
+    "passwordPlaceholder": "Mật khẩu mới (ít nhất 8 ký tự)",
+    "confirmPlaceholder": "Nhập lại mật khẩu mới",
+    "submit": "Đổi mật khẩu",
+    "submitting": "Đang đổi…",
+    "doneTitle": "✅ Đã đổi mật khẩu",
+    "doneBody": "Bạn có thể đăng nhập bằng mật khẩu mới. Các thiết bị đang đăng nhập vẫn dùng được cho tới khi hết phiên.",
+    "goToLogin": "Đăng nhập ngay",
+    "missingToken": "Liên kết này thiếu mã xác nhận. Hãy mở lại đúng liên kết trong email, hoặc yêu cầu liên kết mới.",
+    "requestNew": "Yêu cầu liên kết mới",
+    "mismatch": "Hai mật khẩu không giống nhau.",
+    "failed": "Không đổi được mật khẩu. Liên kết có thể đã hết hạn.",
+    "singleUse": "Liên kết chỉ dùng được một lần và không chia sẻ cho người khác."
+  },
+  "invite": {
+    "checking": "Đang kiểm tra lời mời…",
+    "validTitle": "💌 Bạn được mời vào album gia đình",
+    "validBody": "{{inviter}} đã mời bạn tham gia FamilyGram.",
+    "emailLocked": "Đăng ký bằng email {{email}} (do người mời chọn).",
+    "invalidTitle": "Lời mời không dùng được",
+    "invalidBody": "Liên kết mời đã hết hạn hoặc đã được sử dụng. Bạn hãy xin quản trị viên gửi lời mời mới — hoặc vẫn có thể đăng ký nếu được phép.",
+    "someone": "Một thành viên trong gia đình"
   }
 }

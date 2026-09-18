@@ -15,6 +15,7 @@ const User = require('./User')(sequelize);
 const Post = require('./Post')(sequelize);
 const Comment = require('./Comment')(sequelize);
 const Like = require('./Like')(sequelize);
+const Invite = require('./Invite')(sequelize);
 
 // --- associations ----------------------------------------------------------
 User.hasMany(Post, { foreignKey: 'userId', as: 'posts', onDelete: 'CASCADE', hooks: true });
@@ -29,6 +30,11 @@ Post.hasMany(Like, { foreignKey: 'postId', as: 'likes', onDelete: 'CASCADE', hoo
 Like.belongsTo(Post, { foreignKey: 'postId', as: 'post' });
 User.hasMany(Like, { foreignKey: 'userId', as: 'likes', onDelete: 'CASCADE', hooks: true });
 Like.belongsTo(User, { foreignKey: 'userId', as: 'author' });
+
+// Lời mời: người mời + người nhận (nếu đã chấp nhận).
+User.hasMany(Invite, { foreignKey: 'invitedById', as: 'invitesSent', onDelete: 'CASCADE', hooks: true });
+Invite.belongsTo(User, { foreignKey: 'invitedById', as: 'inviter' });
+Invite.belongsTo(User, { foreignKey: 'acceptedByUserId', as: 'acceptedBy' });
 
 // --- counter maintenance ---------------------------------------------------
 // Counters are updated with atomic SQL so parallel likes can never drift.
@@ -55,6 +61,17 @@ Like.afterDestroy((like, options) => refreshCounters(like.postId, options?.trans
 Comment.afterCreate((comment, options) => refreshCounters(comment.postId, options?.transaction));
 Comment.afterDestroy((comment, options) => refreshCounters(comment.postId, options?.transaction));
 
+/**
+ * Đồng bộ schema.
+ *   syncSchema({ force: true })  → xoá sạch (chỉ dùng khi khởi tạo)
+ *   syncSchema({ alter: true })  → thêm/sửa cột cho khớp model (AN TOÀN dữ liệu)
+ * Mặc định chỉ `sync()` — tạo bảng còn thiếu, KHÔNG đụng bảng đang có.
+ */
+async function syncSchema(options = {}) {
+  await sequelize.sync(options);
+  return Object.keys(sequelize.models);
+}
+
 module.exports = {
   sequelize,
   Sequelize,
@@ -62,5 +79,7 @@ module.exports = {
   Post,
   Comment,
   Like,
+  Invite,
   refreshCounters,
+  syncSchema,
 };

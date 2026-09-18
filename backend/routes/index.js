@@ -9,6 +9,7 @@
 const express = require('express');
 const urls = require('../config/urls');
 const logger = require('../utils/logger');
+const mailer = require('../services/mailer.service');
 
 const authRoutes = require('./auth.routes');
 const postRoutes = require('./post.routes');
@@ -16,6 +17,7 @@ const userRoutes = require('./user.routes');
 const commentRoutes = require('./comment.routes');
 const reelRoutes = require('./reel.routes');
 const storyRoutes = require('./story.routes');
+const inviteRoutes = require('./invite.routes');
 
 const router = express.Router();
 
@@ -28,6 +30,8 @@ router.get('/health', (_req, res) => {
       uptimeSeconds: Math.floor(process.uptime()),
       env: process.env.NODE_ENV || 'development',
       apiBase: urls.api.base,
+      // Trạng thái email: 'ready' nghĩa là SMTP đã đăng nhập được.
+      email: mailer.status(),
       timestamp: new Date().toISOString(),
     },
   });
@@ -42,6 +46,7 @@ router.use('/comments', commentRoutes);
 router.use('/reels', reelRoutes);
 /** Khoảnh khắc 24 giờ. */
 router.use('/stories', storyRoutes);
+router.use('/invites', inviteRoutes);
 
 logger.debug(`API routers mounted under ${urls.prefix.api}`);
 

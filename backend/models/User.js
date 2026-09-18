@@ -84,6 +84,24 @@ module.exports = (sequelize) => {
         type: DataTypes.DATE,
         allowNull: true,
       },
+
+      /**
+       * Đặt lại mật khẩu: CHỈ lưu hash SHA-256 của token, không bao giờ lưu token
+       * gốc. Rò rỉ database cũng không dùng được liên kết đặt lại mật khẩu.
+       */
+      passwordResetHash: {
+        type: DataTypes.STRING(64),
+        allowNull: true,
+      },
+      passwordResetExpiresAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
+      },
+      /** Ai đã mời thành viên này (hiển thị trong AdminJS). */
+      invitedById: {
+        type: DataTypes.BIGINT.UNSIGNED,
+        allowNull: true,
+      },
     },
     {
       tableName: 'users',
@@ -94,6 +112,11 @@ module.exports = (sequelize) => {
       scopes: {
         // Only the login flow and password changes may read the hash.
         withPassword: { attributes: { include: ['password'] } },
+        // Look-up by reset token needs the token columns even though they are
+        // never exposed by toPublicJSON().
+        withResetToken: {
+          attributes: { include: ['password', 'passwordResetHash', 'passwordResetExpiresAt'] },
+        },
       },
       hooks: {
         beforeSave: async (user) => {
@@ -134,6 +157,18 @@ module.exports = (sequelize) => {
 
   User.prototype.isAdmin = function isAdmin() {
     return this.role === 'admin';
+  };
+
+  /** Token đặt lại mật khẩu còn hiệu lực? */
+  User.prototype.hasValidResetToken = function hasValidResetToken() {
+    if (!this.passwordResetHash || !this.passwordResetExpiresAt) return false;
+    return new Date(this.passwordResetExpiresAt).getTime() > Date.now();
+  };
+
+  /** Xoá token sau khi dùng xong (một lần dùng duy nhất). */
+  User.prototype.clearResetToken = function clearResetToken() {
+    this.passwordResetHash = null;
+    this.passwordResetExpiresAt = null;
   };
 
   return User;

@@ -36,6 +36,21 @@ module.exports = {
       '👑 <b>FamilyGram đã được khởi tạo</b>\nTài khoản đầu tiên <b>@{{username}}</b> được tạo với quyền <b>quản trị viên</b>.',
     newMember: '🆕 <b>Thành viên mới tham gia</b>\n{{fullName}} (@{{username}})',
 
+    /* ------------------- Thông báo API trả về giao diện ------------------- */
+    api: {
+      forgotSent:
+        'Nếu email này có tài khoản, chúng tôi đã gửi liên kết đặt lại mật khẩu. Hãy kiểm tra hộp thư (cả mục Spam).',
+      resetInvalid: 'Liên kết đặt lại mật khẩu không hợp lệ hoặc đã hết hạn.',
+      resetDone: 'Mật khẩu đã được đổi. Hãy đăng nhập bằng mật khẩu mới.',
+      inviteInvalid: 'Lời mời không hợp lệ.',
+      inviteUsed: 'Lời mời đã hết hạn hoặc đã được sử dụng.',
+      inviteNotFound: 'Liên kết mời không tồn tại hoặc đã bị thu hồi.',
+      inviteCannotRevoke: 'Lời mời này đã được chấp nhận — không thu hồi được nữa.',
+      inviteEmailTaken: '{{email}} đã có tài khoản (@{{username}}).',
+      emailTaken: 'Email này đã được dùng cho một tài khoản khác.',
+      usernameTaken: 'Tên đăng nhập này đã có người dùng.',
+      mediaRequired: 'Cần ít nhất một ảnh ("image") hoặc một video ("video").',
+    },
     newPhoto: {
       title: '📸 <b>Ảnh mới trong album gia đình</b>',
       author: 'Người đăng: <b>{{fullName}}</b> (@{{username}})',
@@ -82,6 +97,21 @@ module.exports = {
       '👑 <b>FamilyGram initialised</b>\nThe first account <b>@{{username}}</b> was created as <b>admin</b>.',
     newMember: '🆕 <b>New family member joined</b>\n{{fullName}} (@{{username}})',
 
+    /* ---------------------- API messages (frontend) ---------------------- */
+    api: {
+      forgotSent:
+        "If this e-mail has an account, we've sent a password reset link. Please check your inbox (and the Spam folder).",
+      resetInvalid: 'This password reset link is invalid or has expired.',
+      resetDone: 'Your password has been changed. Please sign in with the new one.',
+      inviteInvalid: 'This invitation is not valid.',
+      inviteUsed: 'This invitation has expired or was already used.',
+      inviteNotFound: 'This invitation link does not exist or has been revoked.',
+      inviteCannotRevoke: 'This invitation was already accepted — it can no longer be revoked.',
+      inviteEmailTaken: '{{email}} already has an account (@{{username}}).',
+      emailTaken: 'That e-mail is already used by another account.',
+      usernameTaken: 'That username is already taken.',
+      mediaRequired: 'At least one image ("image") or one video ("video") is required.',
+    },
     newPhoto: {
       title: '📸 <b>New photo in the family album</b>',
       author: 'By <b>{{fullName}}</b> (@{{username}})',
@@ -126,6 +156,20 @@ module.exports = {
     firstUser: '👑 <b>FamilyGram 初始化完成</b>\n第一个账号 <b>@{{username}}</b> 已被设为 <b>管理员</b>。',
     newMember: '🆕 <b>新家庭成员加入</b>\n{{fullName}} (@{{username}})',
 
+    /* --------------------- 前端显示的错误与提示 --------------------- */
+    api: {
+      forgotSent: '如果该邮箱已注册，我们已发送密码重置链接。请查收邮件（包括垃圾邮件）。',
+      resetInvalid: '密码重置链接无效或已过期。',
+      resetDone: '密码已修改，请用新密码登录。',
+      inviteInvalid: '邀请无效。',
+      inviteUsed: '邀请已过期或已被使用。',
+      inviteNotFound: '邀请链接不存在或已被撤销。',
+      inviteCannotRevoke: '该邀请已被接受，无法再撤销。',
+      inviteEmailTaken: '{{email}} 已有账号（@{{username}}）。',
+      emailTaken: '该邮箱已被其他账号使用。',
+      usernameTaken: '该用户名已被使用。',
+      mediaRequired: '至少需要一张图片（"image"）或一个视频（"video"）。',
+    },
     newPhoto: {
       title: '📸 <b>家庭相册有新照片</b>',
       author: '发布者：<b>{{fullName}}</b> (@{{username}})',

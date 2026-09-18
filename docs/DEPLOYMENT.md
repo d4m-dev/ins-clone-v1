@@ -51,6 +51,14 @@ Create the database and the application user:
 npm run db:init        # uses DB_NAME/DB_USER/DB_PASSWORD from .env
 ```
 
+Kiểm tra cấu hình vừa điền (không cần điện thoại, không cần MariaDB):
+
+```bash
+npm run boot:check     # bật thử server + dò 29 điểm (AdminJS, /admin/login, schema, custom CSS)
+npm run smoke          # 57 phép thử API
+npm run mail:test      # xác nhận Gmail gửi được (thêm -- --dry nếu chỉ muốn kiểm tra SMTP)
+```
+
 Generate the AdminJS password hash:
 
 ```bash
@@ -372,6 +380,16 @@ Move the archive to external storage via `.env`: `UPLOAD_DIR=/storage/emulated/0
 | UI hiện tiếng Anh dù muốn tiếng Việt | `localStorage.familygram.locale` cũ trong trình duyệt; bấm 🌐 chọn lại, hoặc đặt `VITE_DEFAULT_LOCALE=vi` trên Vercel rồi redeploy |
 | `/admin` hiện tiếng Anh | `ADMIN_LOCALE=vi` trong `.env` rồi khởi động lại API; nếu chỉ vài chỗ lẻ vẫn tiếng Anh, bấm 🌐 chọn *Tiếng Việt* (AdminJS nhớ theo `localeDetection`) hoặc thêm khoá vào `admin/locales/adminjs.vi.json` |
 | CSS tuỳ chỉnh không thấy tác dụng | kiểm tra `GET /admin/assets/custom-admin.css` trả 200; DevTools → Network xem file có bị cache (Ctrl-Shift-R) và selector `data-css` có đúng với phiên bản AdminJS đang dùng |
+| `/admin/login` trả **500** (trang đăng nhập vẫn hiện) | AdminJS bị mount **sau** `express.json()` → `WrongArgumentError`. Trong `server.js`, AdminJS phải đứng trước `applyParsers()`. `npm run boot:check` phát hiện lỗi này |
+| `ERR_PACKAGE_PATH_NOT_EXPORTED` khi khởi động (`@adminjs/express` / `@adminjs/sequelize`) | hai gói này là **ESM-only**; phải nạp bằng `import()` động trong `admin/adminjs.config.js`, không dùng `require()` |
+| `TypeError: Class extends value undefined` khi khởi động | `connect-session-sequelize` cần `session.Store` (không phải `session.session`) |
+| `AdminJS.registerAdapter is not a function` | `require('adminjs')` trả **namespace**: lấy lớp thật qua `AdminJSModule.AdminJS ?? AdminJSModule.default` |
+| `/admin` trả **503** với trang hướng dẫn | chế độ suy giảm an toàn: AdminJS không nạp được nhưng API và ảnh vẫn chạy. Đọc lý do ngay trên trang đó rồi `cd backend && npm install` |
+| `npm run mail:test` báo "Đăng nhập SMTP thất bại" | dùng **mật khẩu ứng dụng 16 ký tự** (myaccount.google.com/apppasswords), tài khoản gửi phải đã bật xác thực 2 bước; Gmail: `SMTP_HOST=smtp.gmail.com`, `SMTP_PORT=587`, `SMTP_SECURE=false` |
+| Đăng ảnh được nhưng **không nhận email báo** | `EMAIL_ENABLED=false`, hoặc `EMAIL_NOTIFY_NEW_PHOTO=false`, hoặc `NOTIFY_EMAIL` trống. Kiểm tra `/api/health` → `email.ready` (true = SMTP đã đăng nhập) |
+| Email thông báo rơi vào **Spam** | bình thường khi gửi qua Gmail bằng máy chủ cá nhân: đánh dấu "Không phải spam" một lần, hoặc thêm địa chỉ gửi vào danh bạ người nhận |
+| Link mời báo "không dùng được" | hết hạn sau `INVITE_TTL_DAYS` (mặc định 7) hoặc đã dùng (mỗi lời mời chỉ dùng **một lần**). Tạo lời mời mới trong `/admin` → **Lời mời** |
+| Quên mật khẩu: thư không tới | kiểm tra Spam; xác nhận `EMAIL_ENABLED=true` và `npm run mail:test`; link hết hạn sau `RESET_TOKEN_TTL_MINUTES` (mặc định 30 phút) |
 | Phone freezes mid-upload | lower `MAX_UPLOAD_SIZE_MB`, keep the app foregrounded, and add the Termux battery exception |
 
 ---

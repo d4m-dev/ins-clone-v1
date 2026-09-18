@@ -93,6 +93,13 @@ export default function LoginPage() {
               required
             />
 
+            {/* Instagram cũng đặt liên kết này ngay dưới ô mật khẩu. */}
+            <div className="flex justify-end pt-1">
+              <Link to={ROUTES.forgotPassword} className="text-xs font-semibold text-ig-blue hover:underline">
+                {t('auth.forgotPasswordLink')}
+              </Link>
+            </div>
+
             <div className="pt-2">{error && <Alert>{error}</Alert>}</div>
 
             <button type="submit" disabled={!canSubmit} className="ig-button flex items-center justify-center gap-2">

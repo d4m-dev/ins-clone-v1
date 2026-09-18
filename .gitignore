@@ -2,8 +2,14 @@
 node_modules/
 dist/
 build/
+# ── Secrets: KHÔNG bao giờ được commit ────────────────────────────────────
+# (.env.example thì ĐƯỢC commit — đó là bản mẫu không có giá trị thật)
 .env
+.env.*
 .env.local
+*.env.bak*
+!.env.example
+!*/.env.example
 *.log
 .DS_Store
 

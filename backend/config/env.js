@@ -173,10 +173,24 @@ const env = {
     enabled: bool('EMAIL_ENABLED', false),
     from: optional('SENDER_EMAIL', ''),
     password: optional('SENDER_PASSWORD', ''),
+    /** Tên hiển thị trong hộp thư đến: "FamilyGram <andubai5555@gmail.com>". */
+    fromName: optional('MAIL_FROM_NAME', 'FamilyGram'),
     /** Hộp thư nhận thông báo (mặc định = địa chỉ gửi). */
     to: optional('NOTIFY_EMAIL', '') || optional('SENDER_EMAIL', ''),
     /** Tài khoản Google dùng cho tính năng lịch (nếu bật). */
     gcalAccount: optional('GCAL_EMAIL', ''),
+
+    // SMTP — Gmail mặc định 587 + STARTTLS. Termux không cần cấu hình gì thêm.
+    smtpHost: optional('SMTP_HOST', 'smtp.gmail.com'),
+    smtpPort: int('SMTP_PORT', 587),
+    smtpSecure: bool('SMTP_SECURE', false),
+
+    /** Thông báo có ảnh/video mới. */
+    notifyNewPhoto: bool('EMAIL_NOTIFY_NEW_PHOTO', true),
+
+    /** Token đặt lại mật khẩu / lời mời sống bao lâu. */
+    resetTokenTtlMinutes: int('RESET_TOKEN_TTL_MINUTES', 30),
+    inviteTtlDays: int('INVITE_TTL_DAYS', 7),
   },
 
   /** Trợ lý AI (tuỳ chọn) — chỉ chạy ở server để giữ khoá bí mật. */

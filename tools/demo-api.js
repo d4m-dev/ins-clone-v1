@@ -80,6 +80,7 @@ const comments = [
 const likes = new Set(['1:2', '1:3', '1:4', '2:1', '3:1', '3:4', '4:1', '6:1']);
 const tokens = new Map(); // token -> userId
 const uploads = new Map(); // filename -> Buffer
+const invites = []; // lời mời giả lập cho bản xem trước
 const CONTENT_TYPES = {
   '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.png': 'image/png', '.webp': 'image/webp', '.gif': 'image/gif',
   // Video cho Reels + nhạc nền: mock phục vụ đúng như express.static ở production.
@@ -256,6 +257,76 @@ const server = http.createServer(async (req, res) => {
     const token = `demo-${user.id}-${Date.now()}`;
     tokens.set(token, user.id);
     return ok(res, { token, user: publicUser(user) });
+  }
+
+  /* ------------------- quên mật khẩu / đặt lại (giả lập) ------------------ */
+  if (pathname === '/api/auth/forgot-password' && req.method === 'POST') {
+    // Giống backend thật: LUÔN trả cùng một thông báo để không lộ email nào có tài khoản.
+    return ok(res, {
+      message: 'Nếu email này có tài khoản, chúng tôi đã gửi liên kết đặt lại mật khẩu.',
+      expiresInMinutes: 30,
+      // Chỉ bản xem trước mới có: mở luôn liên kết để thử trang đặt lại mật khẩu.
+      demoResetUrl: `${PUBLIC_BASE}${'/reset-password'}?token=demo-token`,
+    });
+  }
+
+  if (pathname === '/api/auth/reset-password' && req.method === 'POST') {
+    const body = JSON.parse((await readBody(req)).toString() || '{}');
+    if (body.token !== 'demo-token' || String(body.password || '').length < 8) {
+      return fail(res, 400, 'Liên kết đặt lại mật khẩu không hợp lệ hoặc đã hết hạn.', 'BAD_REQUEST');
+    }
+    return ok(res, { message: 'Mật khẩu đã được đổi. Hãy đăng nhập bằng mật khẩu mới.' });
+  }
+
+  /* ------------------------------ lời mời -------------------------------- */
+  if (pathname === '/api/invites' && req.method === 'POST') {
+    const body = JSON.parse((await readBody(req)).toString() || '{}');
+    const invite = {
+      id: invites.length + 1,
+      email: String(body.email || '').toLowerCase(),
+      role: body.role === 'admin' ? 'admin' : 'member',
+      message: body.message || null,
+      status: 'pending',
+      invitedById: 1,
+      expiresAt: daysAgo(-7),
+      createdAt: new Date().toISOString(),
+    };
+    invites.push(invite);
+    return ok(res, { invite, emailSent: false, inviteUrl: `${PUBLIC_BASE}/register?invite=demo-invite` }, 201);
+  }
+
+  if (pathname === '/api/invites' && req.method === 'GET') {
+    return ok(res, { invites: invites.map((invite) => ({ ...invite, inviter: publicUser(users[0]) })) });
+  }
+
+  if (pathname === '/api/invites/stats' && req.method === 'GET') {
+    return ok(res, {
+      pending: invites.filter((invite) => invite.status === 'pending').length,
+      accepted: 0,
+      expired: 0,
+      ttlDays: 7,
+    });
+  }
+
+  if (pathname.startsWith('/api/invites/') && req.method === 'GET') {
+    const token = decodeURIComponent(pathname.replace('/api/invites/', ''));
+    if (token === 'demo-invite') {
+      return ok(res, {
+        invite: {
+          id: 1,
+          email: 'nguoi.moi@example.com',
+          role: 'member',
+          status: 'pending',
+          message: 'Vào album nhà mình nhé!',
+          inviter: publicUser(users[0]),
+          expiresAt: daysAgo(-7),
+        },
+      });
+    }
+    if (token === 'demo-expired') {
+      return json(res, 410, { success: false, code: 'INVITE_EXPIRED', message: 'Lời mời đã hết hạn hoặc đã được sử dụng.' });
+    }
+    return fail(res, 404, 'Liên kết mời không tồn tại hoặc đã bị thu hồi.', 'NOT_FOUND');
   }
 
   if (pathname === '/api/auth/register' && req.method === 'POST') {
@@ -498,8 +569,74 @@ const server = http.createServer(async (req, res) => {
     return res.end(buffer);
   }
 
+  /* ------------------------- quên / đặt lại mật khẩu ----------------------- */
+  if (pathname === '/api/auth/forgot-password' && req.method === 'POST') {
+    // Bản giả lập luôn trả cùng một thông báo — giống backend thật (chống dò tài khoản).
+    return ok(res, {
+      message: 'Nếu email này có tài khoản, chúng tôi đã gửi liên kết đặt lại mật khẩu. Hãy kiểm tra hộp thư (cả mục Spam).',
+      expiresInMinutes: 30,
+      demoHint: 'Bản demo không gửi email thật — dùng liên kết bên dưới để thử.',
+      resetUrl: `${PUBLIC_BASE}/reset-password?token=demo-reset-token`,
+    });
+  }
+
+  if (pathname === '/api/auth/reset-password' && req.method === 'POST') {
+    const body = JSON.parse((await readBody(req)).toString() || '{}');
+    if (body.token !== 'demo-reset-token') {
+      return fail(res, 400, 'Liên kết đặt lại mật khẩu không hợp lệ hoặc đã hết hạn.', 'BAD_REQUEST');
+    }
+    return ok(res, { message: 'Mật khẩu đã được đổi. Hãy đăng nhập bằng mật khẩu mới.' });
+  }
+
+  /* --------------------------------- lời mời -------------------------------- */
+  if (pathname === '/api/invites' && req.method === 'POST') {
+    if (!viewer) return fail(res, 401, 'Authentication required', 'UNAUTHORIZED');
+    const body = JSON.parse((await readBody(req)).toString() || '{}');
+    const invite = {
+      id: invites.length + 1,
+      email: String(body.email || '').toLowerCase(),
+      role: body.role === 'admin' ? 'admin' : 'member',
+      message: body.message || null,
+      status: 'pending',
+      invitedById: viewer.id,
+      expiresAt: daysAgo(-7),
+      createdAt: new Date().toISOString(),
+    };
+    invites.push(invite);
+    return ok(res, {
+      invite,
+      emailSent: false, // demo không gửi email thật
+      inviteUrl: `${PUBLIC_BASE}/register?invite=demo-invite-token`,
+    }, 201);
+  }
+
+  if (pathname === '/api/invites' && req.method === 'GET') {
+    return ok(res, { invites: invites.map((invite) => ({ ...invite, inviter: publicUser(findUser(invite.invitedById)) })) });
+  }
+
+  if (pathname === '/api/invites/stats' && req.method === 'GET') {
+    const pending = invites.filter((invite) => invite.status === 'pending').length;
+    return ok(res, { pending, accepted: 0, expired: 0, ttlDays: 7 });
+  }
+
+  if (pathname === '/api/invites/demo-invite-token' && req.method === 'GET') {
+    return ok(res, {
+      invite: {
+        id: 1, email: 'nguoi.moi@example.com', role: 'member',
+        status: 'pending', inviter: publicUser(users[0]), expiresAt: daysAgo(-7),
+      },
+    });
+  }
+
   if (pathname === '/api/health') {
-    return ok(res, { status: 'ok', env: 'demo', apiBase: `${PUBLIC_BASE}/api`, timestamp: new Date().toISOString() });
+    return ok(res, {
+      status: 'ok',
+      env: 'demo',
+      apiBase: `${PUBLIC_BASE}/api`,
+      // Bản giả lập không có SMTP thật.
+      email: { enabled: true, ready: false, reason: 'bản demo không gửi email', from: 'demo@example.com' },
+      timestamp: new Date().toISOString(),
+    });
   }
 
   return fail(res, 404, `Route ${req.method} ${pathname} does not exist.`, 'NOT_FOUND');

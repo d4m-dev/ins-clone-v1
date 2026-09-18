@@ -127,7 +127,7 @@ function applyParsers() {
 /*                          2. Static + API + Admin                           */
 /* -------------------------------------------------------------------------- */
 
-function mountRoutes() {
+async function mountRoutes() {
   // --- uploaded photos (hardened, see middleware/static.middleware.js) -----
   app.use(urls.prefix.uploads, createUploadsRouter());
 
@@ -150,9 +150,6 @@ function mountRoutes() {
   // --- JSON API ------------------------------------------------------------
   app.use(urls.prefix.api, apiRoutes);
 
-  // --- AdminJS dashboard (session auth, custom CSS, full delete powers) ----
-  app.use(urls.prefix.admin, buildAdminRouter(app));
-
   // --- 404 + error envelope ------------------------------------------------
   app.use(notFoundHandler);
   app.use(errorHandler);
@@ -165,6 +162,7 @@ function mountRoutes() {
 async function start() {
   try {
     assertProductionSecrets();
+
 
     logger.banner([
       `FamilyGram API  ·  env=${env.nodeEnv}`,
@@ -188,8 +186,17 @@ async function start() {
     // HTTP stack
     applySecurityHeaders();
     applyCors();
+
+    /**
+     * ⚠️ THỨ TỰ QUAN TRỌNG: AdminJS phải được mount TRƯỚC express.json().
+     * @adminjs/express đọc body theo cách riêng; nếu bộ đọc body chung đã tiêu
+     * thụ request trước thì POST /admin/login ném WrongArgumentError (HTTP 500)
+     * — lỗi rất khó đoán vì trang đăng nhập vẫn hiện bình thường.
+     */
+    app.use(urls.prefix.admin, await buildAdminRouter(app));
+
     applyParsers();
-    mountRoutes();
+    await mountRoutes();
 
     httpServer = http.createServer(app);
     // Big photos over a phone hotspot: allow slow clients, kill dead sockets.

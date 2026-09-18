@@ -341,7 +341,13 @@ locale: buildAdminLocale({
   "db:backup":    "bash scripts/backup-database.sh",
   "tunnel:install": "bash scripts/setup-cloudflared.sh",
   "bootstrap:termux": "bash scripts/bootstrap-termux.sh",
-  "admin:passwd": "node scripts/hash-password.js"
+  "admin:passwd": "node scripts/hash-password.js",
+
+  "smoke":       "node ../tools/_smoke_api.js",      // 57 phép thử API trên SQLite tạm
+  "smoke:email": "node ../tools/_smoke_email.js",    // 24 phép thử nội dung email vi/en/zh
+  "boot:check":  "bash ../tools/boot-check.sh",      // bật thử server rồi tự kiểm tra 29 điểm
+  "mail:test":   "node scripts/mail-test.js",        // kiểm tra SMTP thật + gửi 1 email thử
+  "health":      "bash scripts/health-check.sh"
 }
 ```
 
@@ -354,6 +360,19 @@ locale: buildAdminLocale({
 | **TUNNEL** | `cloudflared tunnel run <name>` | waits until `/api/health` answers, then exposes `api.d4mdev.click` |
 
 `-k` means Ctrl-C tears everything down together (with a graceful shutdown in `server.js`).
+
+### Bốn lệnh kiểm tra — chạy trước khi tin tưởng một thay đổi
+
+| Lệnh | Kiểm tra gì | Cần gì |
+| --- | --- | --- |
+| `npm run smoke` | 57 phép thử API thật: đăng ký/đăng nhập, đăng ảnh + video, Reels, Stories, lượt xem, tải về, chặn path-traversal, **lời mời**, **quên/đặt lại mật khẩu**, thông báo đa ngôn ngữ | không (tự dùng SQLite tạm) |
+| `npm run smoke:email` | 24 phép thử nội dung email: đủ 3 ngôn ngữ, nội suy biến, chống XSS trong chú thích, link trong nút bấm | không |
+| `npm run boot:check` | bật server thật rồi dò 29 điểm: `/admin/login` đăng nhập được (đúng thứ tự middleware!), custom CSS được nhúng, 5 bảng AdminJS, `tokenHash` bị ẩn, schema đủ cột | không |
+| `npm run mail:test` | đăng nhập SMTP thật + gửi 1 email thử tới `NOTIFY_EMAIL` | Gmail đã cấu hình |
+| `npm run doctor` | khám máy chủ: `.env` thiếu khoá nào, quyền tệp, dung lượng `uploads`, chỗ trống đĩa, pin, cổng 3306/4000, kết nối MariaDB — **chỉ đọc, không sửa** | chạy được trên Termux |
+
+> `boot:check` được viết ra sau khi ba lỗi chỉ xuất hiện lúc **khởi động thật** (xem §12).
+> `node --check` không bắt được chúng vì nó chỉ đọc cú pháp, không nạp `require`/ESM.
 
 ---
 
@@ -398,6 +417,56 @@ Tất cả đều nằm trong cùng một app React, không thêm dịch vụ n�
 | Icon | Sinh bằng Pillow (`PIL`), gradient tím→hồng→cam + khung máy ảnh, **không cần tài nguyên ngoài** |
 
 Đổi `CACHE_VERSION` trong `sw.js` mỗi khi sửa service worker để buộc người dùng nhận bản mới.
+
+---
+
+## 5c. Email, lời mời & đặt lại mật khẩu
+
+Bốn loại email, tất cả đều có bản **vi / en / zh** và đều chọn ngôn ngữ theo
+`locale` của người nhận (`services/email.templates.js`):
+
+| Email | Gửi khi | Tới ai |
+| --- | --- | --- |
+| **Ảnh mới** | Có ảnh/video mới (cạnh thông báo Telegram) | `NOTIFY_EMAIL` (reply-to = người đăng) |
+| **Lời mời** | Quản trị viên tạo lời mời | Người được mời |
+| **Đặt lại mật khẩu** | Ai đó bấm "Quên mật khẩu?" | Chủ tài khoản |
+| **Chào mừng** | Đăng ký thành công | Thành viên mới |
+
+**Lời mời — vòng đời một liên kết**
+
+```
+Quản trị viên  →  POST /api/invites            (AdminJS cũng xem/thu hồi được)
+                 →  tạo token 32 byte, CHỈ lưu SHA-256 vào bảng `invites`
+                 →  gửi email chứa  <web>/register?invite=<token>
+Người được mời →  mở link: giao diện gọi GET /api/invites/:token để chào đúng tên
+                 →  đăng ký: backend lấy EMAIL + VAI TRÒ từ lời mời (không tin client)
+                 →  lời mời chuyển sang accepted, token hết hiệu lực ngay
+```
+
+Hết hạn sau `INVITE_TTL_DAYS` ngày (mặc định 7). Lời mời hết hạn/đã dùng/đã thu hồi
+đều trả **410** kèm mã `INVITE_EXPIRED`, nên giao diện báo đúng "link không dùng được"
+thay vì để người dùng điền hết form rồi mới lỗi.
+
+**Đặt lại mật khẩu — ba nguyên tắc an toàn**
+
+1. **Không tiết lộ ai có tài khoản.** `POST /auth/forgot-password` luôn trả cùng một
+   câu trả lời dù email có tồn tại hay không (chống dò thành viên trong gia đình).
+2. **Token không nằm trong database dạng gốc.** Chỉ SHA-256 được lưu
+   (`users.password_reset_hash`), so sánh bằng `timingSafeEqual`, dùng **một lần**,
+   hết hạn sau `RESET_TOKEN_TTL_MINUTES` (mặc định 30 phút).
+3. **Gửi nền, không chặn request.** SMTP lỗi thì người dùng vẫn thấy luồng bình thường
+   (và quản trị viên thấy lý do ở `/api/health` → `email.reason`).
+
+Ba liên kết sâu cần có mặt trong cả hai đầu:
+
+| Liên kết | `backend/config/urls.js` | `frontend/config/urls.js` |
+| --- | --- | --- |
+| `/register?invite=…` | `routes.register` | `ROUTES.register` |
+| `/reset-password?token=…` | `routes.resetPassword` | `ROUTES.resetPassword` |
+| `/p/:id` (bài viết) | `routes.post` | `ROUTES.post(id)` |
+
+> Gmail cần **mật khẩu ứng dụng 16 ký tự** (`myaccount.google.com/apppasswords`),
+> không phải mật khẩu đăng nhập. Kiểm tra bất cứ lúc nào: `npm run mail:test`.
 
 ---
 
@@ -503,12 +572,31 @@ Started from `server.js` via `services/telegram.service.js` with `polling: true`
 | GET | `/reels?page=&limit=` | optional | chỉ video, `limit ≤ 20`, kèm `maxDurationSeconds` |
 | GET | `/reels/:id` | optional | một reel |
 | GET | `/stories` | optional | bài trong 24h gần nhất, gom theo tác giả (`groups`, `windowHours: 24`) |
+| POST | `/auth/forgot-password` | – | `{email}` → **luôn** trả thông báo chung + `expiresInMinutes` (chống dò tài khoản) |
+| POST | `/auth/reset-password` | – | `{token, password}` — token dùng **một lần**, hết hạn theo `RESET_TOKEN_TTL_MINUTES` |
+| POST | `/invites` | JWT **admin** | `{email, role, message?}` → `{invite, emailSent, inviteUrl?}` (`inviteUrl` chỉ trả khi gửi mail lỗi) |
+| GET | `/invites` | JWT **admin** | danh sách lời mời (không bao giờ trả `tokenHash`) |
+| GET | `/invites/stats` | JWT **admin** | `{pending, accepted, expired, ttlDays}` |
+| DELETE | `/invites/:id` | JWT **admin** | thu hồi lời mời (từ chối nếu đã được chấp nhận) |
+| GET | `/invites/:token` | – | tra cứu link mời: 404 nếu không có, **410** (`INVITE_EXPIRED`) nếu hết hạn/đã dùng |
+
+Mọi thông báo lỗi và thành công đều theo `Accept-Language` (vi · en · zh) nhờ `i18n/messages.js`
+nhóm `api.*` — giao diện gửi kèm ngôn ngữ đang chọn, thiếu header thì mặc định tiếng Việt.
 
 Success envelope: `{ "success": true, "data": { … } }` · Failure: `{ "success": false, "code": "…", "message": "…", "details": […] }`.
 
 ---
 
 ## 11. Setup — the short version
+
+**Kiểm tra nhanh sau khi cấu hình (không cần điện thoại):**
+
+```bash
+cd backend
+npm run boot:check     # bật thử server + 29 phép dò
+npm run smoke          # 57 phép thử API
+npm run mail:test      # xác nhận Gmail gửi được
+```
 
 **Phone (Termux):**
 
@@ -552,4 +640,13 @@ Full step-by-step (tunnel config, DNS, wake-lock, battery optimisation, backups,
 * **Không transcode trên điện thoại.** Điện thoại Android là máy chủ: đọc thời lượng bằng cách parse atom `mvhd` (thuần JS), trích ảnh bìa bằng `<canvas>` ở client, nhạc nền phát đồng bộ thay vì mux — CPU gần như không tăng, và **không cần ffmpeg**.
 * **Story là một truy vấn, không phải một bảng.** `GET /api/stories` lọc bài trong 24h rồi gom theo tác giả: không migration, không job dọn dẹp, không dữ liệu mồ côi.
 * **Service worker không cache `/uploads/`.** Album của gia đình sẽ lớn dần; giữ ảnh trong Cache Storage là cách nhanh nhất để đầy bộ nhớ điện thoại. Chỉ HTML/JS/CSS và dữ liệu feed mới được lưu.
+* **Ba cái bẫy chỉ lộ ra lúc khởi động thật** (đã sửa, và `npm run boot:check` canh chúng):
+  1. `@adminjs/express` và `@adminjs/sequelize` là gói **ESM-only** (package.json chỉ khai báo
+     điều kiện `import`) ⇒ `require('@adminjs/express')` ném `ERR_PACKAGE_PATH_NOT_EXPORTED`.
+     Phải nạp bằng `import()` động (`loadAdminPlugins()` trong `admin/adminjs.config.js`).
+  2. `connect-session-sequelize` cần **lớp** `session.Store` của express-session, không phải
+     `session.session` — viết nhầm là `TypeError: Class extends value undefined`.
+  3. AdminJS phải được mount **trước** `express.json()`. Nếu bộ đọc body chung tiêu thụ request
+     trước, `POST /admin/login` trả 500 `WrongArgumentError` trong khi trang đăng nhập vẫn hiện
+     bình thường — lỗi rất dễ mất thời gian.
 * **Tệp luôn nằm trong thư mục con.** URL ảnh/video là `/uploads/posts/<tệp>` và `/uploads/avatars/<tệp>` — hàm dựng URL nhận tham số thư mục tường minh để không bao giờ sinh ra liên kết 404.

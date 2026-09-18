@@ -12,9 +12,12 @@ const { Post, User, Like, Comment, sequelize } = require('../models');
 const { env } = require('../config/env');
 const urls = require('../config/urls');
 const ApiError = require('../utils/ApiError');
+const { resolveLocale } = require('../utils/locale');
+const { t } = require('../i18n');
 const asyncHandler = require('../utils/asyncHandler');
 const storage = require('../services/storage.service');
 const telegram = require('../services/telegram.service');
+const mailer = require('../services/mailer.service');
 const logger = require('../utils/logger');
 const { readMp4DurationSeconds, roundSeconds, formatDuration } = require('../utils/mp4Duration');
 const { assertFileSizes } = require('../middleware/upload.middleware');
@@ -162,7 +165,7 @@ const createPost = asyncHandler(async (req, res) => {
 
   if (!imageFile && !videoFile) {
     await discardUploadedFiles(files);
-    throw ApiError.badRequest('Cần ít nhất một ảnh ("image") hoặc một video ("video").');
+    throw ApiError.badRequest(t(resolveLocale(req), 'api.mediaRequired'));
   }
 
   try {
@@ -223,6 +226,11 @@ const createPost = asyncHandler(async (req, res) => {
     telegram
       .notifyNewPhoto(post, req.user, absolutePath)
       .catch((error) => logger.warn(`Telegram notify failed: ${error.message}`));
+
+    // Email cho quản trị viên — cũng chạy nền, lỗi SMTP không ảnh hưởng người đăng.
+    mailer
+      .notifyNewPhoto({ post, author: req.user, locale: req.user.locale || req.locale })
+      .catch((error) => logger.warn(`Email notify failed: ${error.message}`));
 
     res.status(201).json({
       success: true,
