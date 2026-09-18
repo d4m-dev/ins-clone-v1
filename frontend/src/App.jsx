@@ -13,6 +13,7 @@ import LoginPage from './pages/LoginPage.jsx';
 import RegisterPage from './pages/RegisterPage.jsx';
 import ForgotPasswordPage from './pages/ForgotPasswordPage.jsx';
 import ResetPasswordPage from './pages/ResetPasswordPage.jsx';
+import InvitePage from './pages/InvitePage.jsx';
 import UploadPage from './pages/UploadPage.jsx';
 import ProfilePage from './pages/ProfilePage.jsx';
 import PostPage from './pages/PostPage.jsx';
@@ -56,6 +57,16 @@ export default function App() {
         element={
           <RequireAuth>
             <ProfilePage />
+          </RequireAuth>
+        }
+      />
+      {/* Mời người thân — trang tự chuyển hướng nếu không phải quản trị viên
+          (backend vẫn là nơi chặn thật, qua requireAdmin). */}
+      <Route
+        path={ROUTES.invite}
+        element={
+          <RequireAuth>
+            <InvitePage />
           </RequireAuth>
         }
       />

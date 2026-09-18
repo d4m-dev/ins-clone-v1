@@ -91,7 +91,10 @@
     "videoReady": "Video {{duration}} đã sẵn sàng",
     "modePhoto": "Ảnh",
     "modeVideo": "Video (Reels)",
-    "pickVideo": "Chạm để chọn video"
+    "pickVideo": "Chạm để chọn video",
+    "compressing": "Đang nén ảnh cho nhẹ…",
+    "compressed": "Ảnh đã nén: {{before}} → {{after}} (tiết kiệm {{percent}}%)",
+    "keepOriginal": "Giữ ảnh gốc"
   },
   "profile": {
     "posts": "bài viết",
@@ -107,7 +110,8 @@
       "other": "Thành viên này chưa chia sẻ ảnh nào."
     },
     "loadFailed": "Không thể tải trang cá nhân này.",
-    "member": "Thành viên gia đình"
+    "member": "Thành viên gia đình",
+    "inviteMember": "Mời người thân"
   },
   "explore": {
     "searchPlaceholder": "Tìm ảnh, chú thích, thành viên…",
@@ -236,6 +240,35 @@
     "emailLocked": "Đăng ký bằng email {{email}} (do người mời chọn).",
     "invalidTitle": "Lời mời không dùng được",
     "invalidBody": "Liên kết mời đã hết hạn hoặc đã được sử dụng. Bạn hãy xin quản trị viên gửi lời mời mới — hoặc vẫn có thể đăng ký nếu được phép.",
-    "someone": "Một thành viên trong gia đình"
+    "someone": "Một thành viên trong gia đình",
+    "title": "Mời người thân",
+    "subtitle": "Gửi lời mời vào album gia đình — chỉ quản trị viên làm được việc này.",
+    "emailLabel": "Email của người được mời",
+    "roleMember": "Thành viên",
+    "roleAdmin": "Quản trị viên",
+    "messageLabel": "Lời nhắn (không bắt buộc)",
+    "messagePlaceholder": "Vào album nhà mình nhé!",
+    "send": "Gửi lời mời",
+    "sending": "Đang gửi…",
+    "expiryHint": "Mỗi lời mời chỉ dùng được một lần và tự hết hạn sau vài ngày.",
+    "sentByEmail": "✅ Đã gửi thư mời tới {{email}}.",
+    "emailUnavailable": "⚠️ Chưa gửi được email — bạn hãy copy liên kết dưới đây rồi gửi qua Zalo/Messenger.",
+    "copyLink": "Copy link",
+    "copied": "Đã copy",
+    "copyFailed": "Không copy được — hãy bôi đen rồi sao chép thủ công.",
+    "listTitle": "Lời mời đã gửi",
+    "pendingCount": "({{count}} đang chờ)",
+    "empty": "Chưa có lời mời nào.",
+    "expiresOn": "hết hạn {{date}}",
+    "revoke": "Thu hồi lời mời",
+    "loadFailed": "Không tải được danh sách lời mời.",
+    "failed": "Không gửi được lời mời.",
+    "revokeFailed": "Không thu hồi được lời mời.",
+    "status": {
+      "pending": "Đang chờ",
+      "accepted": "Đã tham gia",
+      "revoked": "Đã thu hồi",
+      "expired": "Hết hạn"
+    }
   }
 }

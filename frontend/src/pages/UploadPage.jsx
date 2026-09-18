@@ -19,6 +19,7 @@ import Layout from '../components/Layout.jsx';
 import { Alert } from '../components/States.jsx';
 import { CameraIcon, SpinnerIcon, CloseIcon, ReelsIcon, VolumeOnIcon } from '../components/Icons.jsx';
 import { postsApi, ApiError } from '../api/client.js';
+import { compressImage, formatBytes } from '../utils/imageCompress.js';
 import { useAuth } from '../context/AuthContext.jsx';
 import { useI18n } from '../i18n/index.js';
 
@@ -95,6 +96,13 @@ export default function UploadPage() {
   const [audioTitle, setAudioTitle] = useState('');
   const [caption, setCaption] = useState('');
   const [location, setLocation] = useState('');
+  const [compressing, setCompressing] = useState(false);
+  /** Tệp gốc trước khi nén — cần giữ để người dùng bật "giữ ảnh gốc". */
+  const [originalFile, setOriginalFile] = useState(null);
+  /** Kết quả nén gần nhất: dùng để hiện "4,2 MB → 780 KB (tiết kiệm 81%)". */
+  const [compression, setCompression] = useState(null);
+  /** Người dùng có thể chọn giữ nguyên ảnh gốc (ví dụ ảnh in, ảnh scan). */
+  const [keepOriginal, setKeepOriginal] = useState(false);
   const [status, setStatus] = useState('idle'); // idle | uploading | done
   const [error, setError] = useState(null);
   const [notice, setNotice] = useState(null);
@@ -125,6 +133,9 @@ export default function UploadPage() {
     setPosterFile(null);
     setDuration(null);
     setNotice(null);
+    setCompression(null);
+    setOriginalFile(null);
+    setKeepOriginal(false);
   };
 
   const switchMode = (next) => {
@@ -146,6 +157,30 @@ export default function UploadPage() {
     }
     if (selectedFile.size > maxMb * 1024 * 1024) {
       setError(t('upload.tooLarge', { max: maxMb }));
+      return;
+    }
+
+    if (mode === MODES.photo) {
+      // Nén ngay trên máy người dùng (xem src/utils/imageCompress.js):
+      // ảnh điện thoại 4–6 MB thường còn dưới 1 MB, tải nhanh hơn và album
+      // nhỏ hơn nhiều — quan trọng vì máy chủ là chiếc điện thoại trong nhà.
+      setCompressing(true);
+      const result = await compressImage(selectedFile);
+      setCompressing(false);
+
+      // Đăng lại đúng tệp đã nén; nếu không nén được thì dùng bản gốc.
+      setFile(result.file);
+      setOriginalFile(result.compressed ? result.originalFile : null);
+      setCompression(result.compressed ? result : null);
+      setNotice(
+        result.compressed
+          ? t('upload.compressed', {
+              before: formatBytes(result.originalBytes),
+              after: formatBytes(result.bytes),
+              percent: result.savedPercent,
+            })
+          : null
+      );
       return;
     }
 
@@ -194,13 +229,17 @@ export default function UploadPage() {
     if (!file || status === 'uploading') return;
     if (mode === MODES.video && duration && duration > limits.maxSeconds + 0.5) return;
 
+    // Ảnh: mặc định gửi bản đã nén; nếu người dùng bật "giữ ảnh gốc" thì gửi bản gốc.
+    const payloadFile =
+      mode === MODES.photo && keepOriginal && originalFile ? originalFile : file;
+
     setStatus('uploading');
     setError(null);
     try {
       const { post } = await postsApi.upload({
         // chế độ video: `video` là clip, `file` là ảnh bìa (tuỳ chọn)
         video: mode === MODES.video ? file : undefined,
-        file: mode === MODES.video ? posterFile || undefined : file,
+        file: mode === MODES.video ? posterFile || undefined : payloadFile,
         audio: audioFile || undefined,
         audioTitle: audioTitle.trim() || undefined,
         durationSeconds: mode === MODES.video ? duration ?? undefined : undefined,
@@ -253,6 +292,35 @@ export default function UploadPage() {
         </div>
 
         <form onSubmit={submit} className="p-4">
+          {/* Thông báo nén ảnh: cho người dùng biết vì sao ảnh gửi đi nhẹ hơn */}
+          {mode === MODES.photo && compressing && (
+            <p className="mb-3 flex items-center gap-2 rounded-lg bg-ink-bg px-3 py-2 text-xs text-ink-soft">
+              <SpinnerIcon className="h-3.5 w-3.5" />
+              {t('upload.compressing')}
+            </p>
+          )}
+
+          {mode === MODES.photo && compression && (
+            <div className="mb-3 flex items-center justify-between gap-3 rounded-lg bg-ink-bg px-3 py-2">
+              <p className="text-xs text-ink-soft">
+                {t('upload.compressed', {
+                  before: formatBytes(compression.originalBytes),
+                  after: formatBytes(compression.bytes),
+                  percent: compression.savedPercent,
+                })}
+              </p>
+              <label className="flex shrink-0 cursor-pointer items-center gap-1.5 text-xs font-semibold text-ink">
+                <input
+                  type="checkbox"
+                  checked={keepOriginal}
+                  onChange={(event) => setKeepOriginal(event.target.checked)}
+                  className="h-3.5 w-3.5 accent-ig-blue"
+                />
+                {t('upload.keepOriginal')}
+              </label>
+            </div>
+          )}
+
           {/* ------------------------- vùng chọn tệp ------------------------- */}
           <div
             onClick={() => !uploading && inputRef.current?.click()}

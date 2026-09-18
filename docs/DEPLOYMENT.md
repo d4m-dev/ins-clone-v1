@@ -42,6 +42,10 @@ cp .env.example .env
 openssl rand -hex 32   # → JWT_SECRET
 openssl rand -hex 32   # → ADMIN_SESSION_SECRET
 nano .env              # fill DB_PASSWORD, ADMIN_EMAIL, PUBLIC_BASE_URL, TELEGRAM_*, CLOUDFLARE_*
+# Trên ĐIỆN THOẠI (chạy thật) nên cài gọn — bỏ qua thư viện chỉ dùng để kiểm thử:
+npm install --omit=dev
+
+# Trên MÁY TÍNH (phát triển/kiểm thử) thì cài đủ, để `npm run smoke`/`boot:check` chạy được:
 npm install
 ```
 

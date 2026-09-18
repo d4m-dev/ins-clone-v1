@@ -91,7 +91,10 @@
     "videoReady": "Video {{duration}} is ready",
     "modePhoto": "Photo",
     "modeVideo": "Video (Reels)",
-    "pickVideo": "Tap to choose a video"
+    "pickVideo": "Tap to choose a video",
+    "compressing": "Compressing the photo…",
+    "compressed": "Photo compressed: {{before}} → {{after}} ({{percent}}% saved)",
+    "keepOriginal": "Keep original"
   },
   "profile": {
     "posts": "posts",
@@ -107,7 +110,8 @@
       "other": "This member has not shared a photo yet."
     },
     "loadFailed": "Could not load this profile.",
-    "member": "Family member"
+    "member": "Family member",
+    "inviteMember": "Invite family"
   },
   "explore": {
     "searchPlaceholder": "Search photos, captions, members…",
@@ -236,6 +240,35 @@
     "emailLocked": "Signing up with {{email}} (chosen by the inviter).",
     "invalidTitle": "This invitation cannot be used",
     "invalidBody": "The invitation link has expired or was already used. Ask an administrator for a new one — you can still sign up if allowed.",
-    "someone": "A family member"
+    "someone": "A family member",
+    "title": "Invite family",
+    "subtitle": "Send an invitation to the family album — administrators only.",
+    "emailLabel": "Invitee's e-mail",
+    "roleMember": "Member",
+    "roleAdmin": "Administrator",
+    "messageLabel": "Message (optional)",
+    "messagePlaceholder": "Join our family album!",
+    "send": "Send invitation",
+    "sending": "Sending…",
+    "expiryHint": "Each invitation works once and expires after a few days.",
+    "sentByEmail": "✅ Invitation e-mail sent to {{email}}.",
+    "emailUnavailable": "⚠️ E-mail could not be sent — copy the link below and share it via Zalo/Messenger.",
+    "copyLink": "Copy link",
+    "copied": "Copied",
+    "copyFailed": "Could not copy — please select and copy manually.",
+    "listTitle": "Sent invitations",
+    "pendingCount": "({{count}} pending)",
+    "empty": "No invitations yet.",
+    "expiresOn": "expires {{date}}",
+    "revoke": "Revoke invitation",
+    "loadFailed": "Could not load the invitation list.",
+    "failed": "Could not send the invitation.",
+    "revokeFailed": "Could not revoke the invitation.",
+    "status": {
+      "pending": "Pending",
+      "accepted": "Joined",
+      "revoked": "Revoked",
+      "expired": "Expired"
+    }
   }
 }

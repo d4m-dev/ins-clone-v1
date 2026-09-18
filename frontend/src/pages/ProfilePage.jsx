@@ -88,6 +88,15 @@ export default function ProfilePage() {
                   {t('profile.sharePhoto')}
                 </Link>
               )}
+              {/* Chỉ quản trị viên mới thấy nút mời người thân. */}
+              {currentUser?.role === 'admin' && (
+                <Link
+                  to={ROUTES.invite}
+                  className="ig-button-ghost !py-1.5 !px-3 text-xs"
+                >
+                  {t('profile.inviteMember')}
+                </Link>
+              )}
               {currentUser?.role === 'admin' && Boolean(ROUTES.admin) && (
                 <a
                   href={ROUTES.admin}

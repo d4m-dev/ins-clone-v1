@@ -15,23 +15,28 @@
     "start:api:watch": "node --watch server.js",
     "dev": "concurrently -k -p \"[{name}]\" -n \"DB,API-WATCH,API,TUNNEL\" -c \"magenta,yellow,green,cyan\" \"npm:start:db\" \"npm:watch:api\" \"npm:start:api\" \"npm:start:tunnel\"",
     "watch:api": "echo 'dev watch not used in prod mode - see nodemon'",
-    "db:init": "bash scripts/init-database.sh",
-    "db:backup": "bash scripts/backup-database.sh",
-    "tunnel:install": "bash scripts/setup-cloudflared.sh",
     "bootstrap:termux": "bash scripts/bootstrap-termux.sh",
+    "db:init": "bash scripts/init-database.sh",
+    "tunnel:install": "bash scripts/setup-cloudflared.sh",
     "admin:passwd": "node scripts/hash-password.js",
-    "health": "node -e \"require('./config/urls');console.log('urls config OK')\"",
+    "health": "bash scripts/health-check.sh",
+    "doctor": "node scripts/doctor.js",
+    "db:backup": "bash scripts/backup-database.sh",
+    "backup:uploads": "bash scripts/backup-uploads.sh",
+    "backup": "bash scripts/backup-all.sh",
     "smoke": "node ../tools/_smoke_api.js",
     "smoke:email": "node ../tools/_smoke_email.js",
+    "smoke:compress": "node ../tools/_smoke_compress.js",
     "boot:check": "bash ../tools/boot-check.sh",
     "mail:test": "node scripts/mail-test.js",
-    "doctor": "node scripts/doctor.js"
+    "check": "bash ../tools/check-all.sh"
   },
   "dependencies": {
     "@adminjs/express": "^6.1.1",
     "@adminjs/sequelize": "^4.1.1",
     "adminjs": "^7.8.17",
     "bcryptjs": "^2.4.3",
+    "concurrently": "^8.2.2",
     "connect-session-sequelize": "^7.1.7",
     "cors": "^2.8.6",
     "dotenv": "^16.6.1",
@@ -46,10 +51,9 @@
     "multer": "^2.4.0",
     "node-telegram-bot-api": "^0.66.0",
     "nodemailer": "^6.9.14",
-    "sequelize": "^6.37.8",
-    "sqlite3": "^6.0.1"
+    "sequelize": "^6.37.8"
   },
   "devDependencies": {
-    "concurrently": "^8.2.2"
+    "sqlite3": "^6.0.1"
   }
 }

@@ -86,10 +86,14 @@ familygram/
 │   ├── models/
 │   │   ├── index.js                      # associations, CASCADE rules, counter hooks
 │   │   ├── User.js  Post.js  Comment.js  Like.js
+│   │   └── Invite.js                     # 🎟️  lời mời có hạn (chỉ lưu SHA-256 của token)
 │   ├── controllers/
-│   │   ├── auth.controller.js  post.controller.js  comment.controller.js
+│   │   ├── auth.controller.js            # đăng ký (kèm lời mời) · quên/đặt lại mật khẩu
+│   │   ├── post.controller.js  comment.controller.js
+│   │   └── invite.controller.js          # tạo / thu hồi / tra cứu lời mời (admin)
 │   ├── routes/
 │   │   ├── index.js                      # mounts everything under urls.prefix.api
+│   │   ├── invite.routes.js              # /api/invites (admin trước, public /:token sau)
 │   │   └── auth · post · user · comment · reel · story .routes.js
 │   ├── middleware/
 │   │   ├── auth.middleware.js            # JWT verify · optional/required/admin guards
@@ -99,6 +103,8 @@ familygram/
 │   │   └── error.middleware.js           # 404 + normalised errors + orphan-file cleanup
 │   ├── services/
 │   │   ├── storage.service.js            # disk I/O, safe path resolution, stats
+│   │   ├── mailer.service.js             # 📧 SMTP Gmail — gửi nền, không bao giờ ném lỗi
+│   │   ├── email.templates.js            # 4 mẫu thư × 3 ngôn ngữ (ảnh mới · mời · mật khẩu · chào mừng)
 │   │   └── telegram.service.js           # bot đa ngôn ngữ: /start /id /status /lang
 │   ├── admin/
 │   │   ├── adminjs.config.js             # ⬅ AdminJS resources + custom CSS injection
@@ -109,11 +115,14 @@ familygram/
 │   ├── i18n/
 │   │   ├── messages.js                   # ⬅ chuỗi vi · en · zh cho bot Telegram + log
 │   │   └── index.js                      # t() và tPlural() (số ít / số nhiều)
-│   ├── utils/  (logger, ApiError, asyncHandler, locale, mp4Duration)
+│   ├── utils/  (logger, ApiError, asyncHandler, locale, mp4Duration, tokens)
 │   ├── scripts/
 │   │   ├── start-mariadb.sh  start-tunnel.sh     # the two concurrently partners
-│   │   ├── init-database.sh  backup-database.sh
+│   │   ├── init-database.sh  backup-database.sh  backup-uploads.sh  backup-all.sh
 │   │   ├── setup-cloudflared.sh  bootstrap-termux.sh
+│   │   ├── health-check.sh                       # hỏi thẳng /api/health
+│   │   ├── doctor.js                             # 🩺 khám máy chủ (chỉ đọc)
+│   │   ├── mail-test.js                          # thử SMTP thật
 │   │   └── hash-password.js                      # bcrypt hash for ADMIN_PASSWORD_HASH
 │   └── uploads/                          # 📁 photos live here (git-ignored)
 │       ├── posts/   avatars/
@@ -136,17 +145,26 @@ familygram/
 │       ├── hooks/useFeed.js              # pagination + optimistic like/comment/delete
 │       ├── components/                   # Layout · PostCard · CommentSection · StoriesBar · StoryViewer
 │       │                                 # PhotoViewer (zoom + slideshow) · InstallPrompt · LanguageSwitcher · Avatar · Icons · States
-│       ├── pages/                        # Feed · Reels · Explore · Upload · Profile · Post · Login · Register
+│       ├── pages/                        # Feed · Reels · Explore · Upload · Profile · Post
+│       │                                 # Login · Register · Quên mật khẩu · Đặt lại mật khẩu · Mời người thân
 │       ├── pwa/useInstallPrompt.js       # beforeinstallprompt + trạng thái mạng + đăng ký SW
 │       ├── public/manifest.webmanifest   # PWA: tên, icon, shortcut Đăng ảnh / Reels
 │       ├── public/sw.js                  # service worker (shell + cache-first assets)
 │       ├── public/icons/                 # icon 192/512 + maskable + apple-touch (sinh bằng Pillow)
-│       └── utils/format.js               # "3 h", "1.2k", …
+│       └── utils/
+│           ├── format.js                 # "3 h", "1.2k", …
+│           └── imageCompress.js          # 🖼️ nén ảnh trên trình duyệt trước khi gửi
 │
-├── tools/                                # dev-only preview harness (not deployed)
-│   ├── demo-api.js                       # dependency-free mock of the REST API
-│   └── demo-images/                      # sample family photos for the demo
-└── README.md · docs/DEPLOYMENT.md
+├── tools/                                # dev-only: xem trước + kiểm thử (không triển khai)
+│   ├── demo-api.js                       # mock REST API (không cần thư viện nào)
+│   ├── demo-images/                      # ảnh mẫu
+│   ├── check-all.sh                      # ⬅ MỘT lệnh chạy toàn bộ kiểm thử
+│   ├── boot-check.sh                     # bật server thật rồi dò 29 điểm
+│   ├── _smoke_api.js                     # 57 phép thử API
+│   ├── _smoke_email.js                   # 24 phép thử nội dung email
+│   └── _smoke_compress.js                # 23 phép thử bộ nén ảnh
+├── .github/workflows/ci.yml              # chạy toàn bộ kiểm thử mỗi lần push
+└── README.md · docs/DEPLOYMENT.md · docs/OPERATIONS.md · docs/ENV-SECRETS.md
 ```
 
 ---
@@ -370,6 +388,9 @@ locale: buildAdminLocale({
 | `npm run boot:check` | bật server thật rồi dò 29 điểm: `/admin/login` đăng nhập được (đúng thứ tự middleware!), custom CSS được nhúng, 5 bảng AdminJS, `tokenHash` bị ẩn, schema đủ cột | không |
 | `npm run mail:test` | đăng nhập SMTP thật + gửi 1 email thử tới `NOTIFY_EMAIL` | Gmail đã cấu hình |
 | `npm run doctor` | khám máy chủ: `.env` thiếu khoá nào, quyền tệp, dung lượng `uploads`, chỗ trống đĩa, pin, cổng 3306/4000, kết nối MariaDB — **chỉ đọc, không sửa** | chạy được trên Termux |
+| `npm run health` | gọi thẳng `/api/health` và in ra chỉ số thật (thêm `-- --public` để kiểm tra cả qua tunnel) | máy chủ đang chạy |
+| `npm run backup` | sao lưu **cả** database và thư mục ảnh (`db:backup` giữ 14 bản · `backup:uploads` giữ 7 bản) | MariaDB đang chạy |
+| `npm run check` | chạy **một lượt tất cả**: cú pháp 44 tệp, 3 bộ smoke, boot-check, build frontend, kiểm tra không lọt `.env` | máy tính (dev) |
 
 > `boot:check` được viết ra sau khi ba lỗi chỉ xuất hiện lúc **khởi động thật** (xem §12).
 > `node --check` không bắt được chúng vì nó chỉ đọc cú pháp, không nạp `require`/ESM.
@@ -470,6 +491,47 @@ Ba liên kết sâu cần có mặt trong cả hai đầu:
 
 ---
 
+## 5d. Nén ảnh trước khi gửi (tiết kiệm dung lượng)
+
+Ảnh điện thoại 3–7 MB được **thu nhỏ và nén ngay trên trình duyệt** trước khi upload
+(`frontend/src/utils/imageCompress.js`) — máy chủ không tốn CPU, và cũng không cần
+cài thư viện xử lý ảnh nào trên Termux.
+
+| Quy tắc | Vì sao |
+| --- | --- |
+| Cạnh dài tối đa **2048 px**, JPEG chất lượng **0.82** | đủ nét trên TV 4K, mà nhẹ hơn 5–8 lần |
+| **Không bao giờ phóng to** ảnh nhỏ | nén ảnh 800 px thành 2048 px chỉ làm nặng thêm |
+| **GIF động**: bỏ qua | vẽ qua canvas sẽ làm mất chuyển động |
+| **PNG**: giữ PNG (chỉ thu nhỏ) | giữ được nền trong suốt; ảnh chụp thường là JPEG nên vẫn nhẹ |
+| Ảnh **dưới 300 KB**: gửi thẳng | nén chẳng được bao nhiêu mà lại mất chất lượng |
+| Nén xong **nặng hơn** bản gốc → trả lại bản gốc | không bao giờ gửi đi tệp tệ hơn |
+| Lỗi bất kỳ → **gửi bản gốc** | nén là tính năng phụ, không được chặn việc đăng ảnh |
+
+Giao diện hiện ngay mức tiết kiệm — *“Ảnh đã nén: 4,2 MB → 760 KB (tiết kiệm 82%)”* — kèm
+công tắc **Giữ ảnh gốc** cho những ảnh cần nguyên chất lượng (ảnh scan, ảnh in).
+
+> Đo thực tế: 1.000 ảnh đã nén ≈ 0,6 GB, thay vì 4–6 GB nếu giữ nguyên ảnh máy ảnh.
+> Trên chiếc điện thoại vừa chạy máy chủ vừa lưu ảnh, đó là khác biệt giữa “dùng được
+> vài năm” và “đầy đĩa sau vài tháng”.
+
+---
+
+## 5e. Mời người thân trong app
+
+Trang **Mời người thân** (`/invite`, chỉ quản trị viên thấy nút ở trang Hồ sơ):
+
+1. Nhập email + chọn vai trò **Thành viên** hoặc **Quản trị viên** + lời nhắn (không bắt buộc).
+2. Backend tạo lời mời (token 32 byte, chỉ lưu SHA-256) và gửi email cho người được mời.
+3. Nếu Gmail lỗi (chưa cấu hình, hết hạn mật khẩu ứng dụng…), giao diện **vẫn hiện link mời**
+   kèm nút **Copy link** để bạn gửi qua Zalo/Messenger — không bao giờ bị kẹt.
+4. Danh sách bên dưới cho biết lời mời nào *đang chờ · đã tham gia · đã thu hồi*, kèm nút ✕ để thu hồi.
+
+Người được mời mở link → trang đăng ký tự kiểm tra lời mời, hiện *“💌 Bạn được mời vào album
+gia đình”*, điền sẵn email và **khoá ô email** (backend luôn lấy email + vai trò từ lời mời,
+không tin dữ liệu gửi lên). Mỗi lời mời dùng được **một lần**, hết hạn sau `INVITE_TTL_DAYS` ngày.
+
+---
+
 ## 6. Data model (Sequelize)
 
 ```
@@ -487,6 +549,24 @@ User 1───n Post 1───n Comment n───1 User
 * `Comment(postId, userId, body)` · `Like(postId, userId)` with a **unique index** on `(user_id, post_id)` → no double likes even under race conditions.
 
 Set `DB_SYNC=none` in `.env` once the schema is frozen (migrations instead of `alter`).
+
+---
+
+### Bảng `invites` — lời mời thành viên
+
+| Cột | Kiểu | Ghi chú |
+| --- | --- | --- |
+| `email` | STRING(191), unique-index | người được mời; lúc đăng ký backend dùng email **này**, không dùng email client gửi lên |
+| `token_hash` | CHAR(64) | **SHA-256** của token trong link — token gốc không bao giờ nằm trong database |
+| `role` | ENUM(member, admin) | vai trò sẽ được cấp khi người đó đăng ký |
+| `status` | ENUM(pending, accepted, revoked, expired) | suy ra từ mốc thời gian, không phải job nền |
+| `expires_at` / `accepted_at` / `revoked_at` / `accepted_by_user_id` | thời gian / FK | vòng đời lời mời |
+| `invited_by_id` | FK → users | ai đã mời (hiện bằng Association `inviter`) |
+
+`users` được bổ sung: `password_reset_hash`, `password_reset_expires_at` (đặt lại mật khẩu
+**một lần**, so sánh hằng thời gian) và `invited_by_id` (nhớ ai đã mời thành viên đó).
+Scope riêng `withToken` / `withResetToken` là nơi duy nhất đọc được hai cột nhạy cảm này —
+truy vấn thường không bao giờ trả chúng.
 
 ---
 
@@ -593,10 +673,12 @@ Success envelope: `{ "success": true, "data": { … } }` · Failure: `{ "success
 
 ```bash
 cd backend
-npm run boot:check     # bật thử server + 29 phép dò
-npm run smoke          # 57 phép thử API
+npm run doctor         # khám cấu hình + dung lượng + cổng
+npm run check          # toàn bộ: cú pháp, 3 bộ smoke, boot-check, build frontend
 npm run mail:test      # xác nhận Gmail gửi được
 ```
+
+Hoặc chỉ một mục: `npm run smoke` · `npm run smoke:email` · `npm run smoke:compress` · `npm run boot:check`.
 
 **Phone (Termux):**
 
@@ -624,6 +706,8 @@ vercel --prod            # or import the repo in the dashboard
 Then open the album, log in, and the **first account you register becomes the admin** (`FIRST_USER_IS_ADMIN=true`) — or create members from `/admin`.
 
 Full step-by-step (tunnel config, DNS, wake-lock, battery optimisation, backups, troubleshooting): **`docs/DEPLOYMENT.md`**.
+Vận hành hằng ngày trên điện thoại (log, sao lưu, cập nhật, xử lý sự cố, cron): **`docs/OPERATIONS.md`**.
+Khoá bí mật & cách xoay vòng: **`docs/ENV-SECRETS.md`**.
 
 ---
 
@@ -640,6 +724,16 @@ Full step-by-step (tunnel config, DNS, wake-lock, battery optimisation, backups,
 * **Không transcode trên điện thoại.** Điện thoại Android là máy chủ: đọc thời lượng bằng cách parse atom `mvhd` (thuần JS), trích ảnh bìa bằng `<canvas>` ở client, nhạc nền phát đồng bộ thay vì mux — CPU gần như không tăng, và **không cần ffmpeg**.
 * **Story là một truy vấn, không phải một bảng.** `GET /api/stories` lọc bài trong 24h rồi gom theo tác giả: không migration, không job dọn dẹp, không dữ liệu mồ côi.
 * **Service worker không cache `/uploads/`.** Album của gia đình sẽ lớn dần; giữ ảnh trong Cache Storage là cách nhanh nhất để đầy bộ nhớ điện thoại. Chỉ HTML/JS/CSS và dữ liệu feed mới được lưu.
+* **Nén ở trình duyệt, không nén ở máy chủ.** Máy chủ là chiếc điện thoại đang treo 24/7:
+  cài thư viện xử lý ảnh bằng C trên Termux rất dễ hỏng, còn `canvas` của trình duyệt đã
+  tối ưu sẵn và chạy trên máy người gửi. Máy chủ chỉ nhận tệp đã nhẹ đi 5–8 lần.
+* **Token một lần, DB chỉ giữ hash.** Cả lời mời và đặt lại mật khẩu đều dùng token 32 byte
+  ngẫu nhiên; database chỉ lưu SHA-256 và so sánh bằng `timingSafeEqual`. Nếu tệp dump
+  database bị lộ, kẻ tấn công **không** dùng được các liên kết đó.
+* **“Quên mật khẩu” luôn trả cùng một câu trả lời.** Khác đi sẽ biến trang đó thành công cụ
+  dò xem ai trong gia đình đã có tài khoản.
+* **Không bao giờ chặn người dùng vì dịch vụ phụ.** SMTP lỗi, Telegram lỗi, nén ảnh lỗi —
+  tất cả đều chỉ ghi log; ảnh vẫn được đăng và người dùng vẫn thấy đúng luồng.
 * **Ba cái bẫy chỉ lộ ra lúc khởi động thật** (đã sửa, và `npm run boot:check` canh chúng):
   1. `@adminjs/express` và `@adminjs/sequelize` là gói **ESM-only** (package.json chỉ khai báo
      điều kiện `import`) ⇒ `require('@adminjs/express')` ném `ERR_PACKAGE_PATH_NOT_EXPORTED`.

@@ -91,7 +91,10 @@
     "videoReady": "视频 {{duration}} 已就绪",
     "modePhoto": "照片",
     "modeVideo": "视频（Reels）",
-    "pickVideo": "点击选择视频"
+    "pickVideo": "点击选择视频",
+    "compressing": "正在压缩图片…",
+    "compressed": "图片已压缩：{{before}} → {{after}}（节省 {{percent}}%）",
+    "keepOriginal": "保留原图"
   },
   "profile": {
     "posts": "帖子",
@@ -107,7 +110,8 @@
       "other": "该成员还没有分享照片。"
     },
     "loadFailed": "无法加载此个人主页。",
-    "member": "家庭成员"
+    "member": "家庭成员",
+    "inviteMember": "邀请家人"
   },
   "explore": {
     "searchPlaceholder": "搜索照片、文字、成员…",
@@ -236,6 +240,35 @@
     "emailLocked": "将使用 {{email}} 注册（由邀请人指定）。",
     "invalidTitle": "该邀请无法使用",
     "invalidBody": "邀请链接已过期或已被使用。请联系管理员重新发送邀请——如允许，你仍可注册。",
-    "someone": "家庭成员"
+    "someone": "家庭成员",
+    "title": "邀请家人",
+    "subtitle": "向家庭相册发送邀请——仅管理员可操作。",
+    "emailLabel": "受邀人邮箱",
+    "roleMember": "成员",
+    "roleAdmin": "管理员",
+    "messageLabel": "留言（可选）",
+    "messagePlaceholder": "来我们的家庭相册吧！",
+    "send": "发送邀请",
+    "sending": "发送中…",
+    "expiryHint": "每个邀请只能使用一次，几天后自动过期。",
+    "sentByEmail": "✅ 邀请邮件已发送至 {{email}}。",
+    "emailUnavailable": "⚠️ 邮件发送失败——请复制下面的链接，通过微信/其他方式发给对方。",
+    "copyLink": "复制链接",
+    "copied": "已复制",
+    "copyFailed": "复制失败——请手动选择并复制。",
+    "listTitle": "已发送的邀请",
+    "pendingCount": "（{{count}} 个待接受）",
+    "empty": "暂无邀请。",
+    "expiresOn": "{{date}} 过期",
+    "revoke": "撤销邀请",
+    "loadFailed": "无法加载邀请列表。",
+    "failed": "无法发送邀请。",
+    "revokeFailed": "无法撤销邀请。",
+    "status": {
+      "pending": "待接受",
+      "accepted": "已加入",
+      "revoked": "已撤销",
+      "expired": "已过期"
+    }
   }
 }

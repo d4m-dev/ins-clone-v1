@@ -1,0 +1,121 @@
+# ============================================================================
+# .github/workflows/ci.yml — kiểm thử tự động mỗi lần push / pull request.
+# ----------------------------------------------------------------------------
+# Vì sao cần? Máy chủ thật là chiếc điện thoại trong nhà. Một lỗi chỉ lộ ra khi
+# khởi động (ví dụ: AdminJS mount sai thứ tự → không đăng nhập được) sẽ làm cả
+# nhà không vào được album cho tới khi bạn phát hiện. Workflow này bắt lỗi đó
+# trong ~2 phút, ngay trên GitHub, trước khi bạn `git pull` về điện thoại.
+#
+# Ba bộ kiểm thử chạy trên SQLite trong bộ nhớ — KHÔNG cần MariaDB, KHÔNG gửi
+# Telegram, KHÔNG gửi email thật.
+# ============================================================================
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch: # cho phép bấm chạy tay từ tab Actions
+
+# Huỷ lần chạy cũ khi có push mới trên cùng nhánh (tiết kiệm phút CI miễn phí).
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # --------------------------------------------------------------------------
+  backend:
+    name: Backend (API · email · khởi động · AdminJS)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+          cache-dependency-path: backend/package-lock.json
+
+      - name: Cài phụ thuộc
+        run: npm ci
+
+      - name: Kiểm tra cú pháp toàn bộ tệp JS
+        run: |
+          fail=0
+          while IFS= read -r file; do
+            node --check "$file" || { echo "::error file=$file::Lỗi cú pháp"; fail=1; }
+          done < <(find . -name '*.js' -not -path './node_modules/*')
+          exit "$fail"
+
+      - name: Bộ kiểm thử API (57 phép thử)
+        run: npm run smoke
+
+      - name: Nội dung email 3 ngôn ngữ (24 phép thử)
+        run: npm run smoke:email
+
+      - name: Nén ảnh phía trình duyệt (23 phép thử)
+        run: npm run smoke:compress
+
+      - name: Khởi động thật + AdminJS + custom CSS + schema (29 điểm)
+        run: npm run boot:check
+
+      - name: Không có bí mật nào bị git theo dõi
+        run: |
+          if git ls-files | grep -E '(^|/)\.env$|\.env\.bak|\.pem$'; then
+            echo "::error::Có tệp bí mật đang được git theo dõi!"
+            exit 1
+          fi
+          echo "✅ Không có .env / khoá riêng tư nào trong repo."
+
+  # --------------------------------------------------------------------------
+  frontend:
+    name: Frontend (build Vercel)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Cài phụ thuộc
+        run: npm ci
+
+      - name: Build như trên Vercel
+        run: npm run build
+
+      - name: i18n — ba ngôn ngữ phải có đúng cùng số khoá
+        run: |
+          node -e "
+            const flat = (o, p = '') => Object.entries(o).flatMap(([k, v]) =>
+              v && typeof v === 'object' ? flat(v, p + k + '.') : [p + k]);
+            const load = (l) => flat(require('./src/i18n/locales/' + l + '.json')).sort();
+            const vi = load('vi'), en = load('en'), zh = load('zh');
+            const missingEn = vi.filter((k) => !en.includes(k));
+            const missingZh = vi.filter((k) => !zh.includes(k));
+            console.log('vi', vi.length, '· en', en.length, '· zh', zh.length);
+            if (missingEn.length || missingZh.length) {
+              console.error('Thiếu khoá — en:', missingEn, 'zh:', missingZh);
+              process.exit(1);
+            }
+            console.log('✅ Ba ngôn ngữ khớp nhau hoàn toàn.');
+          "
+
+      - name: Không hardcode URL trong components
+        run: |
+          # Mọi URL phải nằm ở config/urls.js. Bắt các domain lọt vào mã giao diện.
+          if grep -rnE "https?://[a-z0-9.-]+\.(click|vercel\.app)" src/ | grep -v '^src/i18n/locales/'; then
+            echo "::error::Phát hiện URL hardcode trong src/ — hãy đưa vào config/urls.js"
+            exit 1
+          fi
+          echo "✅ Không có URL hardcode trong mã giao diện."

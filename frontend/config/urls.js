@@ -127,6 +127,8 @@ export const ROUTES = {
    */
   forgotPassword: '/forgot-password',
   resetPassword: '/reset-password',
+  /** Mời người thân — chỉ quản trị viên (xem InvitePage.jsx). */
+  invite: '/invite',
   profile: (username) => `/u/${username}`,
   post: (id) => `/p/${id}`,
   /**

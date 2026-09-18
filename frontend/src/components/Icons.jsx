@@ -175,3 +175,19 @@ export const InstallIcon = ({ className = 'w-6 h-6' }) => (
     <path d="M12 8v6m0 0 2.5-2.5M12 14l-2.5-2.5" strokeLinecap="round" strokeLinejoin="round" />
   </svg>
 );
+
+/* Hai icon cho trang "Mời người thân" (giữ cùng phong cách: nét 1.8, không
+   phụ thuộc thư viện ngoài). */
+export const MailIcon = ({ className = 'w-6 h-6' }) => (
+  <svg {...base} className={className} fill="none" stroke="currentColor" strokeWidth={1.8}>
+    <rect x="2.5" y="4.5" width="19" height="15" rx="3" />
+    <path d="m3.5 7 8.5 6 8.5-6" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+);
+
+export const CopyIcon = ({ className = 'w-6 h-6' }) => (
+  <svg {...base} className={className} fill="none" stroke="currentColor" strokeWidth={1.8}>
+    <rect x="9" y="9" width="11" height="11" rx="2.5" />
+    <path d="M15 6.5V6a2.5 2.5 0 0 0-2.5-2.5H6A2.5 2.5 0 0 0 3.5 6v6.5A2.5 2.5 0 0 0 6 15h.5" strokeLinecap="round" />
+  </svg>
+);

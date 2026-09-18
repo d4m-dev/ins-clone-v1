@@ -132,6 +132,12 @@ export const authApi = {
 export const invitesApi = {
   /** Công khai: kiểm tra link mời trước khi hiện form đăng ký. */
   check: (token, options) => apiGet(ENDPOINTS.invites.check(token), options),
+
+  /* ------------------------- dành cho quản trị viên ---------------------- */
+  create: (payload) => apiPost(ENDPOINTS.invites.create, payload),
+  list: () => apiGet(ENDPOINTS.invites.list),
+  stats: () => apiGet(ENDPOINTS.invites.stats),
+  revoke: (id) => apiDelete(ENDPOINTS.invites.revoke(id)),
 };
 
 export const postsApi = {
