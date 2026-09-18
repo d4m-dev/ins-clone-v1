@@ -18,8 +18,8 @@ export const HomeIcon = ({ filled = false, className = 'w-6 h-6' }) => (
 );
 
 export const SearchIcon = ({ filled = false, className = 'w-6 h-6' }) => (
-  <svg {...base} className={className} fill="none" stroke="currentColor" strokeWidth={filled ? 2.4 : 1.8}>
-    <circle cx="11" cy="11" r="7" />
+  <svg {...base} className={className} fill="none" stroke="currentColor" strokeWidth={filled ? 2.6 : 1.8}>
+    <circle cx="11" cy="11" r="7" fill={filled ? 'currentColor' : 'none'} />
     <path d="m20 20-3.6-3.6" strokeLinecap="round" />
   </svg>
 );
@@ -90,11 +90,15 @@ export const CameraIcon = ({ className = 'w-6 h-6' }) => (
   </svg>
 );
 
-export const ReelsIcon = ({ className = 'w-6 h-6' }) => (
-  <svg {...base} className={className} fill="none" stroke="currentColor" strokeWidth={1.8}>
-    <rect x="3" y="3" width="18" height="18" rx="5" />
-    <path d="M3.5 8.5h17M8.5 3.5 11 8.5M15 3.5l2.5 5" />
-    <path d="m11 12.5 4 2.3-4 2.3v-4.6Z" fill="currentColor" stroke="none" />
+export const ReelsIcon = ({ filled = false, className = 'w-6 h-6' }) => (
+  <svg {...base} className={className} fill="none" stroke="currentColor" strokeWidth={filled ? 0 : 1.8}>
+    <rect x="3" y="3" width="18" height="18" rx="5" fill={filled ? 'currentColor' : 'none'} />
+    <path
+      d="M3.5 8.5h17M8.5 3.5 11 8.5M15 3.5l2.5 5"
+      stroke={filled ? '#fff' : 'currentColor'}
+      strokeWidth={1.8}
+    />
+    <path d="m11 12.5 4 2.3-4 2.3v-4.6Z" fill={filled ? '#fff' : 'currentColor'} stroke="none" />
   </svg>
 );
 

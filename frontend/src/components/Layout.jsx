@@ -1,8 +1,12 @@
 /**
  * src/components/Layout.jsx
  * ---------------------------------------------------------------------------
- * Khung Instagram: sidebar desktop (245px) · thanh trên + tab dưới (mobile)
- * · cột nội dung 470px. Mọi nhãn đều lấy từ i18n (mặc định tiếng Việt).
+ * Khung Instagram: sidebar desktop (245px) · thanh trên + thanh dưới (mọi khổ
+ * màn hình dưới `lg`) · cột nội dung 470px. Mọi nhãn đều lấy từ i18n.
+ *
+ * Thanh dưới nay nằm ở components/BottomNav.jsx theo đúng thứ tự Instagram mới
+ * (Trang chủ · Thước phim · Tin nhắn · Tìm kiếm · Trang cá nhân), còn nút Đăng (+)
+ * chuyển lên thanh trên — cùng bước đổi mà Instagram đã làm từ 10/2025.
  * ---------------------------------------------------------------------------
  */
 
@@ -17,12 +21,12 @@ import {
   SearchIcon,
   PlusSquareIcon,
   ReelsIcon,
-  HeartIcon,
   LogoutIcon,
   CameraIcon,
   MessengerIcon,
 } from './Icons.jsx';
 import InstallPrompt from './InstallPrompt.jsx';
+import BottomNav from './BottomNav.jsx';
 import useChatBadge from '../hooks/useChatBadge.js';
 
 /** Huy hiệu đỏ cho biểu tượng Tin nhắn. */
@@ -38,10 +42,9 @@ function UnreadBadge({ count }) {
 function useNavItems() {
   const { t } = useI18n();
   const { totalUnread, pendingRequests } = useChatBadge();
+  // Cùng thứ tự với thanh dưới (Instagram mới): Trang chủ · Reels · Tin nhắn · Tìm kiếm
   return [
     { to: ROUTES.feed, label: t('nav.home'), Icon: HomeIcon },
-    { to: ROUTES.explore, label: t('nav.search'), Icon: SearchIcon },
-    { to: ROUTES.upload, label: t('nav.create'), Icon: PlusSquareIcon },
     { to: ROUTES.reels, label: t('nav.reels'), Icon: ReelsIcon },
     {
       to: ROUTES.messages,
@@ -49,6 +52,7 @@ function useNavItems() {
       Icon: MessengerIcon,
       badge: totalUnread + pendingRequests,
     },
+    { to: ROUTES.explore, label: t('nav.search'), Icon: SearchIcon },
   ];
 }
 
@@ -120,57 +124,20 @@ function Sidebar({ user, onLogout }) {
 
 function TopBar() {
   const { t } = useI18n();
-  const { totalUnread, pendingRequests } = useChatBadge();
 
   return (
-    <header className="md:hidden sticky top-0 z-30 flex h-12 items-center justify-between border-b border-ink-line bg-white px-4">
-      <Link to={ROUTES.feed} className="text-xl font-semibold ig-gradient-text">
-        {t('app.name')}
-      </Link>
+    <header className="lg:hidden sticky top-0 z-30 flex h-12 items-center justify-between border-b border-ink-line bg-white px-4">
       <div className="flex items-center gap-4">
-        <Link to={ROUTES.explore} aria-label={t('nav.search')}>
-          <SearchIcon className="w-6 h-6" />
-        </Link>
-        <Link to={ROUTES.upload} aria-label={t('nav.create')}>
+        {/* Instagram mới: nút Đăng (+) nằm ở góc trên-trái, không còn ở thanh dưới */}
+        <Link to={ROUTES.upload} aria-label={t('nav.create')} title={t('nav.create')}>
           <PlusSquareIcon className="w-6 h-6" />
         </Link>
-        <Link to={ROUTES.messages} aria-label={t('nav.messages')} className="relative">
-          <MessengerIcon className="w-6 h-6" />
-          <UnreadBadge count={totalUnread + pendingRequests} />
+        <Link to={ROUTES.feed} className="text-xl font-semibold ig-gradient-text">
+          {t('app.name')}
         </Link>
-        <LanguageSwitcher variant="topbar" />
       </div>
+      <LanguageSwitcher variant="topbar" />
     </header>
-  );
-}
-
-function BottomNav({ user }) {
-  const { t } = useI18n();
-  const { totalUnread, pendingRequests } = useChatBadge();
-  const tabs = [
-    { to: ROUTES.feed, Icon: HomeIcon, label: t('nav.home') },
-    { to: ROUTES.explore, Icon: SearchIcon, label: t('nav.search') },
-    { to: ROUTES.reels, Icon: ReelsIcon, label: t('nav.reels') },
-    { to: ROUTES.upload, Icon: PlusSquareIcon, label: t('nav.create') },
-    { to: ROUTES.messages, Icon: MessengerIcon, label: t('nav.messages'), badge: totalUnread + pendingRequests },
-  ];
-
-  return (
-    <nav className="md:hidden fixed bottom-0 left-0 right-0 z-30 flex h-12 items-center justify-around border-t border-ink-line bg-white">
-      {tabs.map(({ to, Icon, label, badge }) => (
-        <NavLink key={label} to={to} aria-label={label} className="relative p-2">
-          {({ isActive }) => (
-            <>
-              <Icon filled={isActive} className="w-6 h-6" />
-              <UnreadBadge count={badge} />
-            </>
-          )}
-        </NavLink>
-      ))}
-      <NavLink to={ROUTES.profile(user?.username || '')} aria-label={t('nav.profile')} className="p-2">
-        <Avatar src={user?.avatarUrl} name={user?.fullName} size="xs" />
-      </NavLink>
-    </nav>
   );
 }
 
@@ -195,7 +162,7 @@ export default function Layout({ children, hideChrome = false }) {
       <Sidebar user={user} onLogout={handleLogout} />
       <TopBar />
 
-      <main className="lg:pl-[245px] pb-14 md:pb-8">
+      <main className="lg:pl-[245px] pb-16 lg:pb-8">
         <div
           className={`mx-auto w-full pt-0 ${isMessages ? 'max-w-shell px-0 md:pt-4' : 'max-w-feed md:pt-6'}`}
           key={location.pathname}
@@ -204,7 +171,7 @@ export default function Layout({ children, hideChrome = false }) {
         </div>
         <footer
           className={`py-8 text-center text-[11px] uppercase tracking-wide text-ink-soft ${
-            isMessages ? 'hidden' : 'hidden md:block'
+            isMessages ? 'hidden' : 'hidden lg:block'
           }`}
         >
           <span className="inline-flex items-center gap-1">
@@ -215,7 +182,7 @@ export default function Layout({ children, hideChrome = false }) {
         <InstallPrompt />
       </main>
 
-      <BottomNav user={user} />
+      <BottomNav />
     </div>
   );
 }

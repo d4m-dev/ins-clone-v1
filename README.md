@@ -826,6 +826,11 @@ Khoá bí mật & cách xoay vòng: **`docs/ENV-SECRETS.md`**.
   `pixgram`, cookie `pixgram.admin`, khoá `localStorage` `pixgram.*`, tunnel `pixgram-api`.
   Máy chủ đang chạy có sẵn `npm run db:rename` (kèm `--dry-run` và đường lùi) để chuyển
   dữ liệu cũ sang tên mới **mà không mất gì**.
+* **Thanh điều hướng theo Instagram bản mới (10/2025).** Thứ tự tab là *Trang chủ ·
+  Thước phim · Tin nhắn (chính giữa) · Tìm kiếm · Trang cá nhân*, biểu tượng **đặc** ở tab
+  đang mở; nút **Đăng (+)** rời thanh dưới lên thanh trên — đúng bước Instagram đã đổi.
+  Nav hiện ở mọi khổ màn hình dưới `lg` (từ `lg` trở lên là sidebar); trước đây khoảng
+  768–1023 px không có thanh điều hướng nào.
 * **Counters over aggregates.** The feed never runs `COUNT(*)` per card — likes/comments are denormalised and kept in sync by hooks with atomic SQL.
 * **Optimistic UI.** Like / comment / delete update instantly and roll back on failure — essential on a mobile connection.
 * **Two URL layers in the frontend.** `config/paths.js` holds the prefixes, `config/urls.js` composes the endpoints; components only ever import from the latter.
