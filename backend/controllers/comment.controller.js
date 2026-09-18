@@ -2,7 +2,7 @@
 
 /**
  * controllers/comment.controller.js
- * Comments are public to logged-in family members; only the author (or an
+ * Comments are public to any logged-in member; only the author (or an
  * admin) may delete one.
  */
 

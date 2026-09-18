@@ -1,7 +1,7 @@
 'use strict';
 
 /**
- * models/User.js — the family member.
+ * models/User.js — a member of the community.
  * Passwords are ALWAYS stored as a bcrypt hash; the plain value never touches
  * the database and is never returned by the API (`defaultScope`).
  */

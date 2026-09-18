@@ -1,5 +1,5 @@
 /**
- * models/Invite.js — lời mời tham gia gia đình.
+ * models/Invite.js — lời mời tham gia cộng đồng.
  * ---------------------------------------------------------------------------
  * Chỉ lưu HASH của token. Token gốc chỉ tồn tại trong email và trên máy người
  * nhận — mất database cũng không chiếm được tài khoản.

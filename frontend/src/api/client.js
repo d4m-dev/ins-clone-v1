@@ -15,7 +15,7 @@ import { ENDPOINTS } from '../../config/urls.js';
 // Dịch thông báo lỗi theo ngôn ngữ đang chọn (module thuần, không cần React).
 import { getLocale, translate } from '../i18n/translate.js';
 
-const TOKEN_KEY = 'familygram.token';
+const TOKEN_KEY = 'pixgram.token';
 /** Ngôn ngữ gửi kèm mỗi request để backend trả lỗi/validation cùng ngôn ngữ. */
 const localeHeader = () => ({ 'Accept-Language': getLocale() });
 
@@ -209,6 +209,89 @@ export const commentsApi = {
   remove: (id) => apiDelete(ENDPOINTS.comments.byId(id)),
 };
 
+/**
+ * Chat 1-1 (kiểu Instagram Direct).
+ *
+ * Ghi chú kỹ thuật:
+ *   • `sendFile` / `sendFormToUser` dùng FormData với TÊN TRƯỜNG "attachment" —
+ *     phải khớp multer ở backend (chatAttachmentUploader). Không tự đặt Content-Type.
+ *   • `openStream` KHÔNG dùng EventSource vì EventSource không gửi được header
+ *     Authorization; nó nối bằng fetch và đọc luồng SSE thủ công. Nhờ vậy token
+ *     không bao giờ lọt vào URL (và vào access log của Cloudflare).
+ */
+export const chatApi = {
+  conversations: ({ box = 'inbox', limit = 50 } = {}, options) =>
+    apiGet(`${ENDPOINTS.chat.conversations}?box=${box}&limit=${limit}`, options),
+
+  openConversation: (userId) => apiPost(ENDPOINTS.chat.conversations, { userId }),
+  conversation: (id, options) => apiGet(ENDPOINTS.chat.conversation(id), options),
+  hideConversation: (id) => apiDelete(ENDPOINTS.chat.conversation(id)),
+
+  /** `before` = id tin cũ nhất đang có → tải thêm tin cũ hơn khi cuộn lên. */
+  messages: (id, { before, limit } = {}, options) => {
+    const params = new URLSearchParams();
+    if (before) params.set('before', String(before));
+    if (limit) params.set('limit', String(limit));
+    const query = params.toString();
+    return apiGet(`${ENDPOINTS.chat.messages(id)}${query ? `?${query}` : ''}`, options);
+  },
+
+  send: (id, { body, sharedPostId } = {}) =>
+    apiPost(ENDPOINTS.chat.messages(id), { body, sharedPostId }),
+
+  /** Gửi kèm tệp vào hội thoại đã biết id. */
+  sendFile: (id, { file, body, sharedPostId } = {}) => {
+    const form = new FormData();
+    if (file) form.append('attachment', file);
+    if (body) form.append('body', body);
+    if (sharedPostId != null) form.append('sharedPostId', String(sharedPostId));
+    return apiPostForm(ENDPOINTS.chat.messages(id), form);
+  },
+
+  /** Gửi nhanh khi chưa biết id hội thoại (nút chia sẻ bài viết). */
+  sendToUser: ({ userId, body, sharedPostId }) =>
+    apiPost(ENDPOINTS.chat.send, { toUserId: userId, body, sharedPostId }),
+
+  sendFormToUser: ({ userId, file, body, sharedPostId }) => {
+    const form = new FormData();
+    form.append('toUserId', String(userId));
+    if (file) form.append('attachment', file);
+    if (body) form.append('body', body);
+    if (sharedPostId != null) form.append('sharedPostId', String(sharedPostId));
+    return apiPostForm(ENDPOINTS.chat.send, form);
+  },
+
+  markRead: (id) => apiPost(ENDPOINTS.chat.read(id), {}),
+  /** Báo "đang nhập…" (nơi gọi tự giới hạn tần suất, xem ChatComposer). */
+  typing: (id, typing = true) => apiPost(ENDPOINTS.chat.typing(id), { typing }),
+  accept: (id) => apiPost(ENDPOINTS.chat.accept(id), {}),
+  decline: (id) => apiPost(ENDPOINTS.chat.decline(id), {}),
+  unsend: (messageId) => apiDelete(ENDPOINTS.chat.message(messageId)),
+
+  summary: (options) => apiGet(ENDPOINTS.chat.summary, options),
+  people: (query, options) => {
+    const params = new URLSearchParams();
+    if (query) params.set('q', query);
+    const suffix = params.toString();
+    return apiGet(`${ENDPOINTS.chat.people}${suffix ? `?${suffix}` : ''}`, options);
+  },
+
+  /**
+   * Mở kênh thời gian thực (SSE). Trả về Response để nơi gọi đọc `body`.
+   * Ném lỗi nếu không có token hoặc mạng hỏng — nơi gọi tự chuyển sang hỏi định kỳ.
+   */
+  openStream: async ({ signal } = {}) => {
+    const token = tokenStorage.get();
+    if (!token) throw new ApiError(translate(getLocale(), 'error.sessionExpired'), { status: 401 });
+    return fetch(ENDPOINTS.chat.stream, {
+      method: 'GET',
+      headers: { Authorization: `Bearer ${token}`, Accept: 'text/event-stream', ...localeHeader() },
+      signal,
+      credentials: 'omit',
+    });
+  },
+};
+
 export default {
   ApiError,
   tokenStorage,
@@ -223,4 +306,5 @@ export default {
   storiesApi,
   usersApi,
   commentsApi,
+  chatApi,
 };

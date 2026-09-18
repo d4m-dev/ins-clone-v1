@@ -73,13 +73,13 @@ const env = {
   db: {
     host: optional('DB_HOST', '127.0.0.1'),
     port: int('DB_PORT', 3306),
-    name: required('DB_NAME', 'familygram'),
-    user: required('DB_USER', 'familygram'),
+    name: required('DB_NAME', 'pixgram'),
+    user: required('DB_USER', 'pixgram'),
     password: optional('DB_PASSWORD'),
     dialect: optional('DB_DIALECT', 'mariadb'),
     /** Chỉ dùng khi DB_DIALECT=sqlite (bộ test tự động chạy không cần MariaDB). */
     storage: optional('DB_STORAGE', ''),
-    /** Múi giờ của gia đình: Việt Nam +07:00 — đổi trong .env nếu ở nơi khác. */
+    /** Múi giờ của máy chủ: Việt Nam +07:00 — đổi trong .env nếu ở nơi khác. */
     timezone: optional('DB_TIMEZONE', '+07:00'),
     logging: bool('DB_LOGGING', false),
     poolMax: int('DB_POOL_MAX', 10),
@@ -92,13 +92,18 @@ const env = {
     jwtExpiresIn: optional('JWT_EXPIRES_IN', '30d'),
     saltRounds: int('BCRYPT_SALT_ROUNDS', 10),
     firstUserIsAdmin: bool('FIRST_USER_IS_ADMIN', true),
+    /**
+     * Cổng đăng ký. `true` = ứng dụng CÔNG KHAI: ai cũng tự tạo được tài khoản.
+     * Đặt `false` nếu muốn quay lại chế độ chỉ-vào-bằng-lời-mời (invite).
+     */
+    publicRegistration: bool('PUBLIC_REGISTRATION', true),
   },
 
   admin: {
     email: required('ADMIN_EMAIL', 'admin@localhost'),
     passwordHash: optional('ADMIN_PASSWORD_HASH'),
     passwordFallback: optional('ADMIN_PASSWORD'),
-    cookieName: optional('ADMIN_COOKIE_NAME', 'familygram.admin'),
+    cookieName: optional('ADMIN_COOKIE_NAME', 'pixgram.admin'),
     sessionSecret: required(
       'ADMIN_SESSION_SECRET',
       isProd ? undefined : 'dev-only-insecure-session-secret'
@@ -130,6 +135,15 @@ const env = {
       'video/quicktime',
     ]),
 
+    /**
+     * Giám sát dung lượng — máy chủ là một chiếc điện thoại: đầy đĩa là sập.
+     * `warnTotalMb` = tổng dung lượng uploads (MB) từ đó bắt đầu nhắc quản trị
+     * viên; `warnFreePercent` = còn ít hơn % đĩa trống thì cảnh báo "nguy hiểm".
+     * Đặt 0 để tắt từng loại cảnh báo.
+     */
+    warnTotalMb: int('STORAGE_WARN_TOTAL_MB', 2000),
+    warnFreePercent: int('DISK_FREE_WARN_PERCENT', 10),
+
     /* --- Nhạc nền (không mux, phát đồng bộ ở client) --- */
     maxAudioSizeMb: int('MAX_AUDIO_SIZE_MB', 10),
     allowedAudioMimeTypes: list('ALLOWED_AUDIO_MIME_TYPES', [
@@ -146,6 +160,31 @@ const env = {
     max: int('RATE_LIMIT_MAX', 300),
     authMax: int('AUTH_RATE_LIMIT_MAX', 20),
     uploadMax: int('UPLOAD_RATE_LIMIT_MAX', 30),
+    chatMax: int('CHAT_RATE_LIMIT_MAX', 120),
+  },
+
+  /**
+   * Chat 1-1 (kiểu Instagram Direct).
+   */
+  chat: {
+    /** Độ dài tối đa một tin nhắn chữ. */
+    maxMessageLength: int('CHAT_MAX_MESSAGE_LENGTH', 1000),
+    /** Số tin nhắn mỗi lần tải; cuộn lên để tải thêm tin cũ hơn. */
+    pageSize: int('CHAT_PAGE_SIZE', 30),
+    /** Ảnh gửi trong tin nhắn được nén ở trình duyệt trước khi upload. */
+    maxAttachmentSizeMb: int('CHAT_MAX_ATTACHMENT_MB', 10),
+    /**
+     * Tin nhắn chờ: người chưa từng trò chuyện mà nhắn trước thì tin nằm ở
+     * mục "Tin nhắn chờ", người nhận bấm Đồng ý mới vào hộp thư chính.
+     */
+    messageRequests: bool('CHAT_MESSAGE_REQUESTS', true),
+    /**
+     * Dự phòng khi SSE bị chặn (một số nhà mạng/proxy cắt kết nối dài):
+     * giao diện tự hỏi tin mới theo nhịp này. 0 = tắt.
+     */
+    pollIntervalMs: int('CHAT_POLL_INTERVAL_MS', 5000),
+    /** Giữ kết nối SSE sống bằng heartbeat (chống proxy timeout). */
+    sseHeartbeatMs: int('CHAT_SSE_HEARTBEAT_MS', 25000),
   },
 
   telegram: {
@@ -173,8 +212,8 @@ const env = {
     enabled: bool('EMAIL_ENABLED', false),
     from: optional('SENDER_EMAIL', ''),
     password: optional('SENDER_PASSWORD', ''),
-    /** Tên hiển thị trong hộp thư đến: "FamilyGram <andubai5555@gmail.com>". */
-    fromName: optional('MAIL_FROM_NAME', 'FamilyGram'),
+    /** Tên hiển thị trong hộp thư đến: "PixGram <andubai5555@gmail.com>". */
+    fromName: optional('MAIL_FROM_NAME', 'PixGram'),
     /** Hộp thư nhận thông báo (mặc định = địa chỉ gửi). */
     to: optional('NOTIFY_EMAIL', '') || optional('SENDER_EMAIL', ''),
     /** Tài khoản Google dùng cho tính năng lịch (nếu bật). */

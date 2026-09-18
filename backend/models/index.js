@@ -16,6 +16,8 @@ const Post = require('./Post')(sequelize);
 const Comment = require('./Comment')(sequelize);
 const Like = require('./Like')(sequelize);
 const Invite = require('./Invite')(sequelize);
+const Conversation = require('./Conversation')(sequelize);
+const Message = require('./Message')(sequelize);
 
 // --- associations ----------------------------------------------------------
 User.hasMany(Post, { foreignKey: 'userId', as: 'posts', onDelete: 'CASCADE', hooks: true });
@@ -35,6 +37,19 @@ Like.belongsTo(User, { foreignKey: 'userId', as: 'author' });
 User.hasMany(Invite, { foreignKey: 'invitedById', as: 'invitesSent', onDelete: 'CASCADE', hooks: true });
 Invite.belongsTo(User, { foreignKey: 'invitedById', as: 'inviter' });
 Invite.belongsTo(User, { foreignKey: 'acceptedByUserId', as: 'acceptedBy' });
+
+// --- chat (nhắn tin 1-1) ---------------------------------------------------
+// Mỗi cặp người dùng có đúng một hội thoại; xoá người dùng thì hội thoại và
+// toàn bộ tin nhắn của họ cũng biến mất (CASCADE) — không để dữ liệu mồ côi.
+Conversation.belongsTo(User, { foreignKey: 'userOneId', as: 'userOne' });
+Conversation.belongsTo(User, { foreignKey: 'userTwoId', as: 'userTwo' });
+Conversation.belongsTo(User, { foreignKey: 'requestedById', as: 'requestedBy' });
+User.hasMany(Conversation, { foreignKey: 'userOneId', as: 'conversationsAsOne', onDelete: 'CASCADE', hooks: true });
+User.hasMany(Conversation, { foreignKey: 'userTwoId', as: 'conversationsAsTwo', onDelete: 'CASCADE', hooks: true });
+
+Conversation.hasMany(Message, { foreignKey: 'conversationId', as: 'messages', onDelete: 'CASCADE', hooks: true });
+Message.belongsTo(Conversation, { foreignKey: 'conversationId', as: 'conversation' });
+Message.belongsTo(User, { foreignKey: 'senderId', as: 'sender' });
 
 // --- counter maintenance ---------------------------------------------------
 // Counters are updated with atomic SQL so parallel likes can never drift.
@@ -82,4 +97,6 @@ module.exports = {
   Invite,
   refreshCounters,
   syncSchema,
+  Conversation,
+  Message,
 };

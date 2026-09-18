@@ -49,7 +49,7 @@ UPLOAD_DIR="$TMP/uploads" \
 PUBLIC_BASE_URL="http://127.0.0.1:$PORT" \
 JWT_SECRET=bootcheck-secret-0123456789abcdefgh \
 ADMIN_SESSION_SECRET=bootcheck-admin-0123456789abcdefg \
-ADMIN_EMAIL=admin@family.local ADMIN_PASSWORD='FamilyGram@2026' \
+ADMIN_EMAIL=admin@congdong.local ADMIN_PASSWORD='PixGram@2026' \
 TELEGRAM_ENABLED=false EMAIL_ENABLED=false AI_ENABLED=false \
 PORT="$PORT" \
 setsid node server.js >"$LOG" 2>&1 &
@@ -96,7 +96,7 @@ line "API cần quyền"
 # --- 3. đăng nhập AdminJS thật ----------------------------------------------
 line "Đăng nhập bảng quản trị (kiểm tra đúng thứ tự middleware)"
 COOKIE="$TMP/cookie.txt"
-LOGIN=$(code -c "$COOKIE" -X POST -d 'email=admin@family.local' -d 'password=FamilyGram@2026' \
+LOGIN=$(code -c "$COOKIE" -X POST -d 'email=admin@congdong.local' -d 'password=PixGram@2026' \
   "http://127.0.0.1:$PORT/admin/login")
 [ "$LOGIN" = 302 ] && ok "POST /admin/login → 302 (đăng nhập thành công)" || bad "POST /admin/login → $LOGIN"
 [ "$(code -b "$COOKIE" "http://127.0.0.1:$PORT/admin")" = 200 ] && ok "GET /admin sau đăng nhập → 200" || bad "GET /admin sau đăng nhập"

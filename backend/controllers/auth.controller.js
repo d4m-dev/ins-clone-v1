@@ -65,6 +65,14 @@ const register = asyncHandler(async (req, res) => {
   });
 
   // Đánh dấu lời mời đã dùng (một lần duy nhất).
+  /**
+   * ỨNG DỤNG CÔNG KHAI: ai cũng tự tạo được tài khoản (PUBLIC_REGISTRATION=true,
+   * mặc định). Đặt false nếu muốn quay lại chế độ chỉ-vào-bằng-lời-mời.
+   */
+  if (!invite && !env.auth.publicRegistration) {
+    throw ApiError.forbidden(t(locale, 'api.inviteRequired'));
+  }
+
   if (invite) {
     invite.acceptedAt = new Date();
     invite.acceptedByUserId = user.id;
@@ -209,7 +217,7 @@ const publicConfig = asyncHandler(async (_req, res) => {
   res.json({
     success: true,
     data: {
-      appName: 'FamilyGram',
+      appName: 'PixGram',
       /** Ảnh — dùng cho ô chọn ảnh trong trang đăng bài. */
       maxUploadMb: env.uploads.maxSizeMb,
       allowedMimeTypes: env.uploads.allowedMimeTypes,
@@ -224,6 +232,14 @@ const publicConfig = asyncHandler(async (_req, res) => {
       apiBaseUrl: urls.api.base,
       defaultLocale: env.telegram.defaultLocale || 'vi',
       supportedLocales: SUPPORTED_LOCALES,
+      /** Ứng dụng công khai hay chỉ vào bằng lời mời (giao diện đổi câu chữ). */
+      publicRegistration: env.auth.publicRegistration,
+      /** Giới hạn của chat để giao diện chặn trước khi gửi lên. */
+      chat: {
+        maxMessageLength: env.chat.maxMessageLength,
+        maxAttachmentMb: env.chat.maxAttachmentSizeMb,
+        messageRequests: env.chat.messageRequests,
+      },
     },
   });
 });

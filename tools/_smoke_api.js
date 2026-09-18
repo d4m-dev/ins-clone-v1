@@ -115,7 +115,7 @@ const fileBlob = (filePath, type) => new Blob([fs.readFileSync(filePath)], { typ
   try {
     /* --------------------------------- auth -------------------------------- */
     const reg = await api('POST', '/api/auth/register', {
-      body: { username: 'test.member', fullName: 'Nguyễn Test', email: 'test@family.local', password: 'matkhau123' },
+      body: { username: 'test.member', fullName: 'Nguyễn Test', email: 'test@congdong.local', password: 'matkhau123' },
     });
     check('Đăng ký tài khoản', reg.status === 201 && reg.payload.data?.token, `HTTP ${reg.status}`);
     const token = reg.payload.data?.token;
@@ -125,9 +125,9 @@ const fileBlob = (filePath, type) => new Blob([fs.readFileSync(filePath)], { typ
     check('Ngôn ngữ mặc định của thành viên = vi', me.payload.data?.user?.locale === 'vi', `locale=${me.payload.data?.user?.locale}`);
 
     /* ------------------------- quên / đặt lại mật khẩu --------------------- */
-    const forgot = await api('POST', '/api/auth/forgot-password', { body: { email: 'test@family.local' } });
+    const forgot = await api('POST', '/api/auth/forgot-password', { body: { email: 'test@congdong.local' } });
     check('Quên mật khẩu trả về thông báo chung', forgot.status === 200 && /Nếu email này/.test(forgot.payload.data?.message || ''));
-    const forgotUnknown = await api('POST', '/api/auth/forgot-password', { body: { email: 'khong.ton.tai@family.local' } });
+    const forgotUnknown = await api('POST', '/api/auth/forgot-password', { body: { email: 'khong.ton.tai@congdong.local' } });
     check(
       'Không tiết lộ email có tồn tại hay không (chống dò tài khoản)',
       forgotUnknown.status === 200 && forgotUnknown.payload.data?.message === forgot.payload.data?.message
@@ -143,7 +143,7 @@ const fileBlob = (filePath, type) => new Blob([fs.readFileSync(filePath)], { typ
 
     /* ------------------- ngôn ngữ thông báo phía máy chủ ------------------- */
     const forgotEn = await api('POST', '/api/auth/forgot-password', {
-      body: { email: 'test@family.local' },
+      body: { email: 'test@congdong.local' },
       headers: { 'Accept-Language': 'en-US,en;q=0.9' },
     });
     check(
@@ -153,13 +153,13 @@ const fileBlob = (filePath, type) => new Blob([fs.readFileSync(filePath)], { typ
     );
 
     const forgotZh = await api('POST', '/api/auth/forgot-password', {
-      body: { email: 'test@family.local' },
+      body: { email: 'test@congdong.local' },
       headers: { 'Accept-Language': 'zh-CN,zh;q=0.9' },
     });
     check('Accept-Language: zh → thông báo tiếng Trung', /如果该邮箱已注册/.test(forgotZh.payload.data?.message || ''));
 
     const dupEn = await api('POST', '/api/auth/register', {
-      body: { username: 'khac.ten', fullName: 'Khác', email: 'test@family.local', password: 'matkhau123' },
+      body: { username: 'khac.ten', fullName: 'Khác', email: 'test@congdong.local', password: 'matkhau123' },
       headers: { 'Accept-Language': 'en' },
     });
     check(
@@ -190,7 +190,7 @@ const fileBlob = (filePath, type) => new Blob([fs.readFileSync(filePath)], { typ
     const videoForm = new FormData();
     videoForm.append('video', fileBlob(VIDEO, 'video/mp4'), 'clip.mp4');
     videoForm.append('image', fileBlob(PHOTO, 'image/jpeg'), 'poster.jpg');
-    videoForm.append('caption', 'Hai đứa nhỏ chơi mưa 🌧️');
+    videoForm.append('caption', 'Mưa đầu mùa trên phố 🌧️');
     videoForm.append('durationSeconds', '6'); // client khai báo
     const videoPost = await api('POST', '/api/posts', { token, form: videoForm });
     check('Đăng video (Reels)', videoPost.status === 201, JSON.stringify(videoPost.payload).slice(0, 200));
@@ -252,7 +252,7 @@ const fileBlob = (filePath, type) => new Blob([fs.readFileSync(filePath)], { typ
     check('Tải video về (attachment)', dlVideo.status === 200 && /attachment/.test(dlVideo.headers.get('content-disposition') || ''));
     check(
       'Tên tệp tải về thân thiện',
-      /familygram-test\.member-\d+-\d{4}-\d{2}-\d{2}\.mp4/.test(dlVideo.headers.get('content-disposition') || ''),
+      /pixgram-test\.member-\d+-\d{4}-\d{2}-\d{2}\.mp4/.test(dlVideo.headers.get('content-disposition') || ''),
       dlVideo.headers.get('content-disposition')
     );
     check('Nội dung tải về khớp tệp gốc', videoBytes.length === fs.statSync(VIDEO).size, `${videoBytes.length} vs ${fs.statSync(VIDEO).size} bytes`);
@@ -277,7 +277,7 @@ const fileBlob = (filePath, type) => new Blob([fs.readFileSync(filePath)], { typ
     /* -------------------------- lời mời thành viên ------------------------- */
     const inviteCreate = await api('POST', '/api/invites', {
       token,
-      body: { email: 'em.gai@family.local', role: 'member', message: 'Vào chơi với cả nhà nhé!' },
+      body: { email: 'ban.moi@congdong.local', role: 'member', message: 'Tham gia cùng mọi người nhé!' },
     });
     check(
       'Tạo lời mời (admin đầu tiên)',
@@ -291,7 +291,7 @@ const fileBlob = (filePath, type) => new Blob([fs.readFileSync(filePath)], { typ
       inviteCreate.payload.data?.emailSent === false && String(inviteCreate.payload.data?.inviteUrl).includes('/register?invite=')
     );
 
-    const dupe = await api('POST', '/api/invites', { token, body: { email: 'test@family.local' } });
+    const dupe = await api('POST', '/api/invites', { token, body: { email: 'test@congdong.local' } });
     check('Từ chối mời người đã có tài khoản', dupe.status === 409, `HTTP ${dupe.status}`);
 
     const list = await api('GET', '/api/invites', { token });
@@ -314,7 +314,7 @@ const fileBlob = (filePath, type) => new Blob([fs.readFileSync(filePath)], { typ
     const { generateToken, hashToken, inDays } = require(path.join(BACKEND, 'utils/tokens'));
     const invite2Raw = generateToken();
     await require(path.join(BACKEND, 'models')).Invite.create({
-      email: 'con.trai@family.local',
+      email: 'ban.hai@congdong.local',
       role: 'admin',
       tokenHash: hashToken(invite2Raw),
       invitedById: 1,
@@ -322,13 +322,13 @@ const fileBlob = (filePath, type) => new Blob([fs.readFileSync(filePath)], { typ
     });
 
     const checkInvite = await api('GET', `/api/invites/${invite2Raw}`);
-    check('Link mời hợp lệ → 200 kèm thông tin', checkInvite.status === 200 && checkInvite.payload.data?.invite?.email === 'con.trai@family.local', `HTTP ${checkInvite.status}`);
+    check('Link mời hợp lệ → 200 kèm thông tin', checkInvite.status === 200 && checkInvite.payload.data?.invite?.email === 'ban.hai@congdong.local', `HTTP ${checkInvite.status}`);
 
     const regByInvite = await api('POST', '/api/auth/register', {
       body: {
-        username: 'con.trai',
+        username: 'ban.hai',
         fullName: 'Con Trai',
-        email: 'dia.chi.khac@family.local', // client cố tình gửi email khác
+        email: 'dia.chi.khac@congdong.local', // client cố tình gửi email khác
         password: 'matkhau123',
         inviteToken: invite2Raw,
       },
@@ -337,11 +337,11 @@ const fileBlob = (filePath, type) => new Blob([fs.readFileSync(filePath)], { typ
     check(
       'Email + vai trò lấy từ LỜI MỜI, không tin client',
       regByInvite.payload.data?.user?.role === 'admin' &&
-        (await require(path.join(BACKEND, 'models')).User.findOne({ where: { username: 'con.trai' } }))?.email === 'con.trai@family.local'
+        (await require(path.join(BACKEND, 'models')).User.findOne({ where: { username: 'ban.hai' } }))?.email === 'ban.hai@congdong.local'
     );
 
     const reused = await api('POST', '/api/auth/register', {
-      body: { username: 'con.trai2', fullName: 'Con Trai 2', email: 'x@family.local', password: 'matkhau123', inviteToken: invite2Raw },
+      body: { username: 'ban.hai2', fullName: 'Bạn Hai 2', email: 'x@congdong.local', password: 'matkhau123', inviteToken: invite2Raw },
     });
     check('Lời mời chỉ dùng được MỘT lần', reused.status === 400, `HTTP ${reused.status}`);
 

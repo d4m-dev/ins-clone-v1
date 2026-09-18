@@ -54,6 +54,9 @@ jobs:
       - name: Bộ kiểm thử API (57 phép thử)
         run: npm run smoke
 
+      - name: "Chat 1-1: hội thoại, chờ kết bạn, đã đọc, thu hồi, SSE (74 phép thử)"
+        run: npm run smoke:chat
+
       - name: Nội dung email 3 ngôn ngữ (24 phép thử)
         run: npm run smoke:email
 
@@ -62,6 +65,9 @@ jobs:
 
       - name: Khởi động thật + AdminJS + custom CSS + schema (29 điểm)
         run: npm run boot:check
+
+      - name: Chốt chặn câu chữ (không còn chữ về gia đình)
+        run: bash ../tools/check-wording.sh
 
       - name: Không có bí mật nào bị git theo dõi
         run: |

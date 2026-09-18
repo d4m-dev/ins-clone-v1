@@ -45,7 +45,7 @@ const sequelize = new Sequelize(env.db.name, env.db.user, env.db.password, {
     // front of the *HTTP* layer only — DB traffic never leaves the device.
     ...(isSqlite ? {} : { timezone: 'local' }),
   },
-  // Múi giờ của gia đình — cấu hình bằng DB_TIMEZONE trong .env (mặc định +07:00).
+  // Múi giờ của máy chủ — cấu hình bằng DB_TIMEZONE trong .env (mặc định +07:00).
   ...(isSqlite ? {} : { timezone: env.db.timezone }),
 });
 

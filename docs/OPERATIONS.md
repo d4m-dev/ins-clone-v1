@@ -1,9 +1,11 @@
-# Vận hành FamilyGram trên điện thoại
+# Vận hành PixGram trên điện thoại
 
 Tài liệu này dành cho **người trực máy chủ** — tức người giữ chiếc điện thoại Android
-đang chạy album gia đình. Không cần biết lập trình; chỉ cần làm theo đúng vài lệnh.
+đang chạy ứng dụng chia sẻ ảnh **PixGram** (mở cho mọi người, có cả tin nhắn 1-1).
+Không cần biết lập trình; chỉ cần làm theo đúng vài lệnh.
 
 > Cài đặt lần đầu: xem **`docs/DEPLOYMENT.md`**. Trang này chỉ nói về việc **chạy hằng ngày**.
+> Nếu máy chủ còn dữ liệu dưới tên cũ: xem **`docs/MIGRATION-PIXGRAM.md`**.
 
 ---
 
@@ -12,7 +14,7 @@ Tài liệu này dành cho **người trực máy chủ** — tức người gi�
 Mở **Termux** trên điện thoại, luôn bắt đầu bằng:
 
 ```bash
-cd ~/familygram/backend
+cd ~/pixgram/backend
 ```
 
 | Lệnh | Khi nào dùng | Mất bao lâu |
@@ -36,7 +38,7 @@ npm run mail:test            # thử gửi email thông báo (khi nghi ngờ Gma
 **Buổi sáng (sau khi điện thoại khởi động lại):**
 
 ```bash
-cd ~/familygram/backend
+cd ~/pixgram/backend
 npm start
 ```
 
@@ -56,7 +58,7 @@ theo thứ tự an toàn (API tự đóng kết nối database trước).
 ## 3. Đọc nhật ký (log) khi có sự cố
 
 ```bash
-cd ~/familygram/backend
+cd ~/pixgram/backend
 ls -lt logs/ | head          # các tệp log, mới nhất ở trên
 tail -f logs/*.log           # xem trực tiếp (Ctrl+C để dừng)
 ```
@@ -78,17 +80,17 @@ Những dòng đáng chú ý:
 
 ## 4. Sao lưu (việc quan trọng nhất)
 
-**Ảnh gia đình không thể tạo lại.** Database thì có thể dựng lại, còn ảnh thì không —
+**Ảnh đã đăng không thể tạo lại.** Database thì có thể dựng lại, còn ảnh thì không —
 nên luôn sao lưu **cả hai**:
 
 ```bash
 npm run backup
 ```
 
-Kết quả nằm trong `~/familygram/backend/backups/`:
+Kết quả nằm trong `~/pixgram/backend/backups/`:
 
 ```
-familygram-20260918-134501.sql.gz     ← database (giữ 14 bản gần nhất)
+pixgram-20260918-134501.sql.gz     ← database (giữ 14 bản gần nhất)
 uploads-20260918-134502.tar.gz        ← toàn bộ ảnh/video (giữ 7 bản gần nhất)
 ```
 
@@ -96,7 +98,7 @@ uploads-20260918-134502.tar.gz        ← toàn bộ ảnh/video (giữ 7 bản 
 thì không cứu được khi mất điện thoại:
 
 ```bash
-cp -r ~/familygram/backend/backups /sdcard/FamilyGram-Backup
+cp -r ~/pixgram/backend/backups /sdcard/PixGram-Backup
 ```
 
 **Tự động mỗi tuần** (Termux):
@@ -105,15 +107,15 @@ cp -r ~/familygram/backend/backups /sdcard/FamilyGram-Backup
 pkg install termux-services -y
 mkdir -p ~/.termux/boot
 # Cron của Termux: chạy 3 giờ sáng Chủ nhật hằng tuần
-echo '0 3 * * 0 cd ~/familygram/backend && npm run backup >> logs/backup.log 2>&1' | crontab -
+echo '0 3 * * 0 cd ~/pixgram/backend && npm run backup >> logs/backup.log 2>&1' | crontab -
 ```
 
 **Khôi phục từ bản sao lưu:**
 
 ```bash
-cd ~/familygram/backend
+cd ~/pixgram/backend
 # 1) Database
-gunzip -c backups/familygram-20260918-134501.sql.gz | mariadb -u familygram -p familygram
+gunzip -c backups/pixgram-20260918-134501.sql.gz | mariadb -u pixgram -p pixgram
 # 2) Ảnh
 tar -xzf backups/uploads-20260918-134502.tar.gz     # giải nén đè lên thư mục uploads/
 ```
@@ -125,7 +127,7 @@ tar -xzf backups/uploads-20260918-134502.tar.gz     # giải nén đè lên thư
 Khi có mã mới trên GitHub:
 
 ```bash
-cd ~/familygram
+cd ~/pixgram
 git pull                      # lấy mã mới
 cd backend
 npm install --omit=dev        # chỉ cài thư viện cần để CHẠY (nhẹ, không cần biên dịch sqlite3)
@@ -161,6 +163,11 @@ curl -s https://api.d4mdev.click/api/health | head -c 200   # bản công khai
 | Máy chủ tự tắt sau vài giờ | Android đã “ngủ đông” Termux | Xem §7 |
 | `EADDRINUSE :4000` | Còn tiến trình cũ đang giữ cổng | `npm run doctor` sẽ chỉ ra; hoặc khởi động lại Termux |
 | Thông báo Telegram/email **sai ngôn ngữ** | Ngôn ngữ của người đăng, không phải của người nhận | Sửa cột **Ngôn ngữ** của thành viên trong `/admin` |
+| **Chat không nhảy tin mới** ngay (phải đợi vài giây) | Kết nối realtime (SSE) bị mạng/proxy cắt | Bình thường vẫn dùng được nhờ tự hỏi định kỳ. Muốn dứt điểm: kiểm tra `npm run health` mục `realtime`, rồi xem lại `CHAT_POLL_INTERVAL_MS` |
+| Chat báo **"đang đồng bộ định kỳ"** ở đầu khung | SSE không mở được (nhà mạng chặn kết nối dài) | Tạm thời vẫn chat bình thường; giảm `CHAT_SSE_HEARTBEAT_MS` xuống 15000 rồi khởi động lại |
+| Không gửi được **ảnh trong tin nhắn** | Ảnh lớn hơn `CHAT_MAX_ATTACHMENT_MB` | Nâng ngưỡng trong `.env` (mặc định 10 MB) và `npm start` lại |
+| Người lạ nhắn tin mà **không thấy thông báo** | Tin nằm ở mục **"Tin nhắn chờ"** (đúng thiết kế, chống spam) | Vào `/messages` → tab "Tin nhắn chờ" → bấm **Đồng ý**. Muốn tắt hẳn: `CHAT_MESSAGE_REQUESTS=false` |
+| **Cảnh báo dung lượng** hiện trên Telegram | `uploads/` vượt ngưỡng hoặc đĩa gần đầy | `npm run backup` rồi dọn bớt tệp cũ; chỉnh `STORAGE_WARN_TOTAL_MB` / `DISK_FREE_WARN_PERCENT` |
 
 Nếu vẫn chưa rõ: `npm run doctor` rồi đọc kỹ các dòng `❌` / `⚠️` — script nói thẳng
 cần sửa gì.
@@ -199,13 +206,13 @@ Cài đặt Android → Ứng dụng → Termux → **Pin** → chọn *Không t
 
 ```bash
 mkdir -p ~/.termux/boot
-cat > ~/.termux/boot/start-familygram.sh <<'SH'
+cat > ~/.termux/boot/start-pixgram.sh <<'SH'
 #!/data/data/com.termux/files/usr/bin/sh
 termux-wake-lock
-cd ~/familygram/backend
+cd ~/pixgram/backend
 nohup npm start > logs/boot.log 2>&1 &
 SH
-chmod +x ~/.termux/boot/start-familygram.sh
+chmod +x ~/.termux/boot/start-pixgram.sh
 ```
 
 ---
@@ -221,9 +228,43 @@ chmod +x ~/.termux/boot/start-familygram.sh
 | Dung lượng 1.000 ảnh đã nén | ~0,6 GB |
 | Sao lưu: database | vài trăm KB – vài MB (nén) |
 | Sao lưu: 1.000 ảnh | ~0,6 GB |
+| Ảnh gửi trong tin nhắn (nén ở trình duyệt) | 150 – 500 KB/ảnh |
+| Dung lượng 10.000 tin nhắn chữ (không ảnh) | ~ 5 – 10 MB |
 
 Nhờ nén ngay trên trình duyệt (trước khi gửi), album nhỏ hơn khoảng **5 lần** so với
 lưu ảnh gốc — đổi lại ảnh xem trên web vẫn nét trên TV 4K.
+
+---
+
+## 8b. Kiểm thử chat & giám sát dung lượng
+
+**Kiểm thử nhanh phần chat (không cần điện thoại, không cần database):**
+
+```bash
+cd ~/pixgram
+npm --prefix backend run smoke:chat        # 74 phép thử: hội thoại, tin nhắn chờ, đã đọc,
+                                           # thu hồi tin, phân trang, ảnh, bài viết chia sẻ, SSE
+```
+
+Bộ kiểm thử này dựng API thật trên SQLite tạm nên chạy được ngay trên Termux, không
+đụng tới dữ liệu thật của bạn.
+
+**Giám sát dung lượng — cài một lần, yên tâm mãi:**
+
+Sau mỗi lần có người đăng ảnh, máy chủ tự kiểm tra dung lượng. Khi `uploads/` vượt
+`STORAGE_WARN_TOTAL_MB` (mặc định 2 GB) **hoặc** đĩa còn dưới `DISK_FREE_WARN_PERCENT`
+(mặc định 10%), bạn nhận một tin Telegram nhắc — tối đa một lần trong 6 giờ, và chỉ
+khi tin nhắn thực sự gửi được.
+
+Xem tình trạng hiện tại bất cứ lúc nào:
+
+```bash
+npm run health          # có mục storage: số tệp, số MB, dung lượng đĩa còn trống, cảnh báo
+curl -s http://127.0.0.1:4000/api/health | python3 -m json.tool
+```
+
+Muốn đổi ngưỡng: sửa `STORAGE_WARN_TOTAL_MB` / `DISK_FREE_WARN_PERCENT` trong
+`backend/.env` rồi `npm start` lại. Đặt `0` để tắt từng loại cảnh báo.
 
 ---
 
@@ -234,5 +275,5 @@ lưu ảnh gốc — đổi lại ảnh xem trên web vẫn nét trên TV 4K.
 | Mỗi tuần | `npm run backup` + copy `backups/` sang thẻ nhớ/máy tính |
 | Mỗi tháng | `npm run doctor` · xem còn trống bao nhiêu, pin có ổn không |
 | Mỗi 6 tháng | Đổi `JWT_SECRET`, mật khẩu ứng dụng Gmail, xoay token tunnel (xem `docs/ENV-SECRETS.md`) |
-| Khi có người mới | Vào **Mời người thân** trong app (hoặc `/admin` → *Lời mời*) để tạo lời mời |
+| Khi có người mới | Vào **Mời thành viên** trong app (hoặc `/admin` → *Lời mời*) để tạo lời mời |
 | Khi ai rời nhóm | `/admin` → *Thành viên* → bỏ tick **Đang hoạt động** (không cần xoá dữ liệu) |

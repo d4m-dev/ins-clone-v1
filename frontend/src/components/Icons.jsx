@@ -169,6 +169,75 @@ export const PlayIcon = ({ className = 'w-6 h-6' }) => (
   </svg>
 );
 
+/* ------------------------------- chat -------------------------------------- */
+
+/** Biểu tượng Messenger (máy bay giấy) — kiểu Instagram Direct. */
+export const MessengerIcon = ({ filled = false, className = 'w-6 h-6' }) => (
+  <svg
+    className={className}
+    viewBox="0 0 24 24"
+    fill={filled ? 'currentColor' : 'none'}
+    stroke="currentColor"
+    strokeWidth={filled ? 0 : 1.8}
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    aria-hidden="true"
+  >
+    <path d="M22 3 2 10.5l6.5 2.8L11 21l3.4-4.9L22 3Z" />
+    {!filled && <path d="M8.5 13.3 22 3" />}
+  </svg>
+);
+
+/** Gửi tin (máy bay giấy nhỏ trong ô soạn tin). */
+export const SendIcon = ({ className = 'w-5 h-5' }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+    <path d="M2.6 3.2 21.3 12 2.6 20.8 2.5 14l11.3-2L2.5 10 2.6 3.2Z" />
+  </svg>
+);
+
+/** Đính kèm ảnh/video. */
+export const ImageIcon = ({ className = 'w-6 h-6' }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden="true">
+    <rect x="3" y="3" width="18" height="18" rx="3" />
+    <circle cx="8.5" cy="9" r="1.6" />
+    <path d="m4 17 4.5-4.5 3.5 3.5L15.5 12 20 16.5" />
+  </svg>
+);
+
+/** Biểu tượng cảm xúc 😊 — bảng emoji nhanh. */
+export const EmojiIcon = ({ className = 'w-6 h-6' }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden="true">
+    <circle cx="12" cy="12" r="9" />
+    <path d="M8.5 14.5a4.5 4.5 0 0 0 7 0" />
+    <circle cx="9" cy="9.5" r="1" fill="currentColor" stroke="none" />
+    <circle cx="15" cy="9.5" r="1" fill="currentColor" stroke="none" />
+  </svg>
+);
+
+/** Thu hồi tin nhắn. */
+export const UndoIcon = ({ className = 'w-5 h-5' }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <path d="M9 14 4 9l5-5" />
+    <path d="M4 9h10a6 6 0 0 1 0 12h-3" />
+  </svg>
+);
+
+/** Tin nhắn chờ (yêu cầu) — phong bì. */
+export const RequestIcon = ({ className = 'w-5 h-5' }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <rect x="3" y="5" width="18" height="14" rx="3" />
+    <path d="m4 7 8 6 8-6" />
+  </svg>
+);
+
+/** Soạn tin mới. */
+export const NewChatIcon = ({ className = 'w-6 h-6' }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <path d="M12 20H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h13a2 2 0 0 1 2 2v5" />
+    <path d="M17 14v6M14 17h6" />
+  </svg>
+);
+
 export const InstallIcon = ({ className = 'w-6 h-6' }) => (
   <svg {...base} className={className} fill="none" stroke="currentColor" strokeWidth={1.8}>
     <rect x="6" y="2.5" width="12" height="19" rx="3" />
@@ -176,7 +245,7 @@ export const InstallIcon = ({ className = 'w-6 h-6' }) => (
   </svg>
 );
 
-/* Hai icon cho trang "Mời người thân" (giữ cùng phong cách: nét 1.8, không
+/* Hai icon cho trang "Mời thành viên" (giữ cùng phong cách: nét 1.8, không
    phụ thuộc thư viện ngoài). */
 export const MailIcon = ({ className = 'w-6 h-6' }) => (
   <svg {...base} className={className} fill="none" stroke="currentColor" strokeWidth={1.8}>

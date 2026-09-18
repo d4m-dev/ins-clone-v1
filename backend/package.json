@@ -1,8 +1,8 @@
 {
-  "name": "familygram-backend",
+  "name": "pixgram-backend",
   "version": "1.0.0",
   "private": true,
-  "description": "Private family photo-sharing backend (Express + MariaDB + AdminJS + Telegram) running on Termux / Ubuntu ARM64.",
+  "description": "Photo-sharing backend (Express + MariaDB + AdminJS + Telegram + chat) running on Termux / Ubuntu ARM64.",
   "main": "server.js",
   "engines": {
     "node": ">=20.0.0"
@@ -17,6 +17,7 @@
     "watch:api": "echo 'dev watch not used in prod mode - see nodemon'",
     "bootstrap:termux": "bash scripts/bootstrap-termux.sh",
     "db:init": "bash scripts/init-database.sh",
+    "db:rename": "bash scripts/rename-database.sh",
     "tunnel:install": "bash scripts/setup-cloudflared.sh",
     "admin:passwd": "node scripts/hash-password.js",
     "health": "bash scripts/health-check.sh",
@@ -29,7 +30,8 @@
     "smoke:compress": "node ../tools/_smoke_compress.js",
     "boot:check": "bash ../tools/boot-check.sh",
     "mail:test": "node scripts/mail-test.js",
-    "check": "bash ../tools/check-all.sh"
+    "check": "bash ../tools/check-all.sh",
+    "smoke:chat": "node ../tools/_smoke_chat.js"
   },
   "dependencies": {
     "@adminjs/express": "^6.1.1",

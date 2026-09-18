@@ -9,7 +9,7 @@
  *   2. trường `locale` của tài khoản (nếu đã lưu trong DB)
  *   3. query `?lang=vi|en|zh` (tiện cho bot/link chia sẻ)
  *   4. TELEGRAM_DEFAULT_LOCALE trong .env
- *   5. 'vi' — ngôn ngữ mặc định của gia đình
+ *   5. 'vi' — ngôn ngữ mặc định của ứng dụng
  * ---------------------------------------------------------------------------
  */
 

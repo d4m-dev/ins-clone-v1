@@ -232,6 +232,14 @@ const createPost = asyncHandler(async (req, res) => {
       .notifyNewPhoto({ post, author: req.user, locale: req.user.locale || req.locale })
       .catch((error) => logger.warn(`Email notify failed: ${error.message}`));
 
+    /**
+     * Giám sát dung lượng: máy chủ là điện thoại, đầy đĩa là sập.
+     * Sau mỗi lần đăng, kiểm tra ngưỡng và nhắc Telegram (tối đa 1 lần/6 giờ).
+     */
+    storage
+      .maybeWarnStorage()
+      .catch((error) => logger.warn(`Kiểm tra dung lượng lỗi: ${error.message}`));
+
     res.status(201).json({
       success: true,
       data: { post: post.toPublicJSON({ viewerId: req.user.id, urls }) },
@@ -353,9 +361,9 @@ const downloadPost = asyncHandler(async (req, res) => {
   if (!absolutePath) throw ApiError.notFound('Tệp không còn trên máy chủ.');
 
   const extension = path.extname(filename);
-  const safeOwner = String(post.author?.username || 'family').replace(/[^a-z0-9._-]/gi, '');
+  const safeOwner = String(post.author?.username || 'member').replace(/[^a-z0-9._-]/gi, '');
   const stamp = new Date(post.createdAt).toISOString().slice(0, 10);
-  const downloadName = `familygram-${safeOwner}-${post.id}-${stamp}${extension}`;
+  const downloadName = `pixgram-${safeOwner}-${post.id}-${stamp}${extension}`;
 
   logger.info(`Tải về #${post.id} (${isVideo ? 'video' : 'ảnh'}) bởi ${req.ip}`);
   res.download(absolutePath, downloadName, (error) => {

@@ -17,6 +17,7 @@ import InvitePage from './pages/InvitePage.jsx';
 import UploadPage from './pages/UploadPage.jsx';
 import ProfilePage from './pages/ProfilePage.jsx';
 import PostPage from './pages/PostPage.jsx';
+import MessagesPage from './pages/MessagesPage.jsx';
 import NotFoundPage from './pages/NotFoundPage.jsx';
 import { Spinner } from './components/States.jsx';
 
@@ -44,6 +45,24 @@ export default function App() {
       <Route path={ROUTES.resetPassword} element={<ResetPasswordPage />} />
       <Route path="/p/:id" element={<PostPage />} />
 
+      {/* Hộp thư + chat: bắt buộc đăng nhập (chat luôn gắn với tài khoản). */}
+      <Route
+        path={ROUTES.messages}
+        element={
+          <RequireAuth>
+            <MessagesPage />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path={`${ROUTES.messages}/:id`}
+        element={
+          <RequireAuth>
+            <MessagesPage />
+          </RequireAuth>
+        }
+      />
+
       <Route
         path={ROUTES.upload}
         element={
@@ -60,7 +79,7 @@ export default function App() {
           </RequireAuth>
         }
       />
-      {/* Mời người thân — trang tự chuyển hướng nếu không phải quản trị viên
+      {/* Mời thành viên — trang tự chuyển hướng nếu không phải quản trị viên
           (backend vẫn là nơi chặn thật, qua requireAdmin). */}
       <Route
         path={ROUTES.invite}

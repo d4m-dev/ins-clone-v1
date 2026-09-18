@@ -75,7 +75,9 @@ function mask(address = '') {
   console.log('\n── Gửi email thử ──────────────────────────────────────');
   const recipient = env.email.to || env.email.from;
   const locale = env.telegram.defaultLocale || 'vi';
-  const samplePostUrl = `${appBase}${urls.routes.post.replace(':id', '0')}`;
+  // ⚠️ urls.routes.post là HÀM `(id) => '/p/<id>'` (không phải chuỗi ':id');
+  // gọi .replace() ở đây từng làm lệnh này ném TypeError trước khi gửi được mail.
+  const samplePostUrl = `${appBase}${urls.routes.post('demo')}`;
 
   const mail = templates.newPhotoEmail(
     {
@@ -86,7 +88,7 @@ function mask(address = '') {
         mediaType: 'photo',
         isVideo: () => false,
       },
-      author: { id: 0, username: 'kiem-tra', fullName: 'Hệ thống FamilyGram', email: recipient },
+      author: { id: 0, username: 'kiem-tra', fullName: 'Hệ thống PixGram', email: recipient },
       urls: { postUrl: samplePostUrl, appUrl: appBase },
     },
     locale

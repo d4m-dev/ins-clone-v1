@@ -46,7 +46,8 @@ async function getStorageStats() {
   let files = 0;
   let bytes = 0;
   let videos = 0;
-  for (const folder of ['posts', 'avatars']) {
+  // 'chat' = tệp gửi trong tin nhắn; tính vào dung lượng đĩa của điện thoại.
+  for (const folder of ['posts', 'avatars', 'chat']) {
     const dir = path.join(UPLOAD_ROOT, folder);
     try {
       const entries = await fs.readdir(dir, { withFileTypes: true });
@@ -65,7 +66,8 @@ async function getStorageStats() {
 }
 
 async function ensureUploadFolders() {
-  for (const folder of ['posts', 'avatars']) {
+  // 'chat' = tệp gửi trong tin nhắn (uploads/chat).
+  for (const folder of ['posts', 'avatars', 'chat']) {
     await fs.mkdir(path.join(UPLOAD_ROOT, folder), { recursive: true });
   }
   logger.info(
@@ -75,4 +77,100 @@ async function ensureUploadFolders() {
   );
 }
 
-module.exports = { resolveStoredFile, deleteStoredFile, getStorageStats, ensureUploadFolders };
+/**
+ * Dung lượng đĩa còn trống (fs.statfs có từ Node 18.15+, Termux đều đạt).
+ * Không hỗ trợ → trả null để phần còn lại vẫn chạy.
+ */
+async function getDiskSpace() {
+  try {
+    const stats = await fs.statfs(UPLOAD_ROOT);
+    const totalBytes = Number(stats.blocks) * Number(stats.bsize);
+    const freeBytes = Number(stats.bavail) * Number(stats.bsize);
+    return {
+      totalBytes,
+      freeBytes,
+      freeMegabytes: Number((freeBytes / 1024 / 1024).toFixed(0)),
+      freePercent: totalBytes ? Number(((freeBytes / totalBytes) * 100).toFixed(1)) : null,
+    };
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Tình trạng lưu trữ + cảnh báo (nếu có).
+ * Dùng cho /api/health và cho thông báo Telegram sau mỗi lần đăng ảnh.
+ */
+async function checkStorageHealth() {
+  const [stats, disk] = await Promise.all([getStorageStats(), getDiskSpace()]);
+
+  let warning = null;
+  if (env.uploads.warnFreePercent > 0 && disk?.freePercent !== null && disk?.freePercent !== undefined) {
+    if (disk.freePercent <= env.uploads.warnFreePercent) {
+      warning = {
+        code: 'DISK_LOW',
+        level: 'critical',
+        message:
+          `Điện thoại chỉ còn ${disk.freePercent}% dung lượng trống (${disk.freeMegabytes} MB). ` +
+          'Hãy xoá bớt ảnh/video cũ rồi sao lưu (npm run backup).',
+      };
+    }
+  }
+  if (!warning && env.uploads.warnTotalMb > 0 && stats.megabytes >= env.uploads.warnTotalMb) {
+    warning = {
+      code: 'UPLOADS_LARGE',
+      level: 'warning',
+      message:
+        `Thư mục uploads đã chiếm ${stats.megabytes} MB (ngưỡng ${env.uploads.warnTotalMb} MB). ` +
+        'Cân nhắc chạy: npm run backup rồi dọn bớt tệp cũ.',
+    };
+  }
+
+  return { ...stats, disk, warning };
+}
+
+/**
+ * Nhắc quản trị viên qua Telegram khi dung lượng tới ngưỡng.
+ * Có chống spam: tối đa một lần mỗi 6 giờ cho mỗi mã cảnh báo (giữ trong RAM —
+ * khởi động lại máy chủ thì nhắc lại một lần, không đáng lo).
+ */
+const warnedAt = new Map();
+const WARN_COOLDOWN_MS = 6 * 60 * 60 * 1000;
+
+async function maybeWarnStorage({ force = false } = {}) {
+  const health = await checkStorageHealth();
+  if (!health.warning) return { warning: null, notified: false };
+
+  const last = warnedAt.get(health.warning.code) || 0;
+  if (!force && Date.now() - last < WARN_COOLDOWN_MS) {
+    return { warning: health.warning, notified: false };
+  }
+
+  try {
+    // Nạp muộn để tránh vòng phụ thuộc (telegram.service dùng storage để gửi ảnh).
+    const telegram = require('./telegram.service');
+    const sent = await telegram.notifyAdmin(
+      `💾 <b>Cảnh báo dung lượng</b>\n${health.warning.message}\n\n` +
+        `Tệp: ${health.files} · Video: ${health.videos} · Tổng: ${health.megabytes} MB`
+    );
+    // Telegram đang tắt/hỏng → KHÔNG đánh dấu "đã nhắc", để lần đăng sau thử lại.
+    if (!sent) return { warning: health.warning, notified: false };
+
+    warnedAt.set(health.warning.code, Date.now());
+    logger.warn(`Cảnh báo dung lượng (${health.warning.code}): ${health.warning.message}`);
+    return { warning: health.warning, notified: true };
+  } catch (error) {
+    logger.warn(`Không gửi được cảnh báo dung lượng: ${error.message}`);
+    return { warning: health.warning, notified: false };
+  }
+}
+
+module.exports = {
+  resolveStoredFile,
+  deleteStoredFile,
+  getStorageStats,
+  getDiskSpace,
+  checkStorageHealth,
+  maybeWarnStorage,
+  ensureUploadFolders,
+};

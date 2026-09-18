@@ -1,4 +1,4 @@
-# 📷 FamilyGram — private family photo album (Instagram UI)
+# 📷 PixGram — chia sẻ ảnh cộng đồng (giao diện kiểu Instagram)
 
 A self-hosted, invite-only Instagram clone: **React + Tailwind** on Vercel, **Node/Express + MariaDB + AdminJS + Telegram bot** on an Android phone (Termux), exposed to the internet through a **Cloudflare Tunnel** on a fixed domain (`api.d4mdev.click`).
 
@@ -13,7 +13,7 @@ A self-hosted, invite-only Instagram clone: **React + Tailwind** on Vercel, **No
 The repo ships a **dev-only mock API** so you can click through the whole UI on a laptop:
 
 ```bash
-cd tools && node demo-api.js        # mock backend on :4000  (users: minh.nguyen · linh.tran · ba.noi · me.su, any password)
+cd tools && node demo-api.js        # mock backend on :4000  (users: minh.nguyen · linh.tran · bao.long · su.ha, any password)
 cd frontend && npm install && npm run dev   # UI on :5173 → proxies /api & /uploads to :4000
 ```
 
@@ -74,7 +74,7 @@ Switching to another domain = edit `.env` (backend) + Vercel env vars (frontend)
 ## 3. Directory structure
 
 ```
-familygram/
+pixgram/
 ├── backend/                              # Termux (Ubuntu/ARM64) — one process
 │   ├── server.js                         # entry: Express + AdminJS + static + Telegram
 │   ├── package.json                      # concurrently 1-click scripts
@@ -146,7 +146,7 @@ familygram/
 │       ├── components/                   # Layout · PostCard · CommentSection · StoriesBar · StoryViewer
 │       │                                 # PhotoViewer (zoom + slideshow) · InstallPrompt · LanguageSwitcher · Avatar · Icons · States
 │       ├── pages/                        # Feed · Reels · Explore · Upload · Profile · Post
-│       │                                 # Login · Register · Quên mật khẩu · Đặt lại mật khẩu · Mời người thân
+│       │                                 # Login · Register · Quên mật khẩu · Đặt lại mật khẩu · Mời thành viên
 │       ├── pwa/useInstallPrompt.js       # beforeinstallprompt + trạng thái mạng + đăng ký SW
 │       ├── public/manifest.webmanifest   # PWA: tên, icon, shortcut Đăng ảnh / Reels
 │       ├── public/sw.js                  # service worker (shell + cache-first assets)
@@ -162,9 +162,11 @@ familygram/
 │   ├── boot-check.sh                     # bật server thật rồi dò 29 điểm
 │   ├── _smoke_api.js                     # 57 phép thử API
 │   ├── _smoke_email.js                   # 24 phép thử nội dung email
-│   └── _smoke_compress.js                # 23 phép thử bộ nén ảnh
+│   ├── _smoke_compress.js                # 23 phép thử bộ nén ảnh
+│   └── check-wording.sh                  # ⬅ chốt chặn: không còn chữ về gia đình
 ├── .github/workflows/ci.yml              # chạy toàn bộ kiểm thử mỗi lần push
 └── README.md · docs/DEPLOYMENT.md · docs/OPERATIONS.md · docs/ENV-SECRETS.md
+    · docs/MIGRATION-PIXGRAM.md
 ```
 
 ---
@@ -177,15 +179,15 @@ familygram/
 NODE_ENV=production
 PORT=4000
 HOST=0.0.0.0
-CORS_ORIGINS=https://family.d4mdev.click,https://familygram.vercel.app
+CORS_ORIGINS=https://ins-clone-v1.vercel.app
 
 PUBLIC_BASE_URL=https://api.d4mdev.click     # tunnel hostname (backend)
-FRONTEND_BASE_URL=https://family.d4mdev.click
+FRONTEND_BASE_URL=https://ins-clone-v1.vercel.app
 
 DB_HOST=127.0.0.1
 DB_PORT=3306
-DB_NAME=familygram
-DB_USER=familygram
+DB_NAME=pixgram
+DB_USER=pixgram
 DB_PASSWORD=change_me_db_password
 DB_DIALECT=mariadb
 DB_LOGGING=false
@@ -198,7 +200,7 @@ FIRST_USER_IS_ADMIN=true
 ADMIN_EMAIL=admin@d4mdev.click
 ADMIN_PASSWORD_HASH=                                # npm run admin:passwd
 ADMIN_PASSWORD=change_me_admin_password
-ADMIN_COOKIE_NAME=familygram.admin
+ADMIN_COOKIE_NAME=pixgram.admin
 ADMIN_SESSION_SECRET=replace_with_another_64_random_hex_chars
 
 UPLOAD_DIR=uploads
@@ -216,7 +218,7 @@ TELEGRAM_ADMIN_CHAT_ID=123456789
 TELEGRAM_ENABLED=true
 TELEGRAM_SEND_PHOTO=true
 
-CLOUDFLARE_TUNNEL_NAME=familygram-api
+CLOUDFLARE_TUNNEL_NAME=pixgram-api
 CLOUDFLARE_HOSTNAME=api.d4mdev.click
 ```
 
@@ -225,7 +227,7 @@ CLOUDFLARE_HOSTNAME=api.d4mdev.click
 ### `frontend/.env.example` → copy to `.env.local`, and set the same keys in Vercel
 
 ```env
-VITE_APP_ORIGIN=https://family.d4mdev.click
+VITE_APP_ORIGIN=https://ins-clone-v1.vercel.app
 VITE_API_ORIGIN=https://api.d4mdev.click   # leave EMPTY for same-origin (dev proxy)
 VITE_API_PREFIX=api
 VITE_UPLOADS_PREFIX=uploads
@@ -301,7 +303,7 @@ timeAgo(post.createdAt)                            // "3 giờ trước" / "3 ho
 ```js
 const { t, tPlural } = require('./i18n');
 
-t('vi', 'newPhoto.title')                       // 📸 Ảnh mới trong album gia đình
+t('vi', 'newPhoto.title')                       // 📸 Ảnh mới trên bảng tin cộng đồng
 tPlural('en', 'newPhoto.likes', 3)              // "3 likes"   (1 → "1 like")
 t('zh', 'bot.chatId', { chatId: 123456 })       // 你的聊天 id：123456
 ```
@@ -313,7 +315,7 @@ t('zh', 'bot.chatId', { chatId: 123456 })       // 你的聊天 id：123456
 
 ### Trang quản trị AdminJS — đã Việt hoá 100% khung giao diện
 
-AdminJS v7 chỉ phát hành sẵn **9 gói ngôn ngữ** (`de en es it ja pl pt-BR ua zh-CN`) — **không có tiếng Việt**. Vì vậy FamilyGram tự cung cấp bộ dịch đầy đủ và dùng cơ chế `locale.translations` chính thức:
+AdminJS v7 chỉ phát hành sẵn **9 gói ngôn ngữ** (`de en es it ja pl pt-BR ua zh-CN`) — **không có tiếng Việt**. Vì vậy PixGram tự cung cấp bộ dịch đầy đủ và dùng cơ chế `locale.translations` chính thức:
 
 | Tầng | Tệp | Phụ trách |
 | --- | --- | --- |
@@ -384,6 +386,7 @@ locale: buildAdminLocale({
 | Lệnh | Kiểm tra gì | Cần gì |
 | --- | --- | --- |
 | `npm run smoke` | 57 phép thử API thật: đăng ký/đăng nhập, đăng ảnh + video, Reels, Stories, lượt xem, tải về, chặn path-traversal, **lời mời**, **quên/đặt lại mật khẩu**, thông báo đa ngôn ngữ | không (tự dùng SQLite tạm) |
+| `npm run smoke:chat` | 74 phép thử **chat 1-1** trên API thật + SQLite: một hội thoại cho mỗi cặp, tin nhắn chờ, đếm chưa đọc, "Đã xem", phân trang tin cũ, ảnh/bài viết chia sẻ, thu hồi tin, ẩn hội thoại, chặn người ngoài, kênh SSE | không |
 | `npm run smoke:email` | 24 phép thử nội dung email: đủ 3 ngôn ngữ, nội suy biến, chống XSS trong chú thích, link trong nút bấm | không |
 | `npm run boot:check` | bật server thật rồi dò 29 điểm: `/admin/login` đăng nhập được (đúng thứ tự middleware!), custom CSS được nhúng, 5 bảng AdminJS, `tokenHash` bị ẩn, schema đủ cột | không |
 | `npm run mail:test` | đăng nhập SMTP thật + gửi 1 email thử tới `NOTIFY_EMAIL` | Gmail đã cấu hình |
@@ -417,14 +420,14 @@ Tất cả đều nằm trong cùng một app React, không thêm dịch vụ n�
 ### Stories — khoảnh khắc 24 giờ
 
 * Không có bảng dữ liệu riêng: **story = bài đăng trong 24h qua**, gom theo tác giả (`GET /api/stories`).
-* Vòng tròn story ở đầu bảng tin; vòng đã xem được lưu ở `localStorage` (`familygram.seenStories`) nên hết màu gradient.
+* Vòng tròn story ở đầu bảng tin; vòng đã xem được lưu ở `localStorage` (`pixgram.seenStories`) nên hết màu gradient.
 * Trình xem: thanh tiến trình theo từng mục, tự chuyển sau 5 giây (ảnh) hoặc **đúng thời lượng video**; chạm trái/phải để lùi/tiến, giữ để tạm dừng.
 * Hết 24h là tự biến mất — không cần cron dọn dẹp.
 
 ### Lightbox + tải về (`PhotoViewer.jsx`)
 
 * Pinch-zoom 2 ngón, chạm đúp để phóng 2.5×, kéo để di chuyển (giới hạn theo tỉ lệ zoom), vuốt ngang để đổi ảnh khi chưa zoom.
-* Nút **Tải về** gọi `GET /api/posts/:id/download` → backend trả `Content-Disposition: attachment` với tên `familygram-{user}-{id}-{ngày}.{ext}`.
+* Nút **Tải về** gọi `GET /api/posts/:id/download` → backend trả `Content-Disposition: attachment` với tên `pixgram-{user}-{id}-{ngày}.{ext}`.
 * Điều hướng bằng ← → trên bàn phím, `Esc` để đóng; nền tối, khoá cuộn trang khi mở.
 
 ### PWA — cài lên màn hình chính
@@ -432,7 +435,7 @@ Tất cả đều nằm trong cùng một app React, không thêm dịch vụ n�
 | Thành phần | Ghi chú |
 | --- | --- |
 | `public/manifest.webmanifest` | `display: standalone`, icon 192/512 + **maskable**, 2 shortcut: Đăng ảnh · Reels |
-| `public/sw.js` | HTML: network-first (offline → shell đã lưu) · `/assets/*`: cache-first · `/api/reels|stories|posts`: network-first có lưu tạm · **`/uploads/*` KHÔNG cache** (album gia đình sẽ phình rất nhanh) |
+| `public/sw.js` | HTML: network-first (offline → shell đã lưu) · `/assets/*`: cache-first · `/api/reels|stories|posts`: network-first có lưu tạm · **`/uploads/*` KHÔNG cache** (kho ảnh sẽ phình rất nhanh) |
 | `src/pwa/useInstallPrompt.js` | `beforeinstallprompt` → nút "Cài đặt ứng dụng"; theo dõi `appinstalled`, trạng thái ngoại tuyến; đăng ký SW **chỉ ở bản production** |
 | `vercel.json` | `sw.js` gửi `Cache-Control: max-age=0, must-revalidate` — nếu không, bản mới không bao giờ tới máy người dùng |
 | Icon | Sinh bằng Pillow (`PIL`), gradient tím→hồng→cam + khung máy ảnh, **không cần tài nguyên ngoài** |
@@ -471,7 +474,7 @@ thay vì để người dùng điền hết form rồi mới lỗi.
 **Đặt lại mật khẩu — ba nguyên tắc an toàn**
 
 1. **Không tiết lộ ai có tài khoản.** `POST /auth/forgot-password` luôn trả cùng một
-   câu trả lời dù email có tồn tại hay không (chống dò thành viên trong gia đình).
+   câu trả lời dù email có tồn tại hay không (chống dò tài khoản).
 2. **Token không nằm trong database dạng gốc.** Chỉ SHA-256 được lưu
    (`users.password_reset_hash`), so sánh bằng `timingSafeEqual`, dùng **một lần**,
    hết hạn sau `RESET_TOKEN_TTL_MINUTES` (mặc định 30 phút).
@@ -516,9 +519,9 @@ công tắc **Giữ ảnh gốc** cho những ảnh cần nguyên chất lượn
 
 ---
 
-## 5e. Mời người thân trong app
+## 5e. Mời thành viên trong app
 
-Trang **Mời người thân** (`/invite`, chỉ quản trị viên thấy nút ở trang Hồ sơ):
+Trang **Mời thành viên** (`/invite`, chỉ quản trị viên thấy nút ở trang Hồ sơ):
 
 1. Nhập email + chọn vai trò **Thành viên** hoặc **Quản trị viên** + lời nhắn (không bắt buộc).
 2. Backend tạo lời mời (token 32 byte, chỉ lưu SHA-256) và gửi email cho người được mời.
@@ -526,9 +529,66 @@ Trang **Mời người thân** (`/invite`, chỉ quản trị viên thấy nút 
    kèm nút **Copy link** để bạn gửi qua Zalo/Messenger — không bao giờ bị kẹt.
 4. Danh sách bên dưới cho biết lời mời nào *đang chờ · đã tham gia · đã thu hồi*, kèm nút ✕ để thu hồi.
 
-Người được mời mở link → trang đăng ký tự kiểm tra lời mời, hiện *“💌 Bạn được mời vào album
-gia đình”*, điền sẵn email và **khoá ô email** (backend luôn lấy email + vai trò từ lời mời,
+Người được mời mở link → trang đăng ký tự kiểm tra lời mời, hiện *“💌 Bạn có lời mời tham gia”*, điền sẵn email và **khoá ô email** (backend luôn lấy email + vai trò từ lời mời,
 không tin dữ liệu gửi lên). Mỗi lời mời dùng được **một lần**, hết hạn sau `INVITE_TTL_DAYS` ngày.
+
+---
+
+## 5f. Chat 1-1 (tin nhắn) — Messenger kiểu Instagram
+
+Hộp thư + khung trò chuyện nằm ở `/messages` (và `/messages/:id` để mở thẳng một
+hội thoại từ thông báo/deep-link). Mọi thứ đều yêu cầu đăng nhập.
+
+**Người dùng thấy gì**
+
+| Tính năng | Chi tiết |
+| --- | --- |
+| Hộp thư | avatar · tên · trích đoạn tin cuối · thời gian · **số tin chưa đọc** (badge đỏ trên thanh điều hướng) |
+| Tin nhắn chờ | người chưa từng trò chuyện mà nhắn trước → nằm riêng ở tab "Tin nhắn chờ"; người nhận bấm **Đồng ý** mới vào hộp thư chính (chống spam) |
+| Khung chat | bong bóng của mình **bên phải nền xanh**, của người kia **bên trái nền xám**; gom theo ngày ("Hôm nay", "Hôm qua", 12 tháng 9) |
+| Đã xem | dưới tin cuối của mình hiện "Đã xem · 2 phút" khi người kia đã mở hội thoại |
+| Đang nhập… | ba chấm nhảy khi người kia đang gõ (tối đa 1 tín hiệu / 2,5 giây, **không ghi database**) |
+| Gửi được | chữ · **ảnh** (nén ngay trong trình duyệt trước khi gửi) · video ngắn · **emoji** · **bài viết chia sẻ** (hiện thành thẻ có ảnh thu nhỏ) |
+| Cuộn lên | tự tải thêm tin cũ hơn theo trang (`CHAT_PAGE_SIZE`, mặc định 30), giữ nguyên vị trí đang đọc |
+| Thu hồi | giữ chuột/chuột phải vào tin của mình → "Thu hồi tin nhắn" (trong 60 phút). Nội dung bị xoá **ngay trong câu UPDATE** — đọc thẳng database cũng không cứu được |
+| Xoá hội thoại | chỉ ẩn phía mình; tin mới sẽ làm hội thoại hiện lại (đúng hành vi Instagram) |
+| Chia sẻ bài viết | nút máy bay giấy trên mỗi bài đăng → chọn người → gửi kèm thẻ bài viết |
+
+**Cách hoạt động (thiết kế)**
+
+* **Một hội thoại cho mỗi cặp người dùng** — khoá duy nhất `pairKey = "<id nhỏ>:<id lớn>"`,
+  nên dù hai người cùng bấm mở chat một lúc cũng không bao giờ sinh ra hai hội thoại.
+* **Realtime bằng SSE, không dùng Socket.IO** (`services/realtime.service.js`):
+  chỉ là HTTP thường nên chạy xuyên Cloudflare Tunnel mà không cần mở cổng phụ hay
+  thư viện nặng. Sự kiện: `ready` · `message` · `read` · `typing` · `conversation` · `deleted`.
+* **Token không bao giờ nằm trong URL**: trình duyệt nối bằng `fetch` + header
+  `Authorization` và tự đọc luồng SSE (EventSource không gửi được header, nên
+  nếu dùng nó thì token sẽ lọt vào access log của Cloudflare).
+* **Tự chữa lành**: nếu SSE bị mạng/proxy cắt, hook `useChatStream` nối lại với
+  khoảng chờ tăng dần (1s → 30s) và **vẫn hỏi định kỳ** `/api/chat/summary`
+  (`CHAT_POLL_INTERVAL_MS`) để badge không bao giờ "kẹt".
+* **Đếm tin chưa đọc bằng một câu SQL** cho cả hộp thư (không N+1 trên điện thoại):
+  đếm tin của người kia tạo **sau** mốc `readAt` của mình.
+* **Tin cuối được chụp sẵn** vào `conversations.last_message_*` (preview + người gửi
+  + thời gian) — hộp thư chỉ cần 1 truy vấn thay vì join `messages` cho từng dòng.
+* **`httpServer.requestTimeout = 0`** trong `server.js`: Node ≥18 mặc định cắt
+  request sau 300 giây, sẽ giết luồng SSE giữa chừng.
+
+**Biến môi trường liên quan** (xem `backend/.env.example` mục 4c)
+
+| Biến | Mặc định | Ý nghĩa |
+| --- | --- | --- |
+| `CHAT_MAX_MESSAGE_LENGTH` | 1000 | độ dài tối đa một tin |
+| `CHAT_PAGE_SIZE` | 30 | số tin mỗi trang khi cuộn lên |
+| `CHAT_MAX_ATTACHMENT_MB` | 10 | ngưỡng ảnh/video trong tin nhắn |
+| `CHAT_MESSAGE_REQUESTS` | true | bật "Tin nhắn chờ" cho người lạ |
+| `CHAT_POLL_INTERVAL_MS` | 5000 | nhịp hỏi dự phòng khi không có realtime |
+| `CHAT_SSE_HEARTBEAT_MS` | 25000 | nhịp giữ kết nối SSE sống qua tunnel |
+| `CHAT_RATE_LIMIT_MAX` | 120 | số tin tối đa / người / `RATE_LIMIT_WINDOW_MINUTES` |
+
+Tệp gửi trong tin nhắn nằm ở `uploads/chat/` — **vẫn nằm dưới cây `/uploads` đã
+siết bảo mật** (danh sách trắng đuôi tệp, chặn dotfile/path-traversal, `nosniff`),
+không mở thêm thư mục tĩnh nào khác.
 
 ---
 
@@ -547,6 +607,32 @@ User 1───n Post 1───n Comment n───1 User
   * Stores **only the filename** — never a URL — so a domain change is a config change, not a migration.
   * `likeCount/commentCount` are denormalised and refreshed with atomic SQL in model hooks.
 * `Comment(postId, userId, body)` · `Like(postId, userId)` with a **unique index** on `(user_id, post_id)` → no double likes even under race conditions.
+
+### Bảng `conversations` — hội thoại 1-1
+
+| Cột | Kiểu | Ghi chú |
+| --- | --- | --- |
+| `pair_key` | STRING(64) **unique** | `"<id nhỏ>:<id lớn>"` → mỗi cặp người dùng chỉ có **một** hội thoại |
+| `user_one_id` / `user_two_id` | BIGINT | hai người tham gia (CASCADE khi xoá người dùng) |
+| `status` | ENUM | `requested` (tin nhắn chờ) · `accepted` · `declined` |
+| `requested_by_id` | BIGINT | ai khởi tạo — quyết định ai được bấm Đồng ý/Từ chối |
+| `user_one_read_at` / `user_two_read_at` | DATE | mốc đã đọc của từng người → tính số tin chưa đọc |
+| `user_one_hidden_at` / `user_two_hidden_at` | DATE | "xoá hội thoại" phía mỗi người; tin mới hơn mốc này sẽ làm hội thoại hiện lại |
+| `last_message_id` / `last_message_sender_id` / `last_message_preview` | — | bản **chụp sẵn** tin cuối để hộp thư không phải join bảng `messages` |
+
+### Bảng `messages` — tin nhắn
+
+| Cột | Kiểu | Ghi chú |
+| --- | --- | --- |
+| `conversation_id` / `sender_id` | BIGINT | CASCADE theo hội thoại/người dùng |
+| `body` | TEXT | chữ trong tin (≤ `CHAT_MAX_MESSAGE_LENGTH`) |
+| `attachment_filename` / `attachment_type` / `attachment_width` / `attachment_height` | — | tệp trong `uploads/chat/`; **chỉ lưu TÊN TỆP, không lưu URL** |
+| `shared_post_id` | BIGINT | bài viết được chia sẻ (FK mềm — xoá bài không làm hỏng tin nhắn) |
+| `read_at` | DATE | người nhận đã xem → hiện "Đã xem" phía người gửi |
+| `deleted_at` | DATE | thu hồi tin: xoá mềm **và** xoá sạch nội dung trong cùng câu UPDATE |
+
+**Số tin chưa đọc KHÔNG lưu thành cột** — nó được tính bằng một câu `COUNT` theo
+mốc `read_at` của từng người, nên không bao giờ lệch như các bộ đếm denormalised.
 
 Set `DB_SYNC=none` in `.env` once the schema is frozen (migrations instead of `alter`).
 
@@ -586,7 +672,7 @@ const adminJsOptions = {
   assets: {
     styles: [`${ASSETS_ROUTE}/custom-admin.css`],  // '/admin/assets/custom-admin.css'
   },
-  branding: { companyName: 'FamilyGram Admin', withMadeWithLove: false, theme: { colors: { primary100: '#c13584' } } },
+  branding: { companyName: 'PixGram Admin', withMadeWithLove: false, theme: { colors: { primary100: '#c13584' } } },
   // …
 };
 
@@ -648,7 +734,7 @@ Started from `server.js` via `services/telegram.service.js` with `polling: true`
 | GET | `/users/me/posts` | JWT | my grid |
 | GET | `/users/:idOrUsername/posts` | optional | any member's grid + profile |
 | POST | `/posts/:id/views` | – | tăng lượt xem (dùng cho Reels) → `{postId, viewCount}` |
-| GET | `/posts/:id/download` | – | tải tệp gốc; tên tệp `familygram-{user}-{id}-{ngày}{ext}` |
+| GET | `/posts/:id/download` | – | tải tệp gốc; tên tệp `pixgram-{user}-{id}-{ngày}{ext}` |
 | GET | `/reels?page=&limit=` | optional | chỉ video, `limit ≤ 20`, kèm `maxDurationSeconds` |
 | GET | `/reels/:id` | optional | một reel |
 | GET | `/stories` | optional | bài trong 24h gần nhất, gom theo tác giả (`groups`, `windowHours: 24`) |
@@ -659,6 +745,20 @@ Started from `server.js` via `services/telegram.service.js` with `polling: true`
 | GET | `/invites/stats` | JWT **admin** | `{pending, accepted, expired, ttlDays}` |
 | DELETE | `/invites/:id` | JWT **admin** | thu hồi lời mời (từ chối nếu đã được chấp nhận) |
 | GET | `/invites/:token` | – | tra cứu link mời: 404 nếu không có, **410** (`INVITE_EXPIRED`) nếu hết hạn/đã dùng |
+| GET | `/chat/conversations?box=inbox\|requests&limit=` | JWT | hộp thư + số tin chưa đọc từng dòng + `summary` cho badge |
+| POST | `/chat/conversations` | JWT | `{userId}` → mở/tạo hội thoại (201 khi tạo mới) |
+| GET | `/chat/conversations/:id` | JWT | chi tiết hội thoại + hồ sơ người kia |
+| DELETE | `/chat/conversations/:id` | JWT | xoá khỏi hộp thư của **chính mình** (chỉ ẩn) |
+| GET | `/chat/conversations/:id/messages?before=&limit=` | JWT | tin nhắn, mới nhất trước + `hasMore`/`nextBefore` để cuộn tải thêm |
+| POST | `/chat/conversations/:id/messages` | JWT | gửi tin: JSON (chữ, `sharedPostId`) hoặc multipart (`attachment` = ảnh/video) |
+| POST | `/chat/conversations/:id/read` | JWT | đánh dấu đã đọc → trả về số tin vừa đọc (phát sự kiện `read` cho người gửi) |
+| POST | `/chat/conversations/:id/typing` | JWT | tín hiệu "đang nhập…" (không ghi database) |
+| POST | `/chat/conversations/:id/accept\|decline` | JWT | người **nhận** đồng ý / từ chối tin nhắn chờ |
+| POST | `/chat/messages` | JWT | gửi nhanh theo `{toUserId}` (nút chia sẻ bài viết) |
+| DELETE | `/chat/messages/:id` | JWT | thu hồi tin của mình (≤ 60 phút) |
+| GET | `/chat/summary` | JWT | `{totalUnread, pendingRequests}` cho badge điều hướng |
+| GET | `/chat/people?q=` | JWT | tìm người để nhắn (kèm `conversationId` nếu đã có hội thoại) |
+| GET | `/chat/stream` | JWT | kênh **SSE**: `ready` · `message` · `read` · `typing` · `conversation` · `deleted` |
 
 Mọi thông báo lỗi và thành công đều theo `Accept-Language` (vi · en · zh) nhờ `i18n/messages.js`
 nhóm `api.*` — giao diện gửi kèm ngôn ngữ đang chọn, thiếu header thì mặc định tiếng Việt.
@@ -700,7 +800,7 @@ cd frontend
 npm install
 vercel --prod            # or import the repo in the dashboard
 # Set env vars: VITE_API_ORIGIN=https://api.d4mdev.click (+ VITE_APP_ORIGIN, VITE_ADMIN_URL)
-# Optionally add the custom domain family.d4mdev.click
+# Optionally add your own custom domain (e.g. photos.yourdomain.com)
 ```
 
 Then open the album, log in, and the **first account you register becomes the admin** (`FIRST_USER_IS_ADMIN=true`) — or create members from `/admin`.
@@ -708,6 +808,7 @@ Then open the album, log in, and the **first account you register becomes the ad
 Full step-by-step (tunnel config, DNS, wake-lock, battery optimisation, backups, troubleshooting): **`docs/DEPLOYMENT.md`**.
 Vận hành hằng ngày trên điện thoại (log, sao lưu, cập nhật, xử lý sự cố, cron): **`docs/OPERATIONS.md`**.
 Khoá bí mật & cách xoay vòng: **`docs/ENV-SECRETS.md`**.
+Đổi tên DB · user MariaDB · tunnel sang PixGram trên máy chủ đang chạy: **`docs/MIGRATION-PIXGRAM.md`**.
 
 ---
 
@@ -716,6 +817,15 @@ Khoá bí mật & cách xoay vòng: **`docs/ENV-SECRETS.md`**.
 * **One process, three jobs.** Express + AdminJS + Telegram share a single Node process: fewer moving parts on a phone, and the bot needs no public URL.
 * **`concurrently` orchestrates the dependencies, not Docker.** `start-tunnel.sh` polls `/api/health` before starting the tunnel, and `start-mariadb.sh` re-uses an already-running server, so running `npm start` twice never corrupts the datadir.
 * **Filenames in the DB, URLs in config.** Photos survive a domain change; changing `PUBLIC_BASE_URL` instantly re-points every image.
+* **Công khai — không còn câu chữ gia đình.** Ứng dụng chuyển từ "album gia đình" sang
+  cộng đồng chia sẻ ảnh: mọi chuỗi (vi · en · zh), email, bot Telegram, nhãn AdminJS và
+  tài liệu đều dùng "thành viên / cộng đồng / kho ảnh". `tools/check-wording.sh` chạy
+  trong `check-all.sh` và CI, **tự chặn** nếu câu chữ cũ quay lại.
+* **Tên thương hiệu đã đổi hẳn — kể cả định danh kỹ thuật.** Tên cũ mang từ khoá đã bị loại bỏ
+  biến mất khỏi UI, email, bot và tài liệu; định danh kỹ thuật nay là DB `pixgram`, user
+  `pixgram`, cookie `pixgram.admin`, khoá `localStorage` `pixgram.*`, tunnel `pixgram-api`.
+  Máy chủ đang chạy có sẵn `npm run db:rename` (kèm `--dry-run` và đường lùi) để chuyển
+  dữ liệu cũ sang tên mới **mà không mất gì**.
 * **Counters over aggregates.** The feed never runs `COUNT(*)` per card — likes/comments are denormalised and kept in sync by hooks with atomic SQL.
 * **Optimistic UI.** Like / comment / delete update instantly and roll back on failure — essential on a mobile connection.
 * **Two URL layers in the frontend.** `config/paths.js` holds the prefixes, `config/urls.js` composes the endpoints; components only ever import from the latter.
@@ -723,7 +833,7 @@ Khoá bí mật & cách xoay vòng: **`docs/ENV-SECRETS.md`**.
 * **Localize bằng i18n, không bằng CSS.** CSS chỉ giữ vai trò thương hiệu + bố cục + lưới an toàn cho chuỗi cứng — vì selector phụ thuộc DOM sẽ vỡ khi AdminJS nâng cấp, còn khoá dịch thì không.
 * **Không transcode trên điện thoại.** Điện thoại Android là máy chủ: đọc thời lượng bằng cách parse atom `mvhd` (thuần JS), trích ảnh bìa bằng `<canvas>` ở client, nhạc nền phát đồng bộ thay vì mux — CPU gần như không tăng, và **không cần ffmpeg**.
 * **Story là một truy vấn, không phải một bảng.** `GET /api/stories` lọc bài trong 24h rồi gom theo tác giả: không migration, không job dọn dẹp, không dữ liệu mồ côi.
-* **Service worker không cache `/uploads/`.** Album của gia đình sẽ lớn dần; giữ ảnh trong Cache Storage là cách nhanh nhất để đầy bộ nhớ điện thoại. Chỉ HTML/JS/CSS và dữ liệu feed mới được lưu.
+* **Service worker không cache `/uploads/`.** Kho ảnh sẽ lớn dần; giữ ảnh trong Cache Storage là cách nhanh nhất để đầy bộ nhớ điện thoại. Chỉ HTML/JS/CSS và dữ liệu feed mới được lưu.
 * **Nén ở trình duyệt, không nén ở máy chủ.** Máy chủ là chiếc điện thoại đang treo 24/7:
   cài thư viện xử lý ảnh bằng C trên Termux rất dễ hỏng, còn `canvas` của trình duyệt đã
   tối ưu sẵn và chạy trên máy người gửi. Máy chủ chỉ nhận tệp đã nhẹ đi 5–8 lần.
@@ -731,7 +841,7 @@ Khoá bí mật & cách xoay vòng: **`docs/ENV-SECRETS.md`**.
   ngẫu nhiên; database chỉ lưu SHA-256 và so sánh bằng `timingSafeEqual`. Nếu tệp dump
   database bị lộ, kẻ tấn công **không** dùng được các liên kết đó.
 * **“Quên mật khẩu” luôn trả cùng một câu trả lời.** Khác đi sẽ biến trang đó thành công cụ
-  dò xem ai trong gia đình đã có tài khoản.
+  dò xem ai đã có tài khoản.
 * **Không bao giờ chặn người dùng vì dịch vụ phụ.** SMTP lỗi, Telegram lỗi, nén ảnh lỗi —
   tất cả đều chỉ ghi log; ảnh vẫn được đăng và người dùng vẫn thấy đúng luồng.
 * **Ba cái bẫy chỉ lộ ra lúc khởi động thật** (đã sửa, và `npm run boot:check` canh chúng):
@@ -744,3 +854,21 @@ Khoá bí mật & cách xoay vòng: **`docs/ENV-SECRETS.md`**.
      trước, `POST /admin/login` trả 500 `WrongArgumentError` trong khi trang đăng nhập vẫn hiện
      bình thường — lỗi rất dễ mất thời gian.
 * **Tệp luôn nằm trong thư mục con.** URL ảnh/video là `/uploads/posts/<tệp>` và `/uploads/avatars/<tệp>` — hàm dựng URL nhận tham số thư mục tường minh để không bao giờ sinh ra liên kết 404.
+
+### Chat 1-1 (bổ sung ở lượt này)
+
+* **SSE thay vì Socket.IO** — Cloudflare Tunnel + Termux: ít cổng, ít phụ thuộc,
+  tự nối lại; mọi thao tác GỬI đi bằng POST nên chỉ cần một chiều realtime.
+* **Không dùng EventSource** — nó không gửi được header `Authorization`, buộc phải
+  nhét token vào URL (lọt access log của Cloudflare). Dùng `fetch` + đọc luồng SSE.
+* **"Tin nhắn chờ" mặc định BẬT** — chống spam khi ứng dụng đã mở cho mọi người;
+  tắt bằng `CHAT_MESSAGE_REQUESTS=false`.
+* **Số tin chưa đọc tính bằng SQL, không lưu cột** — bộ đếm denormalised chỉ để
+  hiển thị nhanh (tin cuối), không bao giờ là nguồn sự thật của số "chưa đọc".
+* **Thu hồi tin = xoá nội dung trong chính câu UPDATE** — giới hạn 60 phút như
+  Instagram; tệp trên đĩa cũng bị xoá luôn.
+* **`requestTimeout = 0`** — bắt buộc, nếu không Node sẽ cắt mọi kết nối SSE sau
+  300 giây và chat sẽ "im lặng" đúng 5 phút một lần.
+* **Giám sát dung lượng sau mỗi lần đăng** — máy chủ là chiếc điện thoại: khi
+  `uploads/` vượt `STORAGE_WARN_TOTAL_MB` hoặc đĩa còn dưới `DISK_FREE_WARN_PERCENT`
+  thì nhắc qua Telegram (tối đa 1 lần/6 giờ, và chỉ đánh dấu "đã nhắc" khi gửi được).

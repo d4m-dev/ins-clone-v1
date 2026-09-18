@@ -1,5 +1,5 @@
 /**
- * routes/invite.routes.js — lời mời tham gia gia đình.
+ * routes/invite.routes.js — lời mời tham gia cộng đồng.
  * ---------------------------------------------------------------------------
  *   POST   /api/invites             (admin)   tạo lời mời + gửi email
  *   GET    /api/invites             (admin)   danh sách kèm trạng thái

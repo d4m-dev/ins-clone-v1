@@ -48,9 +48,11 @@ const EXTENSION_BY_MIME = {
 const IMAGE_MIME = env.uploads.allowedMimeTypes.filter((mime) => mime.startsWith('image/'));
 const VIDEO_MIME = env.uploads.allowedVideoMimeTypes.filter((mime) => mime.startsWith('video/'));
 const AUDIO_MIME = env.uploads.allowedAudioMimeTypes.filter((mime) => mime.startsWith('audio/'));
+/** Tệp gửi trong tin nhắn = ảnh ∪ video. */
+const ATTACHMENT_MIME = [...IMAGE_MIME, ...VIDEO_MIME];
 
 /** Tiền tố tên tệp theo loại — giúp phân biệt khi liệt kê thư mục. */
-const PREFIX = { image: '', video: 'v-', audio: 'a-' };
+const PREFIX = { image: '', video: 'v-', audio: 'a-', attachment: 'c-' };
 
 function ensureDir(dir) {
   fs.mkdirSync(dir, { recursive: true });
@@ -62,6 +64,8 @@ function isAllowed(fieldName, mimeType) {
   if (fieldName === 'image') return IMAGE_MIME.includes(mimeType);
   if (fieldName === 'video') return VIDEO_MIME.includes(mimeType);
   if (fieldName === 'audio') return AUDIO_MIME.includes(mimeType);
+  // Tệp gửi trong tin nhắn: ảnh HOẶC video, ngưỡng riêng (env.chat).
+  if (fieldName === 'attachment') return ATTACHMENT_MIME.includes(mimeType);
   return false;
 }
 
@@ -69,13 +73,14 @@ function isAllowed(fieldName, mimeType) {
 function limitFor(fieldName) {
   if (fieldName === 'video') return env.uploads.maxVideoSizeMb * 1024 * 1024;
   if (fieldName === 'audio') return env.uploads.maxAudioSizeMb * 1024 * 1024;
+  if (fieldName === 'attachment') return env.chat.maxAttachmentSizeMb * 1024 * 1024;
   return env.uploads.maxSizeMb * 1024 * 1024;
 }
 
 /**
  * Tạo multer instance ghi vào <uploads>/<folder>.
- * @param {'posts'|'avatars'} folder
- * @param {Array<'image'|'video'|'audio'>} fields  các trường tệp được phép
+ * @param {'posts'|'avatars'|'chat'} folder
+ * @param {Array<'image'|'video'|'audio'|'attachment'>} fields  các trường tệp được phép
  */
 function createMediaUploader(folder, fields = ['image']) {
   const destination = ensureDir(path.join(UPLOAD_ROOT, folder));
@@ -109,6 +114,7 @@ function createMediaUploader(folder, fields = ['image']) {
           image: IMAGE_MIME,
           video: VIDEO_MIME,
           audio: AUDIO_MIME,
+          attachment: ATTACHMENT_MIME,
         }[file.fieldname];
         return cb(
           ApiError.badRequest(
@@ -130,6 +136,13 @@ const avatarUploader = createMediaUploader('avatars', ['image']);
 /** Bài đăng: poster/ảnh + video + nhạc nền. */
 const postMediaUploader = createMediaUploader('posts', ['image', 'video', 'audio']);
 
+/**
+ * Tệp gửi trong tin nhắn (chat): ảnh hoặc video, tối đa env.chat.maxAttachmentSizeMb.
+ * Ghi vào uploads/chat/ — vẫn nằm dưới cây /uploads đã được siết bảo mật
+ * (middleware/static.middleware.js), không mở thêm thư mục tĩnh nào khác.
+ */
+const chatAttachmentUploader = createMediaUploader('chat', ['attachment']);
+
 /** Giữ tên cũ để không phá vỡ import ở nơi khác. */
 const postImageUploader = postMediaUploader;
 
@@ -140,12 +153,23 @@ function handleUploadErrors(err, req, _res, next) {
   if (err instanceof multer.MulterError) {
     const fieldName = err.field || 'image';
     if (err.code === 'LIMIT_FILE_SIZE') {
-      const mb = { video: env.uploads.maxVideoSizeMb, audio: env.uploads.maxAudioSizeMb }[fieldName] ?? env.uploads.maxSizeMb;
-      const label = { video: 'Video', audio: 'Tệp nhạc' }[fieldName] ?? 'Ảnh';
+      const mb =
+        {
+          video: env.uploads.maxVideoSizeMb,
+          audio: env.uploads.maxAudioSizeMb,
+          attachment: env.chat.maxAttachmentSizeMb,
+        }[fieldName] ?? env.uploads.maxSizeMb;
+      const label = { video: 'Video', audio: 'Tệp nhạc', attachment: 'Tệp đính kèm' }[fieldName] ?? 'Ảnh';
       return next(ApiError.tooLarge(`${label} lớn hơn ${mb} MB cho phép.`));
     }
     if (err.code === 'LIMIT_FILE_COUNT' || err.code === 'LIMIT_UNEXPECTED_FILE') {
-      return next(ApiError.badRequest('Chỉ được tải lên 1 ảnh, 1 video và 1 tệp nhạc mỗi bài.'));
+      return next(
+        ApiError.badRequest(
+          fieldName === 'attachment'
+            ? 'Mỗi tin nhắn chỉ gửi được 1 tệp.'
+            : 'Chỉ được tải lên 1 ảnh, 1 video và 1 tệp nhạc mỗi bài.'
+        )
+      );
     }
     return next(ApiError.badRequest(`Tải tệp bị từ chối: ${err.message}`));
   }
@@ -159,6 +183,7 @@ function assertFileSizes(files = {}) {
     ['image', files.image?.[0], env.uploads.maxSizeMb, 'Ảnh'],
     ['video', files.video?.[0], env.uploads.maxVideoSizeMb, 'Video'],
     ['audio', files.audio?.[0], env.uploads.maxAudioSizeMb, 'Tệp nhạc'],
+    ['attachment', files.attachment?.[0], env.chat.maxAttachmentSizeMb, 'Tệp đính kèm'],
   ];
   for (const [, file, maxMb, label] of checks) {
     if (file && file.size > maxMb * 1024 * 1024) {
@@ -173,11 +198,13 @@ module.exports = {
   IMAGE_MIME,
   VIDEO_MIME,
   AUDIO_MIME,
+  ATTACHMENT_MIME,
   ALLOWED_MIME: IMAGE_MIME, // tương thích ngược
   createMediaUploader,
   avatarUploader,
   postMediaUploader,
   postImageUploader,
+  chatAttachmentUploader,
   handleUploadErrors,
   assertFileSizes,
   ensureDir,

@@ -4,7 +4,7 @@
 /**
  * tools/demo-api.js  —  DEV-ONLY preview harness (NOT part of production)
  * ===========================================================================
- * A dependency-free mock of the FamilyGram REST API so the React UI can be
+ * A dependency-free mock of the PixGram REST API so the React UI can be
  * previewed on a laptop/desktop *without* Termux, MariaDB or the tunnel.
  * It implements the exact same response contract as the real backend
  * (`{ success, data: { … } }`) and serves the demo photos/video from ./demo-images.
@@ -14,7 +14,7 @@
  *   PORT=5000 node tools/demo-api.js
  *
  * Login with any password. Accounts:
- *   minh.nguyen (admin) · linh.tran · ba.noi · me.su
+ *   minh.nguyen (admin) · linh.tran · bao.long · su.ha
  * ===========================================================================
  */
 
@@ -31,17 +31,17 @@ const PUBLIC_BASE = process.env.PUBLIC_BASE_URL || ''; // empty → relative /up
 
 /* ------------------------------- seed data -------------------------------- */
 const users = [
-  { id: 1, username: 'minh.nguyen', fullName: 'Minh Nguyễn', role: 'admin', locale: 'vi', avatarUrl: null, bio: 'Giữ ảnh cho cả nhà 📷', createdAt: daysAgo(420) },
-  { id: 2, username: 'linh.tran', fullName: 'Linh Trần', role: 'member', locale: 'vi', avatarUrl: null, bio: 'Mẹ của hai đứa nhỏ', createdAt: daysAgo(410) },
-  { id: 3, username: 'ba.noi', fullName: 'Ông Bà Nội', role: 'member', locale: 'vi', avatarUrl: null, bio: 'Gia Lai', createdAt: daysAgo(400) },
-  { id: 4, username: 'me.su', fullName: 'Mẹ Su', role: 'member', locale: 'en', avatarUrl: null, bio: 'Sunrise person 🌅', createdAt: daysAgo(300) },
+  { id: 1, username: 'minh.nguyen', fullName: 'Minh Nguyễn', role: 'admin', locale: 'vi', avatarUrl: null, bio: 'Chụp ảnh đường phố 📷', createdAt: daysAgo(420) },
+  { id: 2, username: 'linh.tran', fullName: 'Linh Trần', role: 'member', locale: 'vi', avatarUrl: null, bio: 'Yêu biển và cà phê sáng', createdAt: daysAgo(410) },
+  { id: 3, username: 'bao.long', fullName: 'Bảo Long', role: 'member', locale: 'vi', avatarUrl: null, bio: 'Nhiếp ảnh phong cảnh', createdAt: daysAgo(400) },
+  { id: 4, username: 'su.ha', fullName: 'Su Hà', role: 'member', locale: 'en', avatarUrl: null, bio: 'Sunrise person 🌅', createdAt: daysAgo(300) },
 ];
 
 let nextPostId = 7;
 const posts = [
-  { id: 1, userId: 1, imageFilename: 'demo-1.jpg', caption: 'Sunday dinner on the roof — bà nấu canh chua 🍲', location: 'Chư Ty, Gia Lai', likeCount: 12, commentCount: 3, createdAt: hoursAgo(5) },
-  { id: 2, userId: 2, imageFilename: 'demo-2.jpg', caption: 'Mưa đầu mùa và hai đứa nhỏ 🤍', location: 'Gia Lai', likeCount: 8, commentCount: 2, createdAt: hoursAgo(26) },
-  { id: 3, userId: 3, imageFilename: 'demo-3.jpg', caption: 'Bánh chưng for Tết, as every year.', location: null, likeCount: 21, commentCount: 4, createdAt: hoursAgo(50) },
+  { id: 1, userId: 1, imageFilename: 'demo-1.jpg', caption: 'Bữa tối trên sân thượng — canh chua tự nấu 🍲', location: 'Chư Ty, Gia Lai', likeCount: 12, commentCount: 3, createdAt: hoursAgo(5) },
+  { id: 2, userId: 2, imageFilename: 'demo-2.jpg', caption: 'Mưa đầu mùa trên phố 🤍', location: 'Gia Lai', likeCount: 8, commentCount: 2, createdAt: hoursAgo(26) },
+  { id: 3, userId: 3, imageFilename: 'demo-3.jpg', caption: 'Bánh chưng ngày Tết, năm nào cũng gói.', location: null, likeCount: 21, commentCount: 4, createdAt: hoursAgo(50) },
   { id: 4, userId: 4, imageFilename: 'demo-4.jpg', caption: 'Sunrise walk before the boat left 🌅', location: 'Quy Nhơn', likeCount: 15, commentCount: 1, createdAt: hoursAgo(72) },
   { id: 5, userId: 4, imageFilename: 'demo-1.jpg', caption: 'Rooftop again — this time with a birthday cake 🎂', location: 'Chư Ty', likeCount: 9, commentCount: 1, createdAt: hoursAgo(96) },
   { id: 6, userId: 2, imageFilename: 'demo-4.jpg', caption: 'Same beach, one year later 🌊', location: 'Quy Nhơn', likeCount: 17, commentCount: 2, createdAt: hoursAgo(140) },
@@ -51,7 +51,7 @@ const posts = [
     id: 7, userId: 1, mediaType: 'video',
     imageFilename: 'demo-2.jpg', videoFilename: 'demo-clip.mp4',
     durationSeconds: 5.76, viewCount: 34,
-    caption: 'Hai đứa nhỏ chơi mưa — quay bằng điện thoại 🎬', location: 'Chư Ty, Gia Lai',
+    caption: 'Mưa Sài Gòn — quay bằng điện thoại 🎬', location: 'Chư Ty, Gia Lai',
     likeCount: 14, commentCount: 2, createdAt: hoursAgo(3),
   },
   {
@@ -68,11 +68,11 @@ const viewCounts = new Map([[1, 61], [2, 18], [3, 44], [4, 27], [5, 9], [6, 13],
 
 let nextCommentId = 8;
 const comments = [
-  { id: 1, postId: 1, userId: 2, body: 'Ngon quá! Lần sau cho con xin suất 😋', createdAt: hoursAgo(4) },
-  { id: 2, postId: 1, userId: 3, body: 'Cháu về ăn cơm với bà nhé.', createdAt: hoursAgo(3) },
+  { id: 1, postId: 1, userId: 2, body: 'Ngon quá! Lần sau cho mình xin một suất 😋', createdAt: hoursAgo(4) },
+  { id: 2, postId: 1, userId: 3, body: 'Nhìn hấp dẫn quá, hôm nào qua ăn với nhé!', createdAt: hoursAgo(3) },
   { id: 3, postId: 1, userId: 4, body: 'View đẹp thật 🌇', createdAt: hoursAgo(2) },
-  { id: 4, postId: 2, userId: 1, body: 'Tắm mưa xong nhớ thay đồ nha hai đứa.', createdAt: hoursAgo(25) },
-  { id: 5, postId: 2, userId: 4, body: 'Dễ thương quá 🥰', createdAt: hoursAgo(24) },
+  { id: 4, postId: 2, userId: 1, body: 'Mưa kiểu này ngồi quán cà phê thì hết ý.', createdAt: hoursAgo(25) },
+  { id: 5, postId: 2, userId: 4, body: 'Khung ảnh đẹp quá 🥰', createdAt: hoursAgo(24) },
   { id: 6, postId: 3, userId: 1, body: 'Mùi Tết luôn 🎋', createdAt: hoursAgo(49) },
   { id: 7, postId: 4, userId: 2, body: 'Bình minh đẹp mê.', createdAt: hoursAgo(70) },
 ];
@@ -81,13 +81,13 @@ const likes = new Set(['1:2', '1:3', '1:4', '2:1', '3:1', '3:4', '4:1', '6:1']);
 const tokens = new Map(); // token -> userId
 const uploads = new Map(); // filename -> Buffer
 const invites = [
-  // Hai lời mời mẫu để trang "Mời người thân" không trống khi xem trước.
+  // Hai lời mời mẫu để trang "Mời thành viên" không trống khi xem trước.
   {
-    id: 1, email: 'co.hoi@example.com', role: 'member', message: 'Vào album nhà mình nhé!',
+    id: 1, email: 'ban.moi@example.com', role: 'member', message: 'Tham gia cùng mọi người nhé!',
     status: 'pending', invitedById: 1, expiresAt: daysAgo(-7), createdAt: daysAgo(1),
   },
   {
-    id: 2, email: 'chu.bay@example.com', role: 'member', message: null,
+    id: 2, email: 'ban.hai@example.com', role: 'member', message: null,
     status: 'accepted', invitedById: 1, expiresAt: daysAgo(3), acceptedAt: daysAgo(2), createdAt: daysAgo(4),
   },
 ];
@@ -199,6 +199,258 @@ function parseMultipart(buffer, boundary) {
   return { files, fields };
 }
 
+/* =========================== chat (tin nhắn 1-1) ===========================
+ * Giả lập ĐÚNG hợp đồng của backend thật (services/chat.service.js) để giao
+ * diện Hộp thư chạy được khi xem trước mà không cần MariaDB:
+ *   • mỗi cặp người dùng đúng MỘT hội thoại
+ *   • người lạ nhắn trước → status 'requested' (mục "Tin nhắn chờ")
+ *   • số tin chưa đọc tính từ mốc đã đọc của từng người
+ *   • tin nhắn chứa chữ / ảnh / bài viết chia sẻ / tin đã thu hồi
+ * ========================================================================== */
+
+/** Tệp cho tin nhắn nằm trong uploads/chat/ (giống thật) — sao chép từ ảnh demo. */
+uploads.set('chat-quynhon.jpg', uploads.get('demo-2.jpg') || fs.readFileSync(path.join(DEMO_IMAGES, 'demo-2.jpg')));
+uploads.set('chat-bien.jpg', uploads.get('demo-4.jpg') || fs.readFileSync(path.join(DEMO_IMAGES, 'demo-4.jpg')));
+if (uploads.has('demo-clip.mp4')) uploads.set('chat-clip.mp4', uploads.get('demo-clip.mp4'));
+
+let nextConversationId = 1;
+let nextMessageId = 1;
+
+const conversations = [];
+const messagesOf = (conversation) => conversation.messages;
+
+function seedConversation({ userOneId, userTwoId, status = 'accepted', requestedById = null, readAt = {}, messages = [] }) {
+  const conversation = {
+    id: nextConversationId++,
+    userOneId: Math.min(userOneId, userTwoId),
+    userTwoId: Math.max(userOneId, userTwoId),
+    status,
+    requestedById,
+    // readAt: { [userId]: ISO } — mốc đã đọc của từng người
+    readAt: { ...readAt },
+    hiddenAt: {},
+    messages: messages.map((message) => ({
+      id: nextMessageId++,
+      conversationId: 0,
+      isDeleted: false,
+      attachmentUrl: null,
+      attachmentType: null,
+      sharedPostId: null,
+      readAt: null,
+      ...message,
+    })),
+  };
+  conversation.messages.forEach((message) => {
+    message.conversationId = conversation.id;
+  });
+  conversations.push(conversation);
+  return conversation;
+}
+
+const MINUTE = 60 * 1000;
+const minutesAgo = (m) => new Date(Date.now() - m * MINUTE).toISOString();
+
+// --- 1) Minh ↔ Linh: hội thoại đầy đủ (ảnh, video, bài viết, tin thu hồi) ----
+seedConversation({
+  userOneId: 1,
+  userTwoId: 2,
+  // Minh đọc tới tin gần cuối → còn 1 tin của Linh chưa đọc (badge = 1)
+  readAt: { 1: minutesAgo(4), 2: minutesAgo(9) },
+  messages: [
+    { senderId: 2, body: 'Minh ơi, cuối tuần này đi Quy Nhơn không?', createdAt: minutesAgo(180), readAt: minutesAgo(175) },
+    { senderId: 1, body: 'Đi chứ! Để mình đặt vé tàu.', createdAt: minutesAgo(176), readAt: minutesAgo(170) },
+    { senderId: 2, body: 'Ảnh hôm qua mình chụp nè', attachmentUrl: '/uploads/chat/chat-quynhon.jpg', attachmentType: 'image', attachmentWidth: 1080, attachmentHeight: 1350, createdAt: minutesAgo(90), readAt: minutesAgo(85) },
+    { senderId: 1, body: 'Đẹp ghê 😍', createdAt: minutesAgo(88), readAt: minutesAgo(80) },
+    { senderId: 2, body: 'Nhớ hồi năm ngoái quá', sharedPostId: 6, createdAt: minutesAgo(30), readAt: minutesAgo(25) },
+    { senderId: 1, body: 'Mưa Sài Gòn, quay bằng điện thoại 🎬', attachmentUrl: '/uploads/chat/chat-clip.mp4', attachmentType: 'video', createdAt: minutesAgo(20), readAt: minutesAgo(18) },
+    { senderId: 1, body: 'tin này gửi nhầm, thôi thu hồi 😅', createdAt: minutesAgo(12), readAt: minutesAgo(12), isDeleted: true },
+    { senderId: 2, body: 'Vé tàu đặt mấy giờ vậy?', createdAt: minutesAgo(3), readAt: null },
+  ],
+});
+
+// --- 2) Minh ↔ Bảo Long: chuyện ngắn, đã đọc hết -----------------------------
+seedConversation({
+  userOneId: 1,
+  userTwoId: 3,
+  readAt: { 1: minutesAgo(400), 3: minutesAgo(390) },
+  messages: [
+    { senderId: 3, body: 'Minh ơi, bánh chưng năm nay gói ngày nào?', createdAt: minutesAgo(420), readAt: minutesAgo(415) },
+    { senderId: 1, body: '28 Tết mình gói nhé, lá dong mua rồi.', createdAt: minutesAgo(410), readAt: minutesAgo(405) },
+    { senderId: 3, body: 'Ừ, nhớ mua thêm ít đậu xanh nhé.', createdAt: minutesAgo(402), readAt: minutesAgo(400) },
+  ],
+});
+
+// --- 3) Su Hà → Minh: TIN NHẮN CHỜ (chưa đồng ý) ---------------------------
+seedConversation({
+  userOneId: 1,
+  userTwoId: 4,
+  status: 'requested',
+  requestedById: 4,
+  readAt: {},
+  messages: [
+    { senderId: 4, body: 'Chào Minh, mình là Su Hà — ảnh biển của bạn đẹp quá!', createdAt: minutesAgo(45) },
+    { senderId: 4, body: 'Cho mình hỏi bạn chụp ở Quy Nhơn chỗ nào vậy?', createdAt: minutesAgo(44) },
+  ],
+});
+
+// --- 4) Linh ↔ Su Hà: hai tài khoản kia cũng có hộp thư -------------------
+seedConversation({
+  userOneId: 2,
+  userTwoId: 4,
+  readAt: { 2: minutesAgo(700), 4: minutesAgo(690) },
+  messages: [
+    { senderId: 4, body: 'Linh ơi, mai mình ghé chơi được không?', createdAt: minutesAgo(720), readAt: minutesAgo(710) },
+    { senderId: 2, body: 'Được luôn, mình nấu canh chua nha 🌊', createdAt: minutesAgo(705), readAt: minutesAgo(700) },
+  ],
+});
+
+// --- 5) Câu chuyện dài để thử cuộn tải tin cũ (phân trang) -----------------
+const filler = [];
+for (let index = 40; index >= 1; index -= 1) {
+  filler.push({
+    senderId: index % 2 === 0 ? 1 : 2,
+    body: `Tin cũ số ${index} — trò chuyện lưu lại để thử cuộn lên tải thêm.`,
+    createdAt: minutesAgo(60 * 24 * 3 + index * 3),
+    readAt: minutesAgo(60 * 24 * 3 + index * 3 - 2),
+  });
+}
+// Cặp (3,4) chưa dùng ở trên → vẫn giữ đúng luật "mỗi cặp một hội thoại".
+const longChat = seedConversation({
+  userOneId: 3,
+  userTwoId: 4,
+  readAt: { 3: minutesAgo(60 * 24 * 2), 4: minutesAgo(60 * 24 * 2) },
+  messages: [],
+});
+filler.forEach((message) => {
+  longChat.messages.push({
+    ...message,
+    id: nextMessageId++,
+    conversationId: longChat.id,
+    isDeleted: false,
+    attachmentUrl: null,
+    attachmentType: null,
+    sharedPostId: null,
+  });
+});
+
+const conversationById = (id) => conversations.find((item) => item.id === Number(id)) || null;
+const isMemberOf = (conversation, userId) =>
+  Boolean(conversation && userId && (conversation.userOneId === userId || conversation.userTwoId === userId));
+const peerIdOf = (conversation, userId) =>
+  conversation.userOneId === Number(userId) ? conversation.userTwoId : conversation.userOneId;
+
+/** Trích đoạn tin cuối — cùng luật với services/chat.service.js. */
+function previewOf(message) {
+  if (!message) return null;
+  if (message.isDeleted) return 'Tin nhắn đã được thu hồi';
+  if (message.sharedPostId) return '📎 Bài viết';
+  if (message.body && message.attachmentUrl) return `${message.attachmentType === 'video' ? '🎥 Video' : '📷 Ảnh'} ${message.body}`;
+  if (message.attachmentUrl) return message.attachmentType === 'video' ? '🎥 Video' : '📷 Ảnh';
+  return message.body;
+}
+
+const lastMessageOf = (conversation) => conversation.messages[conversation.messages.length - 1] || null;
+
+function unreadCountFor(conversation, userId) {
+  const peerId = peerIdOf(conversation, userId);
+  const readAt = conversation.readAt[userId] ? new Date(conversation.readAt[userId]).getTime() : 0;
+  return conversation.messages.filter(
+    (message) => message.senderId === peerId && !message.isDeleted && new Date(message.createdAt).getTime() > readAt
+  ).length;
+}
+
+function conversationJSON(conversation, viewerId) {
+  const me = Number(viewerId);
+  const peer = findUser(peerIdOf(conversation, me));
+  const last = lastMessageOf(conversation);
+  const peerReadAt = conversation.readAt[peerIdOf(conversation, me)]
+    ? new Date(conversation.readAt[peerIdOf(conversation, me)]).getTime()
+    : 0;
+  const hidden = conversation.hiddenAt[me] ? new Date(conversation.hiddenAt[me]).getTime() : 0;
+  return {
+    id: conversation.id,
+    status: conversation.status,
+    isRequest: conversation.status === 'requested' && conversation.requestedById !== me,
+    canRespond: conversation.status === 'requested' && conversation.requestedById !== me,
+    peer: peer ? publicUser(peer) : null,
+    lastMessage: last
+      ? {
+          id: last.id,
+          preview: previewOf(last),
+          mine: last.senderId === me,
+          seen: last.senderId === me ? peerReadAt >= new Date(last.createdAt).getTime() : true,
+          at: last.createdAt,
+        }
+      : null,
+    unreadCount: unreadCountFor(conversation, me),
+    updatedAt: last ? last.createdAt : new Date().toISOString(),
+    _hidden: hidden && (!last || new Date(last.createdAt).getTime() <= hidden),
+  };
+}
+
+function messageJSON(message, viewerId) {
+  const me = Number(viewerId);
+  return {
+    id: message.id,
+    conversationId: message.conversationId,
+    senderId: message.senderId,
+    mine: message.senderId === me,
+    body: message.isDeleted ? null : message.body,
+    isDeleted: Boolean(message.isDeleted),
+    attachmentUrl: message.isDeleted ? null : message.attachmentUrl,
+    attachmentType: message.isDeleted ? null : message.attachmentType,
+    attachmentWidth: message.attachmentWidth || null,
+    attachmentHeight: message.attachmentHeight || null,
+    sharedPostId: message.isDeleted ? null : message.sharedPostId,
+    seen: message.senderId === me ? Boolean(message.readAt) : true,
+    readAt: message.readAt,
+    createdAt: message.createdAt,
+  };
+}
+
+function visibleConversations(viewerId, box) {
+  const me = Number(viewerId);
+  return conversations
+    .filter((conversation) => isMemberOf(conversation, me))
+    .filter((conversation) =>
+      box === 'requests'
+        ? conversation.status === 'requested' && conversation.requestedById !== me
+        : conversation.status === 'accepted'
+    )
+    .filter((conversation) => !conversationJSON(conversation, me)._hidden)
+    .sort((a, b) => new Date(lastMessageOf(b)?.createdAt || 0) - new Date(lastMessageOf(a)?.createdAt || 0));
+}
+
+function chatSummary(viewerId) {
+  const inbox = visibleConversations(viewerId, 'inbox');
+  const requests = visibleConversations(viewerId, 'requests');
+  return {
+    totalUnread: inbox.reduce((sum, conversation) => sum + unreadCountFor(conversation, viewerId), 0),
+    pendingRequests: requests.reduce((sum, conversation) => sum + Math.max(unreadCountFor(conversation, viewerId), 1), 0),
+  };
+}
+
+/** Tạo hội thoại mới nếu chưa có (đúng luật: mỗi cặp chỉ một hội thoại). */
+function openConversationBetween(viewerId, peerId) {
+  const me = Number(viewerId);
+  const other = Number(peerId);
+  const existing = conversations.find(
+    (conversation) =>
+      (conversation.userOneId === Math.min(me, other) && conversation.userTwoId === Math.max(me, other))
+  );
+  if (existing) return { conversation: existing, created: false };
+  const conversation = seedConversation({
+    userOneId: me,
+    userTwoId: other,
+    // Người chưa từng trò chuyện → tin nhắn chờ (giống thật, cờ CHAT_MESSAGE_REQUESTS=true)
+    status: conversations.length ? 'requested' : 'requested',
+    requestedById: me,
+    readAt: {},
+    messages: [],
+  });
+  return { conversation, created: true };
+}
+
 /* --------------------------------- router --------------------------------- */
 const server = http.createServer(async (req, res) => {
   const url = new URL(req.url, `http://${req.headers.host}`);
@@ -245,7 +497,7 @@ const server = http.createServer(async (req, res) => {
   /* --------------------------------- auth --------------------------------- */
   if (pathname === '/api/auth/config') {
     return ok(res, {
-      appName: 'FamilyGram',
+      appName: 'PixGram',
       maxUploadMb: 15,
       allowedMimeTypes: ['image/jpeg', 'image/png', 'image/webp', 'image/gif'],
       maxVideoMb: 60,
@@ -318,7 +570,7 @@ const server = http.createServer(async (req, res) => {
     });
   }
 
-  // Thu hồi lời mời: nút × trong trang "Mời người thân".
+  // Thu hồi lời mời: nút × trong trang "Mời thành viên".
   if (pathname.startsWith('/api/invites/') && req.method === 'DELETE') {
     const id = Number(pathname.replace('/api/invites/', ''));
     const found = invites.find((invite) => invite.id === id);
@@ -336,7 +588,7 @@ const server = http.createServer(async (req, res) => {
           email: 'nguoi.moi@example.com',
           role: 'member',
           status: 'pending',
-          message: 'Vào album nhà mình nhé!',
+          message: 'Tham gia cùng mọi người nhé!',
           inviter: publicUser(users[0]),
           expiresAt: daysAgo(-7),
         },
@@ -582,10 +834,280 @@ const server = http.createServer(async (req, res) => {
     res.writeHead(200, {
       'Content-Type': contentTypeOf(filename),
       'Content-Length': buffer.length,
-      'Content-Disposition': `attachment; filename="familygram-${owner}-${post.id}-${date}${extension}"`,
+      'Content-Disposition': `attachment; filename="pixgram-${owner}-${post.id}-${date}${extension}"`,
       'Access-Control-Allow-Origin': '*',
     });
     return res.end(buffer);
+  }
+
+  /* --------------------------------- chat --------------------------------- */
+  /**
+   * Kênh thời gian thực (SSE) — giống backend thật. Sau ~8 giây, người kia
+   * "đang nhập…" rồi gửi một tin để thấy ngay giao diện nhảy tin realtime.
+   */
+  if (pathname === '/api/chat/stream' && req.method === 'GET') {
+    if (!viewer) return fail(res, 401, 'Cần đăng nhập.', 'UNAUTHORIZED');
+    res.writeHead(200, {
+      'Content-Type': 'text/event-stream; charset=utf-8',
+      'Cache-Control': 'no-cache, no-transform',
+      Connection: 'keep-alive',
+      'X-Accel-Buffering': 'no',
+      'Access-Control-Allow-Origin': '*',
+    });
+    const send = (event, payload) => res.write(`event: ${event}\ndata: ${JSON.stringify(payload)}\n\n`);
+    res.write('retry: 3000\n\n');
+    send('ready', { userId: viewer.id, at: new Date().toISOString() });
+
+    const heartbeat = setInterval(() => res.write(': ping\n\n'), 25000);
+    const timers = [heartbeat];
+
+    // Kịch bản demo: đồng nghiệp/bạn bè nhắn tới sau vài giây.
+    const target = visibleConversations(viewer.id, 'inbox')[0];
+    if (target) {
+      const peerId = peerIdOf(target, viewer.id);
+      timers.push(
+        setTimeout(() => send('typing', { conversationId: target.id, userId: peerId, typing: true }), 8000),
+        setTimeout(() => {
+          const message = {
+            id: nextMessageId++,
+            conversationId: target.id,
+            senderId: peerId,
+            body: 'Tin nhắn realtime từ bản xem trước 👋',
+            isDeleted: false,
+            attachmentUrl: null,
+            attachmentType: null,
+            sharedPostId: null,
+            readAt: null,
+            createdAt: new Date().toISOString(),
+          };
+          target.messages.push(message);
+          send('typing', { conversationId: target.id, userId: peerId, typing: false });
+          send('message', {
+            message: messageJSON(message, viewer.id),
+            conversation: { id: target.id, status: target.status, peerId, lastMessagePreview: message.body, lastMessageAt: message.createdAt },
+          });
+        }, 12000)
+      );
+    }
+
+    const cleanup = () => {
+      timers.forEach(clearTimeout);
+      timers.forEach(clearInterval);
+      res.end();
+    };
+    req.on('close', cleanup);
+    req.on('aborted', cleanup);
+    return undefined;
+  }
+
+  if (pathname === '/api/chat/summary' && req.method === 'GET') {
+    if (!viewer) return fail(res, 401, 'Cần đăng nhập.', 'UNAUTHORIZED');
+    return ok(res, chatSummary(viewer.id));
+  }
+
+  if (pathname === '/api/chat/people' && req.method === 'GET') {
+    if (!viewer) return fail(res, 401, 'Cần đăng nhập.', 'UNAUTHORIZED');
+    const query = (url.searchParams.get('q') || '').toLowerCase();
+    const people = users
+      .filter((user) => user.id !== viewer.id)
+      .filter((user) => !query || user.username.toLowerCase().includes(query) || user.fullName.toLowerCase().includes(query))
+      .map((user) => {
+        const existing = conversations.find(
+          (conversation) =>
+            conversation.userOneId === Math.min(user.id, viewer.id) &&
+            conversation.userTwoId === Math.max(user.id, viewer.id)
+        );
+        return { ...publicUser(user), conversationId: existing ? existing.id : null };
+      });
+    return ok(res, { people });
+  }
+
+  if (pathname === '/api/chat/conversations' && req.method === 'GET') {
+    if (!viewer) return fail(res, 401, 'Cần đăng nhập.', 'UNAUTHORIZED');
+    const box = url.searchParams.get('box') === 'requests' ? 'requests' : 'inbox';
+    const limit = Number(url.searchParams.get('limit') || 50);
+    return ok(res, {
+      box,
+      conversations: visibleConversations(viewer.id, box).slice(0, limit).map((conversation) => conversationJSON(conversation, viewer.id)),
+      summary: chatSummary(viewer.id),
+    });
+  }
+
+  if (pathname === '/api/chat/conversations' && req.method === 'POST') {
+    if (!viewer) return fail(res, 401, 'Cần đăng nhập.', 'UNAUTHORIZED');
+    const body = JSON.parse((await readBody(req)) || '{}');
+    const peer = findUser(body.userId);
+    if (!peer) return fail(res, 404, 'Người dùng không tồn tại.', 'NOT_FOUND');
+    if (peer.id === viewer.id) return fail(res, 400, 'Không thể tự nhắn tin cho chính mình.', 'BAD_REQUEST');
+    const { conversation, created } = openConversationBetween(viewer.id, peer.id);
+    return json(res, created ? 201 : 200, {
+      success: true,
+      data: { conversation: conversationJSON(conversation, viewer.id), created },
+    });
+  }
+
+  const chatMessages = /^\/api\/chat\/conversations\/(\d+)\/messages$/.exec(pathname);
+  if (chatMessages) {
+    if (!viewer) return fail(res, 401, 'Cần đăng nhập.', 'UNAUTHORIZED');
+    const conversation = conversationById(chatMessages[1]);
+    if (!conversation) return fail(res, 404, 'Hội thoại không tồn tại.', 'NOT_FOUND');
+    if (!isMemberOf(conversation, viewer.id)) return fail(res, 403, 'Bạn không thuộc hội thoại này.', 'FORBIDDEN');
+
+    if (req.method === 'GET') {
+      const limit = Number(url.searchParams.get('limit') || 30);
+      const before = Number(url.searchParams.get('before') || 0);
+      const pool = before
+        ? conversation.messages.filter((message) => message.id < before)
+        : conversation.messages;
+      const page = pool.slice(-limit);
+      const hasMore = pool.length > page.length;
+      return ok(res, {
+        messages: page.map((message) => messageJSON(message, viewer.id)),
+        hasMore,
+        nextBefore: page.length ? page[0].id : null,
+      });
+    }
+
+    if (req.method === 'POST') {
+      const raw = await readBody(req);
+      let body = '';
+      let sharedPostId = null;
+      let attachment = null;
+      const type = req.headers['content-type'] || '';
+      if (type.includes('multipart/form-data')) {
+        const boundary = /boundary=(.+)$/.exec(type)?.[1];
+        const parsed = parseMultipart(raw, boundary);
+        body = parsed.fields.body || '';
+        sharedPostId = parsed.fields.sharedPostId ? Number(parsed.fields.sharedPostId) : null;
+        const file = parsed.files.attachment;
+        if (file) {
+          const extension = path.extname(file.filename || '') || '.jpg';
+          const stored = `chat-upload-${Date.now()}${extension}`;
+          uploads.set(stored, file.data);
+          attachment = {
+            url: imageUrl(stored, 'chat'),
+            type: file.contentType.startsWith('video/') ? 'video' : 'image',
+          };
+        }
+      } else {
+        const parsed = JSON.parse(raw || '{}');
+        body = parsed.body || '';
+        sharedPostId = parsed.sharedPostId ? Number(parsed.sharedPostId) : null;
+      }
+
+      if (!body.trim() && !attachment && !sharedPostId) {
+        return fail(res, 400, 'Tin nhắn phải có nội dung, ảnh hoặc bài viết được chia sẻ.', 'BAD_REQUEST');
+      }
+
+      const message = {
+        id: nextMessageId++,
+        conversationId: conversation.id,
+        senderId: viewer.id,
+        body: body.trim() || null,
+        isDeleted: false,
+        attachmentUrl: attachment ? attachment.url : null,
+        attachmentType: attachment ? attachment.type : null,
+        sharedPostId: sharedPostId || null,
+        readAt: new Date().toISOString(),
+        createdAt: new Date().toISOString(),
+      };
+      conversation.messages.push(message);
+      conversation.readAt[viewer.id] = message.createdAt;
+      return json(res, 201, {
+        success: true,
+        data: {
+          message: messageJSON(message, viewer.id),
+          conversationId: conversation.id,
+          conversationStatus: conversation.status,
+        },
+      });
+    }
+  }
+
+  const chatAction = /^\/api\/chat\/conversations\/(\d+)\/(read|accept|decline|typing)$/.exec(pathname);
+  if (chatAction && req.method === 'POST') {
+    if (!viewer) return fail(res, 401, 'Cần đăng nhập.', 'UNAUTHORIZED');
+    const conversation = conversationById(chatAction[1]);
+    if (!conversation) return fail(res, 404, 'Hội thoại không tồn tại.', 'NOT_FOUND');
+    if (!isMemberOf(conversation, viewer.id)) return fail(res, 403, 'Bạn không thuộc hội thoại này.', 'FORBIDDEN');
+
+    const peerId = peerIdOf(conversation, viewer.id);
+    if (chatAction[2] === 'read') {
+      const unread = unreadCountFor(conversation, viewer.id);
+      conversation.readAt[viewer.id] = new Date().toISOString();
+      conversation.messages
+        .filter((message) => message.senderId === peerId && !message.isDeleted)
+        .forEach((message) => {
+          message.readAt = message.readAt || conversation.readAt[viewer.id];
+        });
+      return ok(res, { unread, conversationId: conversation.id });
+    }
+    if (chatAction[2] === 'accept') {
+      if (conversation.status !== 'requested' || conversation.requestedById === viewer.id) {
+        return fail(res, 403, 'Chỉ người nhận mới đồng ý được tin nhắn chờ.', 'FORBIDDEN');
+      }
+      conversation.status = 'accepted';
+      return ok(res, { conversationId: conversation.id, status: 'accepted' });
+    }
+    if (chatAction[2] === 'decline') {
+      conversation.status = 'declined';
+      return ok(res, { conversationId: conversation.id, status: 'declined' });
+    }
+    // typing — chỉ là tín hiệu, không lưu gì
+    return ok(res, { ok: true });
+  }
+
+  const chatConversation = /^\/api\/chat\/conversations\/(\d+)$/.exec(pathname);
+  if (chatConversation) {
+    if (!viewer) return fail(res, 401, 'Cần đăng nhập.', 'UNAUTHORIZED');
+    const conversation = conversationById(chatConversation[1]);
+    if (!conversation) return fail(res, 404, 'Hội thoại không tồn tại.', 'NOT_FOUND');
+    if (!isMemberOf(conversation, viewer.id)) return fail(res, 403, 'Bạn không thuộc hội thoại này.', 'FORBIDDEN');
+
+    if (req.method === 'GET') return ok(res, { conversation: conversationJSON(conversation, viewer.id) });
+    if (req.method === 'DELETE') {
+      conversation.hiddenAt[viewer.id] = new Date().toISOString();
+      return ok(res, { hidden: true });
+    }
+  }
+
+  if (pathname === '/api/chat/messages' && req.method === 'POST') {
+    if (!viewer) return fail(res, 401, 'Cần đăng nhập.', 'UNAUTHORIZED');
+    const body = JSON.parse((await readBody(req)) || '{}');
+    const peer = findUser(body.toUserId);
+    if (!peer) return fail(res, 404, 'Người dùng không tồn tại.', 'NOT_FOUND');
+    const { conversation } = openConversationBetween(viewer.id, peer.id);
+    const message = {
+      id: nextMessageId++,
+      conversationId: conversation.id,
+      senderId: viewer.id,
+      body: body.body || null,
+      isDeleted: false,
+      attachmentUrl: null,
+      attachmentType: null,
+      sharedPostId: body.sharedPostId ? Number(body.sharedPostId) : null,
+      readAt: new Date().toISOString(),
+      createdAt: new Date().toISOString(),
+    };
+    conversation.messages.push(message);
+    conversation.readAt[viewer.id] = message.createdAt;
+    return json(res, 201, {
+      success: true,
+      data: { message: messageJSON(message, viewer.id), conversationId: conversation.id, conversationStatus: conversation.status },
+    });
+  }
+
+  const chatMessage = /^\/api\/chat\/messages\/(\d+)$/.exec(pathname);
+  if (chatMessage && req.method === 'DELETE') {
+    if (!viewer) return fail(res, 401, 'Cần đăng nhập.', 'UNAUTHORIZED');
+    const found = conversations.flatMap((conversation) => conversation.messages).find((message) => message.id === Number(chatMessage[1]));
+    if (!found) return fail(res, 404, 'Tin nhắn không tồn tại.', 'NOT_FOUND');
+    if (found.senderId !== viewer.id) return fail(res, 403, 'Chỉ thu hồi được tin nhắn của chính mình.', 'FORBIDDEN');
+    // Thu hồi = xoá nội dung + đánh dấu (đúng như backend thật).
+    found.isDeleted = true;
+    found.body = null;
+    found.attachmentUrl = null;
+    return ok(res, { deleted: true, id: found.id });
   }
 
   if (pathname === '/api/health') {
@@ -611,7 +1133,7 @@ function profileResponse(res, user, viewer) {
 }
 
 server.listen(PORT, '0.0.0.0', () => {
-  console.log(`\n  FamilyGram DEMO API  →  http://127.0.0.1:${PORT}`);
-  console.log('  Users: minh.nguyen · linh.tran · ba.noi · me.su   (any password)');
+  console.log(`\n  PixGram DEMO API  →  http://127.0.0.1:${PORT}`);
+  console.log('  Users: minh.nguyen · linh.tran · bao.long · su.ha   (any password)');
   console.log('  Routes: /api/reels · /api/stories · /api/posts/:id/views · /api/posts/:id/download\n');
 });

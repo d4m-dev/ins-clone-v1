@@ -6,7 +6,7 @@ node_modules/
 .env.local
 .env.*.local
 
-# uploaded family photos (privacy!) and backups
+# uploaded photos (privacy!) and backups
 uploads/*
 !uploads/.gitkeep
 backups/

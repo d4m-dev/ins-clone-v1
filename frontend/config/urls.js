@@ -85,6 +85,28 @@ export const ENDPOINTS = {
   comments: {
     byId: (id) => `${API_BASE}/comments/${id}`,
   },
+
+  /**
+   * Chat 1-1 (kiểu Instagram Direct).
+   * `stream` là kênh SSE thời gian thực; client nối bằng fetch (kèm header
+   * Authorization) nên token KHÔNG bao giờ xuất hiện trong URL/access log.
+   */
+  chat: {
+    conversations: `${API_BASE}/chat/conversations`,
+    conversation: (id) => `${API_BASE}/chat/conversations/${id}`,
+    messages: (id) => `${API_BASE}/chat/conversations/${id}/messages`,
+    read: (id) => `${API_BASE}/chat/conversations/${id}/read`,
+    /** Tín hiệu "đang nhập…" — không lưu database, chỉ đẩy realtime. */
+    typing: (id) => `${API_BASE}/chat/conversations/${id}/typing`,
+    accept: (id) => `${API_BASE}/chat/conversations/${id}/accept`,
+    decline: (id) => `${API_BASE}/chat/conversations/${id}/decline`,
+    /** Gửi nhanh theo toUserId (nút "Chia sẻ vào tin nhắn"). */
+    send: `${API_BASE}/chat/messages`,
+    message: (id) => `${API_BASE}/chat/messages/${id}`,
+    summary: `${API_BASE}/chat/summary`,
+    people: `${API_BASE}/chat/people`,
+    stream: `${API_BASE}/chat/stream`,
+  },
 };
 
 /* --------------------------------- images --------------------------------- */
@@ -127,10 +149,17 @@ export const ROUTES = {
    */
   forgotPassword: '/forgot-password',
   resetPassword: '/reset-password',
-  /** Mời người thân — chỉ quản trị viên (xem InvitePage.jsx). */
+  /** Mời thành viên — chỉ quản trị viên (xem InvitePage.jsx). */
   invite: '/invite',
   profile: (username) => `/u/${username}`,
   post: (id) => `/p/${id}`,
+  /**
+   * Hộp thư + khung chat. Một trang lo cả hai: /messages (danh sách) và
+   * /messages/:id (mở thẳng một hội thoại — dùng cho deep link/thông báo).
+   * Phải khớp `urls.routes.messages` trong backend/config/urls.js.
+   */
+  messages: '/messages',
+  conversation: (id) => `/messages/${id}`,
   /**
    * Trang quản trị AdminJS. KHÔNG hardcode: đặt VITE_ADMIN_URL trên Vercel.
    * Nếu để trống, giao diện sẽ ẩn nút "Trang quản trị" (xem ProfilePage).

@@ -20,13 +20,17 @@ import {
   TrashIcon,
   PlayIcon,
   DownloadIcon,
+  MessengerIcon,
 } from './Icons.jsx';
+import PersonPickerDialog from './chat/PersonPickerDialog.jsx';
 
 export default function PostCard({ post, onLike, onDelete, onCommentAdded, onOpenViewer, defaultShowComments = false }) {
   const { user } = useAuth();
   const { t, count, timeAgo } = useI18n();
   const [showComments, setShowComments] = useState(defaultShowComments);
   const [showMenu, setShowMenu] = useState(false);
+  /** Hộp thoại "gửi vào tin nhắn" (giống Instagram: bài viết gửi kèm thẻ). */
+  const [shareOpen, setShareOpen] = useState(false);
   const [burst, setBurst] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState(null);
@@ -192,6 +196,15 @@ export default function PostCard({ post, onLike, onDelete, onCommentAdded, onOpe
         <button type="button" aria-label={t('post.comments', { count: post.commentCount, total: count(post.commentCount) })} onClick={() => setShowComments((value) => !value)}>
           <CommentIcon className="w-6 h-6" />
         </button>
+        {/* Gửi bài viết vào tin nhắn — hành vi chính của Instagram. */}
+        <button
+          type="button"
+          aria-label={t('chat.shareTo')}
+          title={t('chat.shareTo')}
+          onClick={() => setShareOpen(true)}
+        >
+          <MessengerIcon className="w-6 h-6" />
+        </button>
         <button type="button" aria-label={t('common.copyLink')} onClick={share}>
           <ShareIcon className="w-6 h-6" />
         </button>
@@ -240,6 +253,15 @@ export default function PostCard({ post, onLike, onDelete, onCommentAdded, onOpe
           onAdded={(comment) => !comment?.deleted && onCommentAdded?.(post.id)}
         />
       )}
+
+      {/* Gửi bài viết này vào tin nhắn (kiểu Instagram: kèm thẻ bài viết). */}
+      <PersonPickerDialog
+        open={shareOpen}
+        mode="share"
+        postId={post.id}
+        onClose={() => setShareOpen(false)}
+      />
+
       <div className="h-2 md:hidden" />
     </article>
   );

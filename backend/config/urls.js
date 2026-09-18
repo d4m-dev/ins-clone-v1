@@ -15,7 +15,7 @@
 const { env } = require('./env');
 
 const BASE = env.urls.publicBaseUrl; // https://api.d4mdev.click
-const FRONTEND = env.urls.frontendBaseUrl; // https://family.d4mdev.click
+const FRONTEND = env.urls.frontendBaseUrl; // https://ins-clone-v1.vercel.app
 
 const API_PREFIX = '/api';
 
@@ -74,6 +74,18 @@ const urls = {
       byId: (id) => join(BASE, API_PREFIX, 'users', id),
       posts: (id) => join(BASE, API_PREFIX, 'users', id, 'posts'),
     },
+    /** Chat 1-1 (kiểu Instagram Direct). */
+    chat: {
+      conversations: join(BASE, API_PREFIX, 'chat/conversations'),
+      conversation: (id) => join(BASE, API_PREFIX, 'chat/conversations', id),
+      messages: (id) => join(BASE, API_PREFIX, 'chat/conversations', id, 'messages'),
+      read: (id) => join(BASE, API_PREFIX, 'chat/conversations', id, 'read'),
+      accept: (id) => join(BASE, API_PREFIX, 'chat/conversations', id, 'accept'),
+      decline: (id) => join(BASE, API_PREFIX, 'chat/conversations', id, 'decline'),
+      message: (id) => join(BASE, API_PREFIX, 'chat/messages', id),
+      summary: join(BASE, API_PREFIX, 'chat/summary'),
+      people: join(BASE, API_PREFIX, 'chat/people'),
+    },
   },
 
   /**
@@ -88,7 +100,7 @@ const urls = {
     route: '/uploads',
     /** Absolute base, e.g. https://api.d4mdev.click/uploads */
     base: join(BASE, '/uploads'),
-    folders: { posts: 'posts', avatars: 'avatars' },
+    folders: { posts: 'posts', avatars: 'avatars', chat: 'chat' },
     /** filename + thư mục -> URL tuyệt đối */
     absolute: (filename, folder = 'posts') => (filename ? join(BASE, '/uploads', folder, filename) : null),
     /** filename + thư mục -> đường dẫn cùng origin (dùng khi cần relative) */
@@ -98,6 +110,12 @@ const urls = {
     avatar: (filename) => (filename ? join(BASE, '/uploads', 'avatars', filename) : null),
     relativePost: (filename) => (filename ? join('/uploads', 'posts', filename) : null),
     relativeAvatar: (filename) => (filename ? join('/uploads', 'avatars', filename) : null),
+
+    /** Ảnh/video gửi trong tin nhắn: /uploads/chat/<tệp> */
+    chat: {
+      file: (filename) => (filename ? join(BASE, '/uploads', 'chat', filename) : null),
+      relative: (filename) => (filename ? join('/uploads', 'chat', filename) : null),
+    },
   },
 
   /**
@@ -111,6 +129,8 @@ const urls = {
     resetPassword: '/reset-password',
     post: (id) => `/p/${id}`,
     profile: (username) => `/u/${username}`,
+    messages: '/messages',
+    conversation: (id) => `/messages/${id}`,
   },
 
   /** AdminJS dashboard + its static assets (custom CSS lives here). */
@@ -127,6 +147,8 @@ const urls = {
     login: join(FRONTEND, '/login'),
     post: (id) => join(FRONTEND, '/p', id),
     profile: (username) => join(FRONTEND, `/u/${username}`),
+    messages: join(FRONTEND, '/messages'),
+    conversation: (id) => join(FRONTEND, '/messages', id),
   },
 };
 

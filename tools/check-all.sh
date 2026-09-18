@@ -26,7 +26,7 @@ mark_ok()   { pass=$((pass + 1));    printf '  ✅ %s\n' "$*"; }
 mark_bad()  { fail=$((fail + 1));    printf '  ❌ %s\n' "$*"; }
 mark_skip() { skipped=$((skipped + 1)); printf '  ⏭  %s\n' "$*"; }
 
-line "FamilyGram — kiểm tra toàn bộ"
+line "PixGram — kiểm tra toàn bộ"
 printf 'Thư mục: %s\n' "$HERE"
 
 # ── 0. Chuẩn bị ───────────────────────────────────────────────────────────────
@@ -77,12 +77,17 @@ run_suite() {
 
 run_suite "Bộ kiểm thử API (đăng ký, ảnh, video, Reels, Stories, lời mời, mật khẩu)" \
   "node '$HERE/tools/_smoke_api.js'" 1
+run_suite "Chat 1-1: hội thoại, tin nhắn chờ, đã đọc, thu hồi, SSE" \
+  "node '$HERE/tools/_smoke_chat.js'" 1
 run_suite "Nội dung email 3 ngôn ngữ (vi/en/zh)" \
   "node '$HERE/tools/_smoke_email.js'" 0
 run_suite "Nén ảnh phía trình duyệt (giữ tỉ lệ, chọn định dạng, mức tiết kiệm)" \
   "node '$HERE/tools/_smoke_compress.js'" 0
 run_suite "Khởi động thật + AdminJS + custom CSS + schema" \
   "bash '$HERE/tools/boot-check.sh'" 1
+
+run_suite "Chốt chặn câu chữ: không còn chữ về gia đình (dự án công khai)" \
+  "bash '$HERE/tools/check-wording.sh'" 0
 
 # ── 3. Frontend ──────────────────────────────────────────────────────────────
 step "Frontend (Vite build)"

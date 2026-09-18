@@ -22,7 +22,7 @@ const check = (label, ok, detail = '') => {
 };
 
 /* --------------------------- dữ liệu giả lập ------------------------------ */
-const author = { id: 1, username: 'minh.nguyen', fullName: 'Minh Nguyễn', email: 'minh@family.local', locale: 'vi' };
+const author = { id: 1, username: 'minh.nguyen', fullName: 'Minh Nguyễn', email: 'minh@congdong.local', locale: 'vi' };
 const post = {
   id: 7,
   caption: 'Bữa cơm tối <script>alert(1)</script>',
@@ -65,14 +65,14 @@ check('Chú thích chứa <script> đã bị thoát HTML', !html.includes('<scri
 /* ------------------------------- 3. lời mời ------------------------------- */
 const inviteMail = templates.inviteEmail(
   {
-    invite: { email: 'con.gai@family.local', role: 'member', ttlDays: 7, rawToken: 'TOKEN123456' },
+    invite: { email: 'ban.moi@congdong.local', role: 'member', ttlDays: 7, rawToken: 'TOKEN123456' },
     inviter: author,
     urls: { inviteUrl: 'https://ins-clone-v1.vercel.app/register?invite=TOKEN123456' },
   },
   'vi'
 );
 check('Lời mời: nêu tên người mời', inviteMail.subject.includes('Minh Nguyễn'), inviteMail.subject);
-check('Lời mời: hiện email đăng ký', inviteMail.html.includes('con.gai@family.local'));
+check('Lời mời: hiện email đăng ký', inviteMail.html.includes('ban.moi@congdong.local'));
 check('Lời mời: nêu số ngày hết hạn', inviteMail.html.includes('7 ngày'));
 check('Lời mời: link có token', inviteMail.html.includes('invite=TOKEN123456'));
 

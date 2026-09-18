@@ -1,7 +1,7 @@
 'use strict';
 
 /**
- * server.js — FamilyGram backend entry point
+ * server.js — PixGram backend entry point
  * ===========================================================================
  * One process that boots everything:
  *   1. config/env.js        → .env validation
@@ -134,10 +134,10 @@ async function mountRoutes() {
   // --- tiny landing page so the tunnel root is not a 404 -------------------
   app.get('/', (_req, res) => {
     res.type('html').send(
-      `<!doctype html><meta charset="utf-8"><title>FamilyGram API</title>
+      `<!doctype html><meta charset="utf-8"><title>PixGram API</title>
        <style>body{font-family:system-ui;background:#fafafa;color:#262626;padding:40px;line-height:1.6}
        code{background:#efefef;padding:2px 6px;border-radius:6px}</style>
-       <h1>📷 FamilyGram API</h1>
+       <h1>📷 PixGram API</h1>
        <p>Status: <b>online</b></p>
        <ul>
          <li>Health: <code>${urls.api.health}</code></li>
@@ -165,7 +165,7 @@ async function start() {
 
 
     logger.banner([
-      `FamilyGram API  ·  env=${env.nodeEnv}`,
+      `PixGram API  ·  env=${env.nodeEnv}`,
       `public  ${urls.base}`,
       `local   http://127.0.0.1:${env.server.port}`,
       `uploads ${urls.uploads.base}`,
@@ -202,7 +202,13 @@ async function start() {
     // Big photos over a phone hotspot: allow slow clients, kill dead sockets.
     httpServer.keepAliveTimeout = 65_000;
     httpServer.headersTimeout = 70_000;
-    httpServer.requestTimeout = 120_000;
+    /**
+     * ⚠️ SSE CHAT (/api/chat/stream) giữ một request MỞ LIÊN TỤC hàng giờ.
+     * Node ≥18 mặc định `requestTimeout = 300s` → sẽ tự cắt luồng realtime
+     * giữa chừng. Đặt 0 = tắt hẳn; keepAliveTimeout/headersTimeout vẫn dọn
+     * các socket chết nên không có nguy cơ treo kết nối.
+     */
+    httpServer.requestTimeout = 0;
 
     await new Promise((resolve, reject) => {
       httpServer.once('error', reject);

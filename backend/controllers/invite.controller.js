@@ -1,7 +1,7 @@
 /**
  * controllers/invite.controller.js
  * ---------------------------------------------------------------------------
- * Lời mời tham gia gia đình — chỉ quản trị viên tạo được.
+ * Lời mời tham gia cộng đồng — chỉ quản trị viên tạo được.
  *
  *   POST   /api/invites            (admin) tạo lời mời + gửi email
  *   GET    /api/invites            (admin) danh sách, kèm trạng thái

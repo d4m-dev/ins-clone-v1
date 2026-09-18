@@ -1,9 +1,9 @@
 {
-  "name": "familygram-frontend",
+  "name": "pixgram-frontend",
   "private": true,
   "version": "1.0.0",
   "type": "module",
-  "description": "Instagram-like private family photo album — React + Vite + Tailwind, deployed on Vercel.",
+  "description": "Instagram-like photo-sharing app with 1-1 chat — React + Vite + Tailwind, deployed on Vercel.",
   "scripts": {
     "dev": "vite --host 0.0.0.0 --port 5173",
     "build": "vite build",
