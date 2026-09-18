@@ -161,6 +161,28 @@ const env = {
     tunnelName: optional('CLOUDFLARE_TUNNEL_NAME', ''),
     tunnelConfig: optional('CLOUDFLARE_TUNNEL_CONFIG', ''),
     hostname: optional('CLOUDFLARE_HOSTNAME', ''),
+    /** Tunnel quản lý qua dashboard: chỉ cần token, không cần config.yml. */
+    tunnelToken: optional('CLOUDFLARE_TUNNEL_TOKEN', ''),
+  },
+
+  /**
+   * Email gửi thông báo (Gmail + mật khẩu ứng dụng) — CHỈ dùng ở phía server.
+   * Tuyệt đối không đưa khoá này vào biến VITE_* hay bất kỳ mã phía client.
+   */
+  email: {
+    enabled: bool('EMAIL_ENABLED', false),
+    from: optional('SENDER_EMAIL', ''),
+    password: optional('SENDER_PASSWORD', ''),
+    /** Hộp thư nhận thông báo (mặc định = địa chỉ gửi). */
+    to: optional('NOTIFY_EMAIL', '') || optional('SENDER_EMAIL', ''),
+    /** Tài khoản Google dùng cho tính năng lịch (nếu bật). */
+    gcalAccount: optional('GCAL_EMAIL', ''),
+  },
+
+  /** Trợ lý AI (tuỳ chọn) — chỉ chạy ở server để giữ khoá bí mật. */
+  ai: {
+    enabled: bool('AI_ENABLED', false),
+    geminiApiKey: optional('GEMINI_API_KEY', ''),
   },
 };
 

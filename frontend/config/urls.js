@@ -8,8 +8,8 @@
  * Values come from Vite env vars (`.env` / Vercel → Settings → Environment
  * Variables). Changing the backend domain = editing VITE_API_BASE_URL once.
  *
- *   VITE_API_BASE_URL = https://api.d4mdev.click/api
- *   VITE_UPLOADS_BASE_URL = https://api.d4mdev.click/uploads
+ *   VITE_API_ORIGIN    = <tên-miền-api-của-bạn>      (ví dụ: https://api.example.com)
+ *   VITE_UPLOADS_PREFIX = uploads
  * Leave both empty to use same-origin relative paths — the Vite dev server
  * then proxies /api and /uploads to the backend (see vite.config.js), which is
  * also what keeps the in-app preview working.
@@ -108,7 +108,11 @@ export const ROUTES = {
   register: '/register',
   profile: (username) => `/u/${username}`,
   post: (id) => `/p/${id}`,
-  admin: import.meta.env.VITE_ADMIN_URL || 'https://api.d4mdev.click/admin',
+  /**
+   * Trang quản trị AdminJS. KHÔNG hardcode: đặt VITE_ADMIN_URL trên Vercel.
+   * Nếu để trống, giao diện sẽ ẩn nút "Trang quản trị" (xem ProfilePage).
+   */
+  admin: import.meta.env.VITE_ADMIN_URL || '',
 };
 
 /* ------------------------------ placeholders ------------------------------ */

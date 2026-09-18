@@ -20,6 +20,10 @@ fi
 
 PORT="${PORT:-4000}"
 TUNNEL_NAME="${CLOUDFLARE_TUNNEL_NAME:-familygram-api}"
+# Token của tunnel do Cloudflare dashboard tạo (Zero Trust → Networks → Tunnels).
+# Khi có token thì KHÔNG cần config.yml: tuyến đường (public hostname → origin)
+# đã được cấu hình trên dashboard.
+TUNNEL_TOKEN="${CLOUDFLARE_TUNNEL_TOKEN:-}"
 HOSTNAME="${CLOUDFLARE_HOSTNAME:-api.d4mdev.click}"
 CONFIG_FILE="${CLOUDFLARE_TUNNEL_CONFIG:-$HOME/.cloudflared/config.yml}"
 
@@ -49,11 +53,16 @@ for _ in $(seq 1 60); do
   sleep 3
 done
 
-if [ -f "$CONFIG_FILE" ]; then
+if [ -n "$TUNNEL_TOKEN" ]; then
+  # Cách 1 (khuyên dùng): tunnel quản lý qua dashboard, xác thực bằng token.
+  echo "[TUNNEL] Starting token-managed tunnel  ($HOSTNAME → http://127.0.0.1:$PORT)"
+  exec "$CLOUDFLARED" tunnel --no-autoupdate run --token "$TUNNEL_TOKEN"
+elif [ -f "$CONFIG_FILE" ]; then
   echo "[TUNNEL] Starting tunnel '$TUNNEL_NAME'  ($HOSTNAME → http://127.0.0.1:$PORT)"
   exec "$CLOUDFLARED" --config "$CONFIG_FILE" tunnel run "$TUNNEL_NAME"
 else
-  echo "[TUNNEL] $CONFIG_FILE not found — falling back to a quick (ephemeral) tunnel."
-  echo "[TUNNEL] For the fixed domain run: bash scripts/setup-cloudflared.sh"
+  echo "[TUNNEL] Không có CLOUDFLARE_TUNNEL_TOKEN và cũng không thấy $CONFIG_FILE"
+  echo "[TUNNEL] → tạm dùng quick tunnel (URL đổi mỗi lần chạy)."
+  echo "[TUNNEL] Muốn domain cố định: đặt CLOUDFLARE_TUNNEL_TOKEN trong .env"
   exec "$CLOUDFLARED" tunnel --url "http://127.0.0.1:$PORT" --no-autoupdate
 fi

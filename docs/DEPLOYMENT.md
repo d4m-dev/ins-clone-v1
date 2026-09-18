@@ -214,6 +214,55 @@ Trên Android: mở bằng Chrome → menu ⋮ → **Thêm vào màn hình chín
 Nhớ đổi `CACHE_VERSION` trong `frontend/public/sw.js` mỗi lần sửa service worker —
 nếu không, máy người dùng vẫn chạy bản SW cũ.
 
+## 6d. Biến môi trường trên Vercel (BẮT BUỘC)
+
+Vite **nhúng cứng** biến `VITE_*` vào bundle lúc build. Nếu thiếu, app sẽ gọi
+`/api/...` **của chính nó** (tức `https://<tên-app>.vercel.app/api/...`) và nhận về
+`index.html` thay vì JSON → mọi request đều lỗi.
+
+Vào **Vercel → Project → Settings → Environment Variables**, thêm đủ 7 biến sau
+(Environment: *Production, Preview, Development*), rồi **Redeploy**:
+
+| Biến | Giá trị |
+| --- | --- |
+| `VITE_APP_ORIGIN` | `https://ins-clone-v1.vercel.app` |
+| `VITE_API_ORIGIN` | `https://api.d4mdev.click` |
+| `VITE_API_PREFIX` | `api` |
+| `VITE_UPLOADS_PREFIX` | `uploads` |
+| `VITE_ADMIN_URL` | `https://api.d4mdev.click/admin` |
+| `VITE_DEFAULT_LOCALE` | `vi` |
+| `VITE_SUPPORTED_LOCALES` | `vi,en,zh` |
+
+> ⚠️ **Tuyệt đối không** đặt `SENDER_PASSWORD`, `TELEGRAM_BOT_TOKEN`,
+> `CLOUDFLARE_TUNNEL_TOKEN`, `GEMINI_API_KEY` trong Vercel — chúng chỉ thuộc về
+> `backend/.env` trên điện thoại. Biến `VITE_*` bị **in thẳng vào file JS** mà ai
+> cũng đọc được.
+
+**Cách kiểm tra nhanh sau khi redeploy:**
+
+```bash
+# 1. Bundle có biết API thật chưa? (phải thấy domain API của bạn)
+curl -s https://ins-clone-v1.vercel.app/assets/$(curl -s https://ins-clone-v1.vercel.app/ | grep -o 'index-[^"]*\.js') | grep -c "api.d4mdev.click"
+
+# 2. Sai thì lệnh này trả về HTML; đúng thì trả JSON
+curl -s https://ins-clone-v1.vercel.app/api/health | head -c 60
+```
+
+---
+
+## 6e. Thứ tự khởi động đúng (nếu web báo lỗi mạng)
+
+1. **Điện thoại (Termux):** `cd ~/ins-clone-v1/backend && npm start`
+   → `concurrently` chạy MariaDB + API + tunnel.
+2. Kiểm tra API đã sống: `curl -s https://api.d4mdev.click/api/health`
+   → phải là JSON `{"success":true,...}`.
+3. Mở web Vercel → đăng nhập.
+
+Nếu `curl` trả **HTTP 530 / `error code: 1033`** nghĩa là DNS trỏ đúng tunnel
+nhưng **chưa có connector nào kết nối**. Kiểm tra `CLOUDFLARE_TUNNEL_TOKEN`
+trong `backend/.env` (Zero Trust → Networks → Tunnels → connector token) và chạy
+`npm run start:tunnel`.
+
 ## 6b. Ngôn ngữ (i18n)
 
 Mặc định **tiếng Việt**; tiếng Anh và tiếng Trung là ngôn ngữ phụ.
@@ -303,6 +352,9 @@ Move the archive to external storage via `.env`: `UPLOAD_DIR=/storage/emulated/0
 
 | Symptom | Cause / fix |
 | --- | --- |
+| `api.d4mdev.click` trả **530 / error 1033** | Tunnel chưa có connector: thiếu `CLOUDFLARE_TUNNEL_TOKEN` trong `backend/.env`, hoặc `npm run start:tunnel` chưa chạy |
+| Web Vercel tải được nhưng mọi request lỗi JSON | Thiếu `VITE_API_ORIGIN` trên Vercel → app gọi `/api` của chính nó. Thêm đủ 7 biến ở §6d rồi **Redeploy** |
+| Nút "Trang quản trị" không hiện | `VITE_ADMIN_URL` chưa đặt (nút tự ẩn khi chưa cấu hình) |
 | Reels báo 422 "Video dài …" | Clip vượt `MAX_VIDEO_DURATION_SECONDS`. Cắt ngắn lại, hoặc tăng biến trong `.env` rồi `npm run start:api`. |
 | Video không tự phát trong Reels | Trình duyệt chặn autoplay khi **có tiếng** — app mở ở chế độ tắt tiếng, bấm biểu tượng loa để bật. Trên iOS cần thao tác chạm trước lần phát đầu. |
 | Nút "Cài đặt ứng dụng" không hiện | PWA chỉ cài được khi chạy trên HTTPS (Vercel) và **không** phải chế độ riêng tư. iOS không hỗ trợ `beforeinstallprompt` — dùng Safari → Chia sẻ → Thêm vào màn hình chính. |

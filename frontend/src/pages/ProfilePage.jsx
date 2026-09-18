@@ -88,7 +88,7 @@ export default function ProfilePage() {
                   {t('profile.sharePhoto')}
                 </Link>
               )}
-              {currentUser?.role === 'admin' && (
+              {currentUser?.role === 'admin' && Boolean(ROUTES.admin) && (
                 <a
                   href={ROUTES.admin}
                   target="_blank"
